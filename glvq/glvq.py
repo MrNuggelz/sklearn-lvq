@@ -16,13 +16,13 @@ from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_is_fitted
 
 
-def _squared_euclidean(A, B=None):
-    if B is None:
-        d = np.sum(A ** 2, 1)[np.newaxis].T + np.sum(A ** 2, 1) - 2 * A.dot(
-            A.T)
+def _squared_euclidean(a, b=None):
+    if b is None:
+        d = np.sum(a ** 2, 1)[np.newaxis].T + np.sum(a ** 2, 1) - 2 * a.dot(
+            a.T)
     else:
-        d = np.sum(A ** 2, 1)[np.newaxis].T + np.sum(B ** 2, 1) - 2 * A.dot(
-            B.T)
+        d = np.sum(a ** 2, 1)[np.newaxis].T + np.sum(b ** 2, 1) - 2 * a.dot(
+            b.T)
     return np.maximum(d, 0)
 
 
@@ -104,7 +104,7 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
 
         distcorrectpluswrong = distcorrect + distwrong
 
-        G = np.zeros(prototypes.shape)
+        g = np.zeros(prototypes.shape)
         distcorrectpluswrong = 4 / distcorrectpluswrong ** 2
 
         for i in range(nb_prototypes):
@@ -113,12 +113,12 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
 
             dcd = distcorrect[idxw] * distcorrectpluswrong[idxw]
             dwd = distwrong[idxc] * distcorrectpluswrong[idxc]
-            G[i] = dcd.dot(training_data[idxw]) - dwd.dot(
+            g[i] = dcd.dot(training_data[idxw]) - dwd.dot(
                 training_data[idxc]) + (dwd.sum(0) -
                                         dcd.sum(0)) * prototypes[i]
-        G[:nb_prototypes] = 1 / n_data * G[:nb_prototypes]
-        G = G * (1 + 0.0001 * random_state.rand(*G.shape) - 0.5)
-        return G.ravel()
+        g[:nb_prototypes] = 1 / n_data * g[:nb_prototypes]
+        g = g * (1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
+        return g.ravel()
 
     def _optfun(self, variables, training_data, label_equals_prototype):
         n_data, n_dim = training_data.shape
@@ -188,9 +188,9 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
                 self.c_w_[pos:pos + nb_prot] = self.classes_[actClass]
                 pos += nb_prot
         else:
-            X = validation.check_array(self.initial_prototypes)
-            self.w_ = X[:, :-1]
-            self.c_w_ = X[:, -1]
+            x = validation.check_array(self.initial_prototypes)
+            self.w_ = x[:, :-1]
+            self.c_w_ = x[:, -1]
             if self.w_.shape != (np.sum(nb_ppc), nb_features):
                 raise ValueError("the initial prototypes have wrong shape\n"
                                  "found=(%d,%d)\n"
@@ -204,29 +204,29 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
                     "prototype labels={}\n".format(self.classes_, self.c_w_))
         return train_set, train_lab, random_state
 
-    def _optimize(self, X, y, random_state):
+    def _optimize(self, x, y, random_state):
         label_equals_prototype = y[np.newaxis].T == self.c_w_
         res = minimize(
-            fun=lambda x: self._optfun(
-                variables=x, training_data=X,
+            fun=lambda vs: self._optfun(
+                variables=vs, training_data=x,
                 label_equals_prototype=label_equals_prototype),
-            jac=lambda x: self._optgrad(
-                variables=x, training_data=X,
+            jac=lambda vs: self._optgrad(
+                variables=vs, training_data=x,
                 label_equals_prototype=label_equals_prototype,
                 random_state=random_state),
             method='l-bfgs-b', x0=self.w_,
             options={'disp': self.display, 'gtol': self.gtol,
                      'maxiter': self.max_iter})
         self.w_ = res.x.reshape(self.w_.shape)
-        return res.nit
+        self.n_iter_ = res.nit
 
-    def fit(self, X, y):
+    def fit(self, x, y):
         """Fit the GLVQ model to the given training data and parameters using
         l-bfgs-b.
 
         Parameters
         ----------
-        X : array-like, shape = [n_samples, n_features]
+        x : array-like, shape = [n_samples, n_features]
           Training vector, where n_samples in the number of samples and
           n_features is the number of features.
         y : array, shape = [n_samples]
@@ -237,19 +237,19 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
         --------
         self
         """
-        X, y, random_state = self._validate_train_parms(X, y)
+        x, y, random_state = self._validate_train_parms(x, y)
         if len(np.unique(y)) == 1:
             raise ValueError("fitting " + type(
                 self).__name__ + " with only one class is not possible")
-        self.n_iter_ = self._optimize(X, y, random_state)
+        self._optimize(x, y, random_state)
         return self
 
-    def _compute_distance(self, X, w=None):
+    def _compute_distance(self, x, w=None):
         if w is None:
             w = self.w_
-        return cdist(X, w, 'euclidean')
+        return cdist(x, w, 'euclidean')
 
-    def predict(self, X):
+    def predict(self, x):
         """Predict class membership index for each input sample.
 
         This function does classification on an array of
@@ -258,7 +258,7 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
 
         Parameters
         ----------
-        X : array-like, shape = [n_samples, n_features]
+        x : array-like, shape = [n_samples, n_features]
 
 
         Returns
@@ -267,10 +267,10 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
             Returns predicted values.
         """
         check_is_fitted(self, ['w_', 'c_w_'])
-        X = validation.check_array(X)
-        if X.shape[1] != self.w_.shape[1]:
+        x = validation.check_array(x)
+        if x.shape[1] != self.w_.shape[1]:
             raise ValueError("X has wrong number of features\n"
                              "found=%d\n"
-                             "expected=%d" % (self.w_.shape[1], X.shape[1]))
-        dist = self._compute_distance(X)
+                             "expected=%d" % (self.w_.shape[1], x.shape[1]))
+        dist = self._compute_distance(x)
         return (self.c_w_[dist.argmin(1)])

@@ -128,34 +128,34 @@ class LgmlvqModel(GlvqModel):
 
         distcorrectpluswrong = distcorrect + distwrong
 
-        G = np.zeros(variables.shape)
+        g = np.zeros(variables.shape)
         normfactors = 4 / distcorrectpluswrong ** 2
 
         if lr_relevances > 0:
-            Gw = []
+            gw = []
             for i in range(len(psis)):
-                Gw.append(np.zeros(psis[i].shape))
+                gw.append(np.zeros(psis[i].shape))
         for i in range(nb_prototypes):
             idxc = i == pidxcorrect
             idxw = i == pidxwrong
             if self.classwise:
-                rightIdx = np.where((self.c_w_[i] == self.classes_) == 1)[0][
+                right_idx = np.where((self.c_w_[i] == self.classes_) == 1)[0][
                     0]  # test if works
             else:
-                rightIdx = i
+                right_idx = i
             dcd = distcorrect[idxw] * normfactors[idxw]
             dwd = distwrong[idxc] * normfactors[idxc]
 
             difc = training_data[idxc] - variables[i]
             difw = training_data[idxw] - variables[i]
             if lr_prototypes > 0:
-                G[i] = (dcd.dot(difw) - dwd.dot(difc)).dot(
-                    psis[rightIdx].conj().T).dot(psis[rightIdx])
+                g[i] = (dcd.dot(difw) - dwd.dot(difc)).dot(
+                    psis[right_idx].conj().T).dot(psis[right_idx])
             if lr_relevances > 0:
-                Gw[rightIdx] = Gw[rightIdx] - (difw * dcd[np.newaxis].T).dot(
-                    psis[rightIdx].conj().T).T.dot(difw) + \
+                gw[right_idx] = gw[right_idx] - (difw * dcd[np.newaxis].T).dot(
+                    psis[right_idx].conj().T).T.dot(difw) + \
                                (difc * dwd[np.newaxis].T).dot(
-                                   psis[rightIdx].conj().T).T.dot(difc)
+                                   psis[right_idx].conj().T).T.dot(difc)
         if lr_relevances > 0:
             if sum(self.regularization_) > 0:
                 regmatrices = np.zeros([sum(self.dim_), nb_features])
@@ -163,16 +163,16 @@ class LgmlvqModel(GlvqModel):
                     regmatrices[sum(self.dim_[:i + 1]) - self.dim_[i]:sum(
                         self.dim_[:i + 1])] = \
                         self.regularization_[i] * np.linalg.pinv(psis[i])
-                G[nb_prototypes:] = 2 / nb_samples * lr_relevances * \
-                    np.concatenate(Gw) - regmatrices
+                g[nb_prototypes:] = 2 / nb_samples * lr_relevances * \
+                    np.concatenate(gw) - regmatrices
             else:
-                G[nb_prototypes:] = 2 / nb_samples * lr_relevances * \
-                                    np.concatenate(Gw)
+                g[nb_prototypes:] = 2 / nb_samples * lr_relevances * \
+                                    np.concatenate(gw)
         if lr_prototypes > 0:
-            G[:nb_prototypes] = 1 / nb_samples * \
-                                lr_prototypes * G[:nb_prototypes]
-        G = G * (1 + 0.0001 * random_state.rand(*G.shape) - 0.5)
-        return G.ravel()
+            g[:nb_prototypes] = 1 / nb_samples * \
+                                lr_prototypes * g[:nb_prototypes]
+        g = g * (1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
+        return g.ravel()
 
     def _f(self, variables, training_data, label_equals_prototype):
         # print("f")
@@ -208,12 +208,12 @@ class LgmlvqModel(GlvqModel):
                 return np.log(np.linalg.det(x.dot(x.conj().T)))
 
             t = np.array([test(x) for x in psis])
-            regTerm = self.regularization_ * t
-            return mu - 1 / nb_samples * regTerm[
-                pidxcorrect] - 1 / nb_samples * regTerm[pidxwrong]
+            reg_term = self.regularization_ * t
+            return mu - 1 / nb_samples * reg_term[
+                pidxcorrect] - 1 / nb_samples * reg_term[pidxwrong]
         return mu.sum(0)
 
-    def _optimize(self, X, y, random_state):
+    def _optimize(self, x, y, random_state):
         nb_prototypes, nb_features = self.w_.shape
         nb_classes = len(self.classes_)
         if not isinstance(self.classwise, bool):
@@ -248,7 +248,7 @@ class LgmlvqModel(GlvqModel):
         else:
             if not isinstance(self.initial_matrices, list):
                 raise ValueError("initial matrices must be a list")
-            self.omegas_ = list(map(lambda x: validation.check_array(x),
+            self.omegas_ = list(map(lambda v: validation.check_array(v),
                                     self.initial_matrices))
             if self.classwise:
                 if len(self.omegas_) != nb_classes:
@@ -256,7 +256,7 @@ class LgmlvqModel(GlvqModel):
                                      "found=%d\n"
                                      "expected=%d" % (
                                          len(self.omegas_), nb_classes))
-                elif np.sum(map(lambda x: x.shape[1],
+                elif np.sum(map(lambda v: v.shape[1],
                                 self.omegas_)) != nb_features * \
                         len(self.omegas_):
                     raise ValueError(
@@ -266,7 +266,7 @@ class LgmlvqModel(GlvqModel):
                                  "found=%d\n"
                                  "expected=%d" % (
                                      len(self.omegas_), nb_classes))
-            elif np.sum([x.shape[1] for x in self.omegas_]) != \
+            elif np.sum([v.shape[1] for v in self.omegas_]) != \
                     nb_features * len(self.omegas_):
                 raise ValueError(
                     "each matrix should have %d columns" % nb_features)
@@ -291,30 +291,30 @@ class LgmlvqModel(GlvqModel):
         variables = np.append(self.w_, np.concatenate(self.omegas_), axis=0)
         label_equals_prototype = y[np.newaxis].T == self.c_w_
         res = minimize(
-            fun=lambda x: self._f(
-                x, X, label_equals_prototype=label_equals_prototype),
-            jac=lambda x: self._g(
-                x, X, label_equals_prototype=label_equals_prototype,
+            fun=lambda vs: self._f(
+                vs, x, label_equals_prototype=label_equals_prototype),
+            jac=lambda vs: self._g(
+                vs, x, label_equals_prototype=label_equals_prototype,
                 lr_prototypes=1, lr_relevances=0, random_state=random_state),
             method='L-BFGS-B',
             x0=variables, options={'disp': self.display, 'gtol': self.gtol,
                                    'maxiter': self.max_iter})
         n_iter = res.nit
         res = minimize(
-            fun=lambda x: self._f(
-                x, X, label_equals_prototype=label_equals_prototype),
-            jac=lambda x: self._g(
-                x, X, label_equals_prototype=label_equals_prototype,
+            fun=lambda vs: self._f(
+                vs, x, label_equals_prototype=label_equals_prototype),
+            jac=lambda vs: self._g(
+                vs, x, label_equals_prototype=label_equals_prototype,
                 lr_prototypes=0, lr_relevances=1, random_state=random_state),
             method='L-BFGS-B',
             x0=res.x, options={'disp': self.display, 'gtol': self.gtol,
                                'maxiter': self.max_iter})
         n_iter = max(n_iter, res.nit)
         res = minimize(
-            fun=lambda x: self._f(
-                x, X, label_equals_prototype=label_equals_prototype),
-            jac=lambda x: self._g(
-                x, X, label_equals_prototype=label_equals_prototype,
+            fun=lambda vs: self._f(
+                vs, x, label_equals_prototype=label_equals_prototype),
+            jac=lambda vs: self._g(
+                vs, x, label_equals_prototype=label_equals_prototype,
                 lr_prototypes=1, lr_relevances=1, random_state=random_state),
             method='L-BFGS-B',
             x0=res.x, options={'disp': self.display, 'gtol': self.gtol,
@@ -326,35 +326,35 @@ class LgmlvqModel(GlvqModel):
         for i in range(len(self.dim_)):
             indices.append(sum(self.dim_[:i + 1]))
         self.omegas_ = np.split(out[nb_prototypes:], indices[:-1])  # .conj().T
-        return n_iter
+        self.n_iter_ = n_iter
 
-    def _compute_distance(self, X, w=None,
+    def _compute_distance(self, x, w=None,
                           psis=None):
         if w is None:
             w = self.w_
         if psis is None:
             psis = self.omegas_
-        nb_samples = X.shape[0]
+        nb_samples = x.shape[0]
         nb_prototypes = w.shape[0]
         distance = np.zeros([nb_prototypes, nb_samples])
         if len(psis) == nb_prototypes:
             for i in range(nb_prototypes):
-                distance[i] = np.sum(np.dot(X - w[i], psis[i].conj().T) ** 2,
+                distance[i] = np.sum(np.dot(x - w[i], psis[i].conj().T) ** 2,
                                      1)
             return np.transpose(distance)
         for i in range(nb_prototypes):
-            matrixIdx = np.where(self.classes_ == self.c_w_[i])[0][0]
+            matrix_idx = np.where(self.classes_ == self.c_w_[i])[0][0]
             distance[i] = np.sum(
-                np.dot(X - w[i], psis[matrixIdx].conj().T) ** 2, 1)
+                np.dot(x - w[i], psis[matrix_idx].conj().T) ** 2, 1)
         return np.transpose(distance)
 
-    def project(self, X, prototype_idx, dims, print_variance_covered=False):
+    def project(self, x, prototype_idx, dims, print_variance_covered=False):
         """Projects the data input data X using the relevance matrix of the
         prototype specified by prototype_idx to dimension dim
 
         Parameters
         ----------
-        X : array-like, shape = [n,n_features]
+        x : array-like, shape = [n,n_features]
           input data for project
         prototype_idx : int
           index of the prototype
@@ -379,4 +379,4 @@ class LgmlvqModel(GlvqModel):
         if print_variance_covered:
             print('variance coverd by projection:',
                   v[idx][:dims].sum() / v.sum() * 100)
-        return X.dot(u[:, idx][:, :dims].dot(np.diag(np.sqrt(v[idx][:dims]))))
+        return x.dot(u[:, idx][:, :dims].dot(np.diag(np.sqrt(v[idx][:dims]))))

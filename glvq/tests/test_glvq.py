@@ -4,7 +4,8 @@ from glvq.glvq import GlvqModel
 from glvq.grlvq import GrlvqModel
 from glvq.gmlvq import GmlvqModel
 from glvq.lgmlvq import LgmlvqModel
-from sklearn.utils.testing import assert_greater, assert_raise_message, assert_allclose
+from sklearn.utils.testing import assert_greater, assert_raise_message, \
+    assert_allclose
 
 from sklearn import datasets
 from sklearn.utils import check_random_state
@@ -67,13 +68,13 @@ def test_grlvq_iris():
 
     model = GrlvqModel(initial_prototypes=[[0, 0, 0], [4, 4, 1]])
     nb_ppc = 10
-    X = np.append(
+    x = np.append(
         np.random.multivariate_normal([0, 0], np.array([[0.3, 0], [0, 4]]),
                                       size=nb_ppc),
         np.random.multivariate_normal([4, 4], np.array([[0.3, 0], [0, 4]]),
                                       size=nb_ppc), axis=0)
     y = np.append(np.zeros(nb_ppc), np.ones(nb_ppc), axis=0)
-    model.fit(X, y)
+    model.fit(x, y)
     assert_allclose(np.array([1.0, 0.0]), model.lambda_, atol=0.2)
 
     assert_raise_message(ValueError, 'length of initial relevances is wrong',
@@ -91,13 +92,13 @@ def test_gmlvq_iris():
 
     model = GmlvqModel(initial_prototypes=[[0, 0, 0], [4, 4, 1]])
     nb_ppc = 10
-    X = np.append(
+    x = np.append(
         np.random.multivariate_normal([0, 0], np.array([[0.3, 0], [0, 4]]),
                                       size=nb_ppc),
         np.random.multivariate_normal([4, 4], np.array([[0.3, 0], [0, 4]]),
                                       size=nb_ppc), axis=0)
     y = np.append(np.zeros(nb_ppc), np.ones(nb_ppc), axis=0)
-    model.fit(X, y)
+    model.fit(x, y)
     assert_allclose(np.array([[1, 0], [0.2, 0]]), model.omega_, atol=0.3)
 
     assert_raise_message(ValueError, 'regularization must be a positive float',
@@ -169,6 +170,6 @@ def test_lgmlvq_iris():
     model = LgmlvqModel(initial_prototypes=[[0, 2, 1], [1, 6, 2]],
                         initial_matrices=[np.ones([2, 2]), np.ones([2, 2])],
                         dim=[2, 2])
-    X = np.array([[0, 0], [0, 4], [1, 4], [1, 8]])
+    x = np.array([[0, 0], [0, 4], [1, 4], [1, 8]])
     y = np.array([1, 1, 2, 2])
-    model.fit(X, y)
+    model.fit(x, y)
