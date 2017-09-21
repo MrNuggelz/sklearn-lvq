@@ -5,13 +5,13 @@ machine:
     USERNAME: "scikit-learn-contrib"
 
     # The repository where the documentation will be hosted
-    DOC_REPO: "project-template"
+    DOC_REPO: "sklearn-glvq"
 
     # The base URL for the Github page where the documentation will be hosted
     DOC_URL: ""
 
     # The email is to be used for commits in the Github Page
-    EMAIL: "vnb222+ci@nyu.edu"
+    EMAIL: "jjensen@techfak.uni-bielefeld.de"
 
 dependencies:
 
