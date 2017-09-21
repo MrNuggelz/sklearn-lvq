@@ -131,9 +131,9 @@ coordinate axis.
 
 .. topic:: References:
 
-    .. [3] `"Regularization in Matrix Relevance Learning"
-      <http://www.cs.rug.nl/~biehl/Preprints/tnn-2010.pdf>`_
-      P. Schneider, K. Bunte, B. Hammer and M. Biehl - IEEE Transactions on Neural Networks, vol. 21, nb. 5, pp. 831-840, 2010.
+    .. [3] `"Adaptive Relevance Matrices in Learning Vector Quantization"
+      <http://www.cs.rug.nl/~biehl/Preprints/gmlvq.pdf>`_
+      Petra Schneider, Michael Biehl and Barbara Hammer - Neural Computation, vol. 21, nb. 12, pp. 3532-3561, 2009.
 
     .. [4] `"Limited Rank Matrix Learning - Discriminative Dimension Reduction and Visualization"
       <http://www.cs.rug.nl/biehl/Preprints/liram-preliminary.pdf>`_
@@ -204,6 +204,6 @@ zero [7]_.
     .. [6] `LVQ Toolbox
       <http://matlabserver.cs.rug.nl/gmlvqweb/web/>`_  M. Biehl, P. Schneider and K. Bunte, 2017
 
-    .. [7] "Regularization in Matrix Relevance Learning" P. Schneider, K.
-      Bunte, B. Hammer and M. Biehl - IEEE Transactions on Neural Networks,
-      vol. 21, nb. 5, pp. 831-840, 2010.
+    .. [7] `"Regularization in Matrix Relevance Learning"
+      <http://www.cs.rug.nl/~biehl/Preprints/tnn-2010.pdf>`_
+      P. Schneider, K. Bunte, B. Hammer and M. Biehl - IEEE Transactions on Neural Networks, vol. 21, nb. 5, pp. 831-840, 2010.
