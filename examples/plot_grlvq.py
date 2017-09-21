@@ -84,3 +84,4 @@ grlvq.fit(toy_data, toy_label)
 project_plot2d(grlvq, toy_data, toy_label, 1, 'grlvq')
 
 print('classification accuracy:', grlvq.score(toy_data, toy_label))
+plt.show()

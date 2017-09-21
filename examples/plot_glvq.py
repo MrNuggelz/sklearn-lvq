@@ -36,3 +36,4 @@ plt.axis('equal')
 f.show()
 
 print('classification accuracy:', glvq.score(toy_data, toy_label))
+plt.show()
