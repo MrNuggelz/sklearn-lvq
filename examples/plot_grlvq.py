@@ -4,7 +4,7 @@ Generalized Relevance Learning Vector Quantization
 ==================================================
 This example shows the different glvq algorithms and how they project
 different data sets. The data sets are chosen to show the strength of each
-algorithm. Each plot shows for each datapoint which class it belongs to
+algorithm. Each plot shows for each data point which class it belongs to
 (big circle) and which class it was classified to (smaller circle). It also
 shows the prototypes (light blue circle). The projected data is shown in the
 right plot.
@@ -18,14 +18,14 @@ from glvq import GrlvqModel
 print(__doc__)
 
 
-def project_plot2d(model, X, y, figure, title=""):
+def project_plot2d(model, x, y, figure, title=""):
     """
     Projects the input data to two dimensions and plots it. The projection is
     done using the relevances of the given glvq model.
 
     :param model: GlvqModel that has relevances
         (GrlvqModel,GmlvqModel,LgmlvqModel)
-    :param X: Input data
+    :param x: Input data
     :param y: Input data target
     :param figure: the figure to plot on
     :param title: the title to use, optional
@@ -34,36 +34,36 @@ def project_plot2d(model, X, y, figure, title=""):
     dim = 2
     f = plt.figure(figure)
     f.suptitle(title)
-    pred = model.predict(X)
+    pred = model.predict(x)
 
     if hasattr(model, 'omegas_'):
         nb_prototype = model.w_.shape[0]
         ax = f.add_subplot(1, nb_prototype + 1, 1)
-        ax.scatter(X[:, 0], X[:, 1], c=y, alpha=0.5)
-        ax.scatter(X[:, 0], X[:, 1], c=pred, marker='.')
+        ax.scatter(x[:, 0], x[:, 1], c=y, alpha=0.5)
+        ax.scatter(x[:, 0], x[:, 1], c=pred, marker='.')
         ax.scatter(model.w_[:, 0], model.w_[:, 1])
         ax.axis('equal')
         for i in range(nb_prototype):
-            X_p = model.project(X, i, dim, print_variance_covered=True)
+            x_p = model.project(x, i, dim, print_variance_covered=True)
             w_p = model.project(model.w_[i], i, dim)
 
             ax = f.add_subplot(1, nb_prototype + 1, i + 2)
-            ax.scatter(X_p[:, 0], X_p[:, 1], c=y, alpha=0.2)
+            ax.scatter(x_p[:, 0], x_p[:, 1], c=y, alpha=0.2)
             # ax.scatter(X_p[:, 0], X_p[:, 1], c=pred, marker='.')
             ax.scatter(w_p[0], w_p[1], marker='D', s=20)
             ax.axis('equal')
 
     else:
         ax = f.add_subplot(121)
-        ax.scatter(X[:, 0], X[:, 1], c=y, alpha=0.5)
-        ax.scatter(X[:, 0], X[:, 1], c=pred, marker='.')
+        ax.scatter(x[:, 0], x[:, 1], c=y, alpha=0.5)
+        ax.scatter(x[:, 0], x[:, 1], c=pred, marker='.')
         ax.scatter(model.w_[:, 0], model.w_[:, 1])
         ax.axis('equal')
-        X_p = model.project(X, dim, print_variance_covered=True)
+        x_p = model.project(x, dim, print_variance_covered=True)
         w_p = model.project(model.w_, dim)
 
         ax = f.add_subplot(122)
-        ax.scatter(X_p[:, 0], X_p[:, 1], c=y, alpha=0.5)
+        ax.scatter(x_p[:, 0], x_p[:, 1], c=y, alpha=0.5)
         # ax.scatter(X_p[:, 0], X_p[:, 1], c=pred, marker='.')
         ax.scatter(w_p[:, 0], w_p[:, 1], marker='D', s=20)
         ax.axis('equal')

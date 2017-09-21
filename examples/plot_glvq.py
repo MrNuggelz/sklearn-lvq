@@ -4,7 +4,7 @@ Generalized Learning Vector Quantization
 ========================================
 This example shows the different glvq algorithms and how they project
 different data sets. The data sets are chosen to show the strength of each
-algorithm. Each plot shows for each datapoint which class it belongs to
+algorithm. Each plot shows for each data point which class it belongs to
 (big circle) and which class it was classified to (smaller circle). It also
 shows the prototypes (light blue circle). The projected data is shown in the
 right plot.
