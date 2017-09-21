@@ -9,6 +9,7 @@ from sklearn.utils.testing import assert_greater, assert_raise_message, \
 
 from sklearn import datasets
 from sklearn.utils import check_random_state
+from sklearn.utils.estimator_checks import check_estimator
 
 # also load the iris dataset
 iris = datasets.load_iris()
@@ -21,6 +22,7 @@ iris.target = iris.target[perm]
 # TODO: grlvq not working with lbfgs-b
 
 def test_glvq_iris():
+    check_estimator(GlvqModel)
     model = GlvqModel()
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), 0.94)
@@ -62,6 +64,7 @@ def test_glvq_iris():
 
 
 def test_grlvq_iris():
+    check_estimator(GrlvqModel)
     model = GrlvqModel(regularization=0.5)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), 0.89)
@@ -86,6 +89,7 @@ def test_grlvq_iris():
 
 
 def test_gmlvq_iris():
+    check_estimator(GmlvqModel)
     model = GmlvqModel(regularization=0.5)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), 0.94)
@@ -114,6 +118,7 @@ def test_gmlvq_iris():
 
 
 def test_lgmlvq_iris():
+    check_estimator(LgmlvqModel)
     model = LgmlvqModel()
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), 0.95)
