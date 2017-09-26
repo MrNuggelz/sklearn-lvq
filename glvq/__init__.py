@@ -8,6 +8,7 @@ from .glvq import GlvqModel
 from .grlvq import GrlvqModel
 from .gmlvq import GmlvqModel
 from .lgmlvq import LgmlvqModel
+from .plot_2d import plot2d
 
-__all__ = ['GlvqModel', 'GrlvqModel', 'GmlvqModel', 'LgmlvqModel']
+__all__ = ['GlvqModel', 'GrlvqModel', 'GmlvqModel', 'LgmlvqModel','plot2d']
 __version__ = '1.0'

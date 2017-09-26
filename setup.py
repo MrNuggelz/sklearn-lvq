@@ -18,7 +18,7 @@ except ImportError:
     sys.exit(1)
 
 setup(name='sklearn-glvq',
-      version='1.0',
+      version='1.0.1',
       description='sklearn compatible Generalized Learning Vector '
                   'Quantization implementation',
       author='Joris Jensen',
