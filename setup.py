@@ -29,7 +29,7 @@ CLASSIFIERS = [
     'Operating System :: Microsoft :: Windows',
 ]
 
-version='1.0.2'
+version='1.0.3'
 
 setup(name='sklearn-glvq',
       version=version,

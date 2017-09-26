@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from sklearn.utils import validation
 
 
 def plot2d(model, x, y, figure, title=""):
@@ -14,6 +15,7 @@ def plot2d(model, x, y, figure, title=""):
     :param title: the title to use, optional
     :return: None
     """
+    x, y = validation.check_X_y(x, y)
     dim = 2
     f = plt.figure(figure)
     f.suptitle(title)
@@ -34,12 +36,13 @@ def plot2d(model, x, y, figure, title=""):
             w_p = model.project(model.w_[i], i, dim)
 
             ax = f.add_subplot(1, nb_prototype + 1, i + 2)
-            ax.scatter(x_p[:, 0], x_p[:, 1], c=to_tango_colors(y,0), alpha=0.2)
+            ax.scatter(x_p[:, 0], x_p[:, 1], c=to_tango_colors(y, 0),
+                       alpha=0.2)
             # ax.scatter(X_p[:, 0], X_p[:, 1], c=pred, marker='.')
             ax.scatter(w_p[0], w_p[1],
-                       c=tango_color('aluminium',5), marker='D')
+                       c=tango_color('aluminium', 5), marker='D')
             ax.scatter(w_p[0], w_p[1],
-                       c=tango_color(i,0), marker='.')
+                       c=tango_color(i, 0), marker='.')
             ax.axis('equal')
 
     else:
