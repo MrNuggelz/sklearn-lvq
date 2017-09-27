@@ -1,0 +1,16 @@
+:mod:`glvq`.LgmlvqModel
+==============================
+
+.. currentmodule:: glvq
+
+.. autoclass:: LgmlvqModel
+
+   
+   .. automethod:: __init__
+   
+
+.. include:: glvq.LgmlvqModel.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

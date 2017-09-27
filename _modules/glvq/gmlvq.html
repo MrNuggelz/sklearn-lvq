@@ -1,0 +1,509 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>glvq.gmlvq &mdash; sklearn-glvq 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="sklearn-glvq 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> sklearn-glvq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/glvqapi.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glvq.html">Generalized Learning Vector Quantization</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">sklearn-glvq</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>glvq.gmlvq</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for glvq.gmlvq</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># Author: Joris Jensen &lt;jjensen@techfak.uni-bielefeld.de&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD 3 clause</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">log</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="k">import</span> <span class="n">minimize</span>
+
+<span class="kn">from</span> <span class="nn">.glvq</span> <span class="k">import</span> <span class="n">GlvqModel</span><span class="p">,</span> <span class="n">_squared_euclidean</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="k">import</span> <span class="n">validation</span>
+
+
+<div class="viewcode-block" id="GmlvqModel"><a class="viewcode-back" href="../../modules/generated/glvq.GmlvqModel.html#glvq.GmlvqModel">[docs]</a><span class="k">class</span> <span class="nc">GmlvqModel</span><span class="p">(</span><span class="n">GlvqModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generalized Matrix Learning Vector Quantization</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    prototypes_per_class : int or list of int, optional (default=1)</span>
+<span class="sd">        Number of prototypes per class. Use list to specify different numbers</span>
+<span class="sd">        per class.</span>
+
+<span class="sd">    initial_prototypes : array-like,</span>
+<span class="sd">     shape =  [n_prototypes, n_features + 1], optional</span>
+<span class="sd">        Prototypes to start with. If not given initialization near the class</span>
+<span class="sd">        means. Class label must be placed as last entry of each prototype</span>
+
+<span class="sd">    initial_matrix : array-like, shape = [dim, n_features], optional</span>
+<span class="sd">        Relevance matrix to start with.</span>
+<span class="sd">        If not given random initialization for rectangular matrix and unity</span>
+<span class="sd">        for squared matrix.</span>
+
+<span class="sd">    regularization : float, optional (default=0.0)</span>
+<span class="sd">        Value between 0 and 1. Regularization is done by the log determinant</span>
+<span class="sd">        of the relevance matrix. Without regularization relevances may</span>
+<span class="sd">        degenerate to zero.</span>
+
+<span class="sd">    dim : int, optional (default=nb_features)</span>
+<span class="sd">        Maximum rank or projection dimensions</span>
+
+<span class="sd">    max_iter : int, optional (default=2500)</span>
+<span class="sd">        The maximum number of iterations.</span>
+
+<span class="sd">    gtol : float, optional (default=1e-5)</span>
+<span class="sd">        Gradient norm must be less than gtol before successful</span>
+<span class="sd">        termination of l-bfgs-b.</span>
+
+<span class="sd">    display : boolean, optional (default=False)</span>
+<span class="sd">        Print information about the bfgs steps.</span>
+
+<span class="sd">    random_state : int, RandomState instance or None, optional (default=None)</span>
+<span class="sd">        If int, random_state is the seed used by the random number generator;</span>
+<span class="sd">        If RandomState instance, random_state is the random number generator;</span>
+<span class="sd">        If None, the random number generator is the RandomState instance used</span>
+<span class="sd">        by `np.random`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    w_ : array-like, shape = [n_prototypes, n_features]</span>
+<span class="sd">        Prototype vector, where n_prototypes in the number of prototypes and</span>
+<span class="sd">        n_features is the number of features</span>
+
+<span class="sd">    c_w_ : array-like, shape = [n_prototypes]</span>
+<span class="sd">        Prototype classes</span>
+
+<span class="sd">    classes_ : array-like, shape = [n_classes]</span>
+<span class="sd">        Array containing labels.</span>
+
+<span class="sd">    dim_ : int</span>
+<span class="sd">        Maximum rank or projection dimensions</span>
+
+<span class="sd">    omega_ : array-like, shape = [dim, n_features]</span>
+<span class="sd">        Relevance matrix</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    GlvqModel, GrlvqModel, LgmlvqModel</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GmlvqModel.__init__"><a class="viewcode-back" href="../../modules/generated/glvq.GmlvqModel.html#glvq.GmlvqModel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prototypes_per_class</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">initial_prototypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">initial_matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regularization</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                 <span class="n">dim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span> <span class="n">gtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GmlvqModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">prototypes_per_class</span><span class="p">,</span>
+                                         <span class="n">initial_prototypes</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">gtol</span><span class="p">,</span>
+                                         <span class="n">display</span><span class="p">,</span> <span class="n">random_state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regularization</span> <span class="o">=</span> <span class="n">regularization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_matrix</span> <span class="o">=</span> <span class="n">initial_matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialdim</span> <span class="o">=</span> <span class="n">dim</span></div>
+
+    <span class="k">def</span> <span class="nf">_optgrad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">training_data</span><span class="p">,</span> <span class="n">label_equals_prototype</span><span class="p">,</span>
+                 <span class="n">random_state</span><span class="p">,</span> <span class="n">lr_relevances</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lr_prototypes</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">n_data</span><span class="p">,</span> <span class="n">n_dim</span> <span class="o">=</span> <span class="n">training_data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">variables</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="n">n_dim</span><span class="p">,</span> <span class="n">n_dim</span><span class="p">)</span>
+        <span class="n">nb_prototypes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">omega_t</span> <span class="o">=</span> <span class="n">variables</span><span class="p">[</span><span class="n">nb_prototypes</span><span class="p">:]</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">_squared_euclidean</span><span class="p">(</span><span class="n">training_data</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">omega_t</span><span class="p">),</span>
+                                  <span class="n">variables</span><span class="p">[:</span><span class="n">nb_prototypes</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">omega_t</span><span class="p">))</span>
+        <span class="n">d_wrong</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">d_wrong</span><span class="p">[</span><span class="n">label_equals_prototype</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">distwrong</span> <span class="o">=</span> <span class="n">d_wrong</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pidxwrong</span> <span class="o">=</span> <span class="n">d_wrong</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">d_correct</span> <span class="o">=</span> <span class="n">dist</span>
+        <span class="n">d_correct</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">label_equals_prototype</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">distcorrect</span> <span class="o">=</span> <span class="n">d_correct</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pidxcorrect</span> <span class="o">=</span> <span class="n">d_correct</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">distcorrectpluswrong</span> <span class="o">=</span> <span class="n">distcorrect</span> <span class="o">+</span> <span class="n">distwrong</span>
+
+        <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">variables</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">distcorrectpluswrong</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">/</span> <span class="n">distcorrectpluswrong</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="k">if</span> <span class="n">lr_relevances</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">gw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">omega_t</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_dim</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_prototypes</span><span class="p">):</span>
+            <span class="n">idxc</span> <span class="o">=</span> <span class="n">i</span> <span class="o">==</span> <span class="n">pidxcorrect</span>
+            <span class="n">idxw</span> <span class="o">=</span> <span class="n">i</span> <span class="o">==</span> <span class="n">pidxwrong</span>
+
+            <span class="n">dcd</span> <span class="o">=</span> <span class="n">distcorrect</span><span class="p">[</span><span class="n">idxw</span><span class="p">]</span> <span class="o">*</span> <span class="n">distcorrectpluswrong</span><span class="p">[</span><span class="n">idxw</span><span class="p">]</span>
+            <span class="n">dwd</span> <span class="o">=</span> <span class="n">distwrong</span><span class="p">[</span><span class="n">idxc</span><span class="p">]</span> <span class="o">*</span> <span class="n">distcorrectpluswrong</span><span class="p">[</span><span class="n">idxc</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">lr_relevances</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">difc</span> <span class="o">=</span> <span class="n">training_data</span><span class="p">[</span><span class="n">idxc</span><span class="p">]</span> <span class="o">-</span> <span class="n">variables</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">difw</span> <span class="o">=</span> <span class="n">training_data</span><span class="p">[</span><span class="n">idxw</span><span class="p">]</span> <span class="o">-</span> <span class="n">variables</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">gw</span> <span class="o">=</span> <span class="n">gw</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">difw</span> <span class="o">*</span> <span class="n">dcd</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">omega_t</span><span class="p">)</span><span class="o">.</span><span class="n">T</span> \
+                    <span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">difw</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">difc</span> <span class="o">*</span> <span class="n">dwd</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                                        <span class="n">omega_t</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">difc</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">lr_prototypes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dcd</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">difw</span><span class="p">)</span> <span class="o">-</span> <span class="n">dwd</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">difc</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">lr_prototypes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dcd</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">training_data</span><span class="p">[</span><span class="n">idxw</span><span class="p">])</span> <span class="o">-</span> \
+                       <span class="n">dwd</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">training_data</span><span class="p">[</span><span class="n">idxc</span><span class="p">])</span> <span class="o">+</span> \
+                       <span class="p">(</span><span class="n">dwd</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">dcd</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">*</span> <span class="n">variables</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">f3</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">regularization</span><span class="p">:</span>
+            <span class="n">f3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">omega_t</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">if</span> <span class="n">lr_relevances</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">g</span><span class="p">[</span><span class="n">nb_prototypes</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">n_data</span> \
+                                <span class="o">*</span> <span class="n">lr_relevances</span> <span class="o">*</span> <span class="n">gw</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">regularization</span> <span class="o">*</span> <span class="n">f3</span>
+        <span class="k">if</span> <span class="n">lr_prototypes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">g</span><span class="p">[:</span><span class="n">nb_prototypes</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">n_data</span> <span class="o">*</span> <span class="n">lr_prototypes</span> \
+                                <span class="o">*</span> <span class="n">g</span><span class="p">[:</span><span class="n">nb_prototypes</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">omega_t</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">omega_t</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">g</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.0001</span> <span class="o">*</span> <span class="n">random_state</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="o">*</span><span class="n">g</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_optfun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">training_data</span><span class="p">,</span> <span class="n">label_equals_prototype</span><span class="p">):</span>
+        <span class="n">n_data</span><span class="p">,</span> <span class="n">n_dim</span> <span class="o">=</span> <span class="n">training_data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">variables</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="n">n_dim</span><span class="p">,</span> <span class="n">n_dim</span><span class="p">)</span>
+        <span class="n">nb_prototypes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">omega_t</span> <span class="o">=</span> <span class="n">variables</span><span class="p">[</span><span class="n">nb_prototypes</span><span class="p">:]</span>  <span class="c1"># .conj().T</span>
+
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">_squared_euclidean</span><span class="p">(</span><span class="n">training_data</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">omega_t</span><span class="p">),</span>
+                                  <span class="n">variables</span><span class="p">[:</span><span class="n">nb_prototypes</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">omega_t</span><span class="p">))</span>
+        <span class="n">d_wrong</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">d_wrong</span><span class="p">[</span><span class="n">label_equals_prototype</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">distwrong</span> <span class="o">=</span> <span class="n">d_wrong</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">d_correct</span> <span class="o">=</span> <span class="n">dist</span>
+        <span class="n">d_correct</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">label_equals_prototype</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">distcorrect</span> <span class="o">=</span> <span class="n">d_correct</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">distcorrectpluswrong</span> <span class="o">=</span> <span class="n">distcorrect</span> <span class="o">+</span> <span class="n">distwrong</span>
+        <span class="n">distcorectminuswrong</span> <span class="o">=</span> <span class="n">distcorrect</span> <span class="o">-</span> <span class="n">distwrong</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">distcorectminuswrong</span> <span class="o">/</span> <span class="n">distcorrectpluswrong</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">regularization</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">reg_term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regularization</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">omega_t</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">omega_t</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="n">mu</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">reg_term</span>  <span class="c1"># f</span>
+        <span class="k">return</span> <span class="n">mu</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regularization</span><span class="p">,</span>
+                          <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">regularization</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;regularization must be a positive float &quot;</span><span class="p">)</span>
+        <span class="n">nb_prototypes</span><span class="p">,</span> <span class="n">nb_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialdim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dim_</span> <span class="o">=</span> <span class="n">nb_features</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initialdim</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialdim</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;dim must be an positive int&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dim_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialdim</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_matrix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim_</span> <span class="o">==</span> <span class="n">nb_features</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">omega_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">nb_features</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">omega_</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim_</span><span class="p">,</span> <span class="n">nb_features</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">omega_</span> <span class="o">=</span> <span class="n">validation</span><span class="o">.</span><span class="n">check_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_matrix</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">nb_features</span><span class="p">:</span>  <span class="c1"># TODO: check dim</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;initial matrix has wrong number of features</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;found=</span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;expected=</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">omega_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">nb_features</span><span class="p">))</span>
+
+        <span class="n">variables</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega_</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">label_equals_prototype</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;l-bfgs-b&#39;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span>
+            <span class="n">fun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">vs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_optfun</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">label_equals_prototype</span><span class="o">=</span><span class="n">label_equals_prototype</span><span class="p">),</span>
+            <span class="n">jac</span><span class="o">=</span><span class="k">lambda</span> <span class="n">vs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_optgrad</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">label_equals_prototype</span><span class="o">=</span><span class="n">label_equals_prototype</span><span class="p">,</span>
+                          <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+                          <span class="n">lr_prototypes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">lr_relevances</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;disp&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">,</span> <span class="s1">&#39;gtol&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">gtol</span><span class="p">,</span>
+                     <span class="s1">&#39;maxiter&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">})</span>
+        <span class="n">n_iter</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">nit</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span>
+            <span class="n">fun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">vs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_optfun</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">label_equals_prototype</span><span class="o">=</span><span class="n">label_equals_prototype</span><span class="p">),</span>
+            <span class="n">jac</span><span class="o">=</span><span class="k">lambda</span> <span class="n">vs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_optgrad</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">label_equals_prototype</span><span class="o">=</span><span class="n">label_equals_prototype</span><span class="p">,</span>
+                          <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+                          <span class="n">lr_prototypes</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lr_relevances</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;disp&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">,</span> <span class="s1">&#39;gtol&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">gtol</span><span class="p">,</span>
+                     <span class="s1">&#39;maxiter&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">})</span>
+        <span class="n">n_iter</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">n_iter</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">nit</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span>
+            <span class="n">fun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">vs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_optfun</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">label_equals_prototype</span><span class="o">=</span><span class="n">label_equals_prototype</span><span class="p">),</span>
+            <span class="n">jac</span><span class="o">=</span><span class="k">lambda</span> <span class="n">vs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_optgrad</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">label_equals_prototype</span><span class="o">=</span><span class="n">label_equals_prototype</span><span class="p">,</span>
+                          <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+                          <span class="n">lr_prototypes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">lr_relevances</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;disp&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">,</span> <span class="s1">&#39;gtol&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">gtol</span><span class="p">,</span>
+                     <span class="s1">&#39;maxiter&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">})</span>
+        <span class="n">n_iter</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">n_iter</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">nit</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="n">nb_features</span><span class="p">,</span> <span class="n">nb_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w_</span> <span class="o">=</span> <span class="n">out</span><span class="p">[:</span><span class="n">nb_prototypes</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">omega_</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="n">nb_prototypes</span><span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">omega_</span> <span class="o">/=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">omega_</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">omega_</span><span class="p">))))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">=</span> <span class="n">n_iter</span>
+
+    <span class="k">def</span> <span class="nf">_compute_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_</span>
+        <span class="k">if</span> <span class="n">omega</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">omega</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega_</span>
+        <span class="n">nb_samples</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">nb_prototypes</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nb_prototypes</span><span class="p">,</span> <span class="n">nb_samples</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_prototypes</span><span class="p">):</span>
+            <span class="n">distance</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">omega</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">distance</span><span class="o">.</span><span class="n">T</span>
+
+<div class="viewcode-block" id="GmlvqModel.project"><a class="viewcode-back" href="../../modules/generated/glvq.GmlvqModel.html#glvq.GmlvqModel.project">[docs]</a>    <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="n">print_variance_covered</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Projects the data input data X using the relevance matrix of trained</span>
+<span class="sd">        model to dimension dim</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : array-like, shape = [n,n_features]</span>
+<span class="sd">          input data for project</span>
+<span class="sd">        dims : int</span>
+<span class="sd">          dimension to project to</span>
+<span class="sd">        print_variance_covered : boolean</span>
+<span class="sd">          flag to print the covered variance of the projection</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        C : array, shape = [n,n_features]</span>
+<span class="sd">            Returns predicted values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">v</span><span class="p">,</span> <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">omega_</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">omega_</span><span class="p">))</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">argsort</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">print_variance_covered</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;variance coverd by projection:&#39;</span><span class="p">,</span>
+                  <span class="n">v</span><span class="p">[</span><span class="n">idx</span><span class="p">][:</span><span class="n">dims</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">v</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">][:,</span> <span class="p">:</span><span class="n">dims</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">idx</span><span class="p">][:</span><span class="n">dims</span><span class="p">]))))</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Joris Jensen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

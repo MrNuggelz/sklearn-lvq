@@ -1,0 +1,524 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>glvq.GrlvqModel &mdash; sklearn-glvq 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="sklearn-glvq 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="API" href="../glvqapi.html"/>
+        <link rel="next" title="glvq.GmlvqModel" href="glvq.GmlvqModel.html"/>
+        <link rel="prev" title="glvq.GlvqModel" href="glvq.GlvqModel.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> sklearn-glvq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../glvqapi.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="glvq.GlvqModel.html"><code class="docutils literal"><span class="pre">glvq</span></code>.GlvqModel</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">glvq</span></code>.GrlvqModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glvq.GmlvqModel.html"><code class="docutils literal"><span class="pre">glvq</span></code>.GmlvqModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glvq.LgmlvqModel.html"><code class="docutils literal"><span class="pre">glvq</span></code>.LgmlvqModel</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glvq.html">Generalized Learning Vector Quantization</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">sklearn-glvq</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../glvqapi.html">API</a> &raquo;</li>
+        
+      <li><code class="docutils literal"><span class="pre">glvq</span></code>.GrlvqModel</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/modules/generated/glvq.GrlvqModel.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="glvq-grlvqmodel">
+<h1><code class="xref py py-mod docutils literal"><span class="pre">glvq</span></code>.GrlvqModel<a class="headerlink" href="#glvq-grlvqmodel" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="glvq.GrlvqModel">
+<em class="property">class </em><code class="descclassname">glvq.</code><code class="descname">GrlvqModel</code><span class="sig-paren">(</span><em>prototypes_per_class=1</em>, <em>initial_prototypes=None</em>, <em>initial_relevances=None</em>, <em>regularization=0.0</em>, <em>max_iter=2500</em>, <em>gtol=1e-05</em>, <em>display=False</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/glvq/grlvq.html#GrlvqModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glvq.GrlvqModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generalized Relevance Learning Vector Quantization</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>prototypes_per_class</strong> : int or list of int, optional (default=1)</p>
+<blockquote>
+<div><p>Number of prototypes per class. Use list to specify different
+numbers per class.</p>
+</div></blockquote>
+<p><strong>initial_prototypes</strong> : array-like, shape = [n_prototypes, n_features + 1],</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>optional</dt>
+<dd><p class="first last">Prototypes to start with. If not given initialization near the class
+means. Class label must be placed as last entry of each prototype.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>initial_relevances</strong> : array-like, shape = [n_prototypes], optional</p>
+<blockquote>
+<div><p>Relevances to start with. If not given all relevances are equal.</p>
+</div></blockquote>
+<p><strong>regularization</strong> : float, optional (default=0.0)</p>
+<blockquote>
+<div><p>Value between 0 and 1. Regularization is done by the log determinant
+of the relevance matrix. Without regularization relevances may
+degenerate to zero.</p>
+</div></blockquote>
+<p><strong>max_iter</strong> : int, optional (default=2500)</p>
+<blockquote>
+<div><p>The maximum number of iterations.</p>
+</div></blockquote>
+<p><strong>gtol</strong> : float, optional (default=1e-5)</p>
+<blockquote>
+<div><p>Gradient norm must be less than gtol before successful termination
+of l-bfgs-b.</p>
+</div></blockquote>
+<p><strong>display</strong> : boolean, optional (default=False)</p>
+<blockquote>
+<div><p>Print information about the bfgs steps.</p>
+</div></blockquote>
+<p><strong>random_state</strong> : int, RandomState instance or None, optional</p>
+<blockquote class="last">
+<div><p>If int, random_state is the seed used by the random number generator;
+If RandomState instance, random_state is the random number generator;
+If None, the random number generator is the RandomState instance used
+by <cite>np.random</cite>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="7%" />
+<col width="93%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>w_</strong></td>
+<td>(array-like, shape = [n_prototypes, n_features]) Prototype vector, where n_prototypes in the number of prototypes and n_features is the number of features</td>
+</tr>
+<tr class="row-even"><td><strong>c_w_</strong></td>
+<td>(array-like, shape = [n_prototypes]) Prototype classes</td>
+</tr>
+<tr class="row-odd"><td><strong>classes_</strong></td>
+<td>(array-like, shape = [n_classes]) Array containing labels.</td>
+</tr>
+<tr class="row-even"><td><strong>lambda_</strong></td>
+<td>(array-like, shape = [n_prototypes]) Relevances</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="glvq.GlvqModel.html#glvq.GlvqModel" title="glvq.GlvqModel"><code class="xref py py-obj docutils literal"><span class="pre">GlvqModel</span></code></a>, <a class="reference internal" href="glvq.GmlvqModel.html#glvq.GmlvqModel" title="glvq.GmlvqModel"><code class="xref py py-obj docutils literal"><span class="pre">GmlvqModel</span></code></a>, <a class="reference internal" href="glvq.LgmlvqModel.html#glvq.LgmlvqModel" title="glvq.LgmlvqModel"><code class="xref py py-obj docutils literal"><span class="pre">LgmlvqModel</span></code></a></p>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#glvq.GrlvqModel.fit" title="glvq.GrlvqModel.fit"><code class="xref py py-obj docutils literal"><span class="pre">fit</span></code></a>(x,&nbsp;y)</td>
+<td>Fit the GLVQ model to the given training data and parameters using l-bfgs-b.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#glvq.GrlvqModel.get_params" title="glvq.GrlvqModel.get_params"><code class="xref py py-obj docutils literal"><span class="pre">get_params</span></code></a>([deep])</td>
+<td>Get parameters for this estimator.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#glvq.GrlvqModel.predict" title="glvq.GrlvqModel.predict"><code class="xref py py-obj docutils literal"><span class="pre">predict</span></code></a>(x)</td>
+<td>Predict class membership index for each input sample.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#glvq.GrlvqModel.project" title="glvq.GrlvqModel.project"><code class="xref py py-obj docutils literal"><span class="pre">project</span></code></a>(x,&nbsp;dims[,&nbsp;print_variance_covered])</td>
+<td>Projects the data input data X using the relevance vector of trained</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#glvq.GrlvqModel.score" title="glvq.GrlvqModel.score"><code class="xref py py-obj docutils literal"><span class="pre">score</span></code></a>(X,&nbsp;y[,&nbsp;sample_weight])</td>
+<td>Returns the mean accuracy on the given test data and labels.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#glvq.GrlvqModel.set_params" title="glvq.GrlvqModel.set_params"><code class="xref py py-obj docutils literal"><span class="pre">set_params</span></code></a>(**params)</td>
+<td>Set the parameters of this estimator.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="glvq.GrlvqModel.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>prototypes_per_class=1</em>, <em>initial_prototypes=None</em>, <em>initial_relevances=None</em>, <em>regularization=0.0</em>, <em>max_iter=2500</em>, <em>gtol=1e-05</em>, <em>display=False</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/glvq/grlvq.html#GrlvqModel.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glvq.GrlvqModel.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="glvq.GrlvqModel.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#glvq.GrlvqModel.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the GLVQ model to the given training data and parameters using
+l-bfgs-b.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : array-like, shape = [n_samples, n_features]</p>
+<blockquote>
+<div><p>Training vector, where n_samples in the number of samples and
+n_features is the number of features.</p>
+</div></blockquote>
+<p><strong>y</strong> : array, shape = [n_samples]</p>
+<blockquote>
+<div><p>Target values (integers in classification, real numbers in
+regression)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">self</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="glvq.GrlvqModel.get_params">
+<code class="descname">get_params</code><span class="sig-paren">(</span><em>deep=True</em><span class="sig-paren">)</span><a class="headerlink" href="#glvq.GrlvqModel.get_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get parameters for this estimator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>deep</strong> : boolean, optional</p>
+<blockquote>
+<div><p>If True, will return the parameters for this estimator and
+contained subobjects that are estimators.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>params</strong> : mapping of string to any</p>
+<blockquote class="last">
+<div><p>Parameter names mapped to their values.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="glvq.GrlvqModel.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#glvq.GrlvqModel.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict class membership index for each input sample.</p>
+<p>This function does classification on an array of
+test vectors X.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : array-like, shape = [n_samples, n_features]</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>C</strong> : array, shape = (n_samples,)</p>
+<blockquote class="last">
+<div><p>Returns predicted values.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="glvq.GrlvqModel.project">
+<code class="descname">project</code><span class="sig-paren">(</span><em>x</em>, <em>dims</em>, <em>print_variance_covered=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/glvq/grlvq.html#GrlvqModel.project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glvq.GrlvqModel.project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Projects the data input data X using the relevance vector of trained
+model to dimension dim</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : array-like, shape = [n,n_features]</p>
+<blockquote>
+<div><p>input data for project</p>
+</div></blockquote>
+<p><strong>dims</strong> : int</p>
+<blockquote>
+<div><p>dimension to project to</p>
+</div></blockquote>
+<p><strong>print_variance_covered</strong> : boolean</p>
+<blockquote>
+<div><p>flag to print the covered variance of the projection</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>C</strong> : array, shape = [n,n_features]</p>
+<blockquote class="last">
+<div><p>Returns predicted values.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="glvq.GrlvqModel.score">
+<code class="descname">score</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>sample_weight=None</em><span class="sig-paren">)</span><a class="headerlink" href="#glvq.GrlvqModel.score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the mean accuracy on the given test data and labels.</p>
+<p>In multi-label classification, this is the subset accuracy
+which is a harsh metric since you require for each sample that
+each label set be correctly predicted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like, shape = (n_samples, n_features)</p>
+<blockquote>
+<div><p>Test samples.</p>
+</div></blockquote>
+<p><strong>y</strong> : array-like, shape = (n_samples) or (n_samples, n_outputs)</p>
+<blockquote>
+<div><p>True labels for X.</p>
+</div></blockquote>
+<p><strong>sample_weight</strong> : array-like, shape = [n_samples], optional</p>
+<blockquote>
+<div><p>Sample weights.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>score</strong> : float</p>
+<blockquote class="last">
+<div><p>Mean accuracy of self.predict(X) wrt. y.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="glvq.GrlvqModel.set_params">
+<code class="descname">set_params</code><span class="sig-paren">(</span><em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#glvq.GrlvqModel.set_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parameters of this estimator.</p>
+<p>The method works on simple estimators as well as on nested objects
+(such as pipelines). The latter have parameters of the form
+<code class="docutils literal"><span class="pre">&lt;component&gt;__&lt;parameter&gt;</span></code> so that it’s possible to update each
+component of a nested object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<div class="clearer"></div></div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="glvq.GmlvqModel.html" class="btn btn-neutral float-right" title="glvq.GmlvqModel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="glvq.GlvqModel.html" class="btn btn-neutral" title="glvq.GlvqModel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Joris Jensen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
