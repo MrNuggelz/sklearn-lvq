@@ -39,7 +39,7 @@
         <link rel="search" title="Search" href="../search.html"/>
     <link rel="top" title="sklearn-glvq 1.0 documentation" href="../index.html"/>
         <link rel="up" title="Examples" href="index.html"/>
-        <link rel="next" title="Generalized Learning Vector Quantization" href="../glvq.html"/>
+        <link rel="next" title="GLVQ Benchmark" href="plot_benchmark.html"/>
         <link rel="prev" title="Localized Generalized Matrix Learning Vector Quantization" href="plot_lgmlvq.html"/> 
 
   
@@ -100,6 +100,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_grlvq.html">Generalized Relevance Learning Vector Quantization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_lgmlvq.html">Localized Generalized Matrix Learning Vector Quantization</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Generalized Learning Vector Quantization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">GLVQ Benchmark</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../glvq.html">Generalized Learning Vector Quantization</a></li>
@@ -179,7 +180,7 @@ right plot.</p>
 <img alt="../_images/sphx_glr_plot_glvq_001.png" class="align-center" src="../_images/sphx_glr_plot_glvq_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="n">GLVQ</span><span class="p">:</span>
-<span class="n">classification</span> <span class="n">accuracy</span><span class="p">:</span> <span class="mf">1.0</span>
+<span class="p">(</span><span class="s1">&#39;classification accuracy:&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="line-block">
@@ -203,25 +204,23 @@ right plot.</p>
 <span class="n">glvq</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">toy_data</span><span class="p">,</span> <span class="n">toy_label</span><span class="p">)</span>
 <span class="n">pred</span> <span class="o">=</span> <span class="n">glvq</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">toy_data</span><span class="p">)</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">toy_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">toy_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">toy_label</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">toy_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">toy_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">pred</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">glvq</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">glvq</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
-<span class="n">f</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
 <span class="k">print</span><span class="p">(</span><span class="s1">&#39;classification accuracy:&#39;</span><span class="p">,</span> <span class="n">glvq</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">toy_data</span><span class="p">,</span> <span class="n">toy_label</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  0.248 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.058 seconds)</p>
 <div class="sphx-glr-footer docutils container">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" href="../_downloads/plot_glvq.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_glvq.py</span></code></a></div>
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" href="../_downloads/plot_glvq.ipynb" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_glvq.ipynb</span></code></a></div>
 </div>
-<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Generated by Sphinx-Gallery</a></p>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
 
 
@@ -234,7 +233,7 @@ right plot.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../glvq.html" class="btn btn-neutral float-right" title="Generalized Learning Vector Quantization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="plot_benchmark.html" class="btn btn-neutral float-right" title="GLVQ Benchmark" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="plot_lgmlvq.html" class="btn btn-neutral" title="Localized Generalized Matrix Learning Vector Quantization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
