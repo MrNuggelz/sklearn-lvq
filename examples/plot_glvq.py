@@ -28,12 +28,10 @@ glvq = GlvqModel()
 glvq.fit(toy_data, toy_label)
 pred = glvq.predict(toy_data)
 
-f = plt.figure(1)
 plt.scatter(toy_data[:, 0], toy_data[:, 1], c=toy_label)
 plt.scatter(toy_data[:, 0], toy_data[:, 1], c=pred, marker='.')
 plt.scatter(glvq.w_[:, 0], glvq.w_[:, 1])
 plt.axis('equal')
-f.show()
 
 print('classification accuracy:', glvq.score(toy_data, toy_label))
 plt.show()
