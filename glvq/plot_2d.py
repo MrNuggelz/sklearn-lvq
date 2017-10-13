@@ -1,8 +1,10 @@
+from operator import itemgetter
+
 import matplotlib.pyplot as plt
 from sklearn.utils import validation
 
 
-def plot2d(model, x, y, figure, title=""):
+def plot2d(model, x, y, figure, title="", prototype_count=-1):
     """
     Projects the input data to two dimensions and plots it. The projection is
     done using the relevances of the given glvq model.
@@ -23,6 +25,12 @@ def plot2d(model, x, y, figure, title=""):
 
     if hasattr(model, 'omegas_'):
         nb_prototype = model.w_.shape[0]
+        if prototype_count is -1:
+            prototype_count = nb_prototype
+        if prototype_count > nb_prototype:
+            print(
+                'prototype_count may not be bigger than number of prototypes')
+            return
         ax = f.add_subplot(1, nb_prototype + 1, 1)
         ax.scatter(x[:, 0], x[:, 1], c=to_tango_colors(y), alpha=0.5)
         ax.scatter(x[:, 0], x[:, 1], c=to_tango_colors(pred), marker='.')
@@ -31,11 +39,15 @@ def plot2d(model, x, y, figure, title=""):
         ax.scatter(model.w_[:, 0], model.w_[:, 1],
                    c=to_tango_colors(model.c_w_, 0), marker='.')
         ax.axis('equal')
-        for i in range(nb_prototype):
+
+        d = sorted([(model._compute_distance(x[y == model.c_w_[i]],
+                                             model.w_[i]).sum(), i) for i in
+                    range(nb_prototype)], key=itemgetter(0))
+        idxs = list(map(itemgetter(1), d))
+        for i in idxs:
             x_p = model.project(x, i, dim, print_variance_covered=True)
             w_p = model.project(model.w_[i], i, dim)
-
-            ax = f.add_subplot(1, nb_prototype + 1, i + 2)
+            ax = f.add_subplot(1, nb_prototype + 1, idxs.index(i) + 2)
             ax.scatter(x_p[:, 0], x_p[:, 1], c=to_tango_colors(y, 0),
                        alpha=0.2)
             # ax.scatter(X_p[:, 0], X_p[:, 1], c=pred, marker='.')
