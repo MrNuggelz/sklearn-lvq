@@ -335,7 +335,10 @@ class LgmlvqModel(GlvqModel):
         if psis is None:
             psis = self.omegas_
         nb_samples = x.shape[0]
-        nb_prototypes = w.shape[0]
+        if len(w.shape) is 1:
+            nb_prototypes = 1
+        else:
+            nb_prototypes = w.shape[0]
         distance = np.zeros([nb_prototypes, nb_samples])
         if len(psis) == nb_prototypes:
             for i in range(nb_prototypes):
