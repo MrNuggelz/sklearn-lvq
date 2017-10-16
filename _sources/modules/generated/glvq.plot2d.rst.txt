@@ -1,0 +1,12 @@
+:mod:`glvq`.plot2d
+===============================
+
+.. currentmodule:: glvq
+
+.. autofunction:: plot2d
+
+.. include:: glvq.plot2d.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

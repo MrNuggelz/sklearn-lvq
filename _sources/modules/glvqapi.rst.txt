@@ -19,3 +19,5 @@ API
 .. autosummary::
    :toctree: generated/
    :template: function.rst
+
+   plot2d

@@ -1,0 +1,337 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>glvq.plot_2d &mdash; sklearn-glvq 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="sklearn-glvq 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> sklearn-glvq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/glvqapi.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto_examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glvq.html">Generalized Learning Vector Quantization</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">sklearn-glvq</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>glvq.plot_2d</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for glvq.plot_2d</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">operator</span> <span class="k">import</span> <span class="n">itemgetter</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="k">import</span> <span class="n">validation</span>
+
+
+<div class="viewcode-block" id="plot2d"><a class="viewcode-back" href="../../modules/generated/glvq.plot2d.html#glvq.plot2d">[docs]</a><span class="k">def</span> <span class="nf">plot2d</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">figure</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">prototype_count</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Projects the input data to two dimensions and plots it. The projection is</span>
+<span class="sd">    done using the relevances of the given glvq model.</span>
+
+<span class="sd">    :param model: GlvqModel that has relevances</span>
+<span class="sd">        (GrlvqModel,GmlvqModel,LgmlvqModel)</span>
+<span class="sd">    :param x: Input data</span>
+<span class="sd">    :param y: Input data target</span>
+<span class="sd">    :param figure: the figure to plot on</span>
+<span class="sd">    :param title: the title to use, optional</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">validation</span><span class="o">.</span><span class="n">check_X_y</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">dim</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figure</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;omegas_&#39;</span><span class="p">):</span>
+        <span class="n">nb_prototype</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">w_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">prototype_count</span> <span class="ow">is</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">prototype_count</span> <span class="o">=</span> <span class="n">nb_prototype</span>
+        <span class="k">if</span> <span class="n">prototype_count</span> <span class="o">&gt;</span> <span class="n">nb_prototype</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s1">&#39;prototype_count may not be bigger than number of prototypes&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nb_prototype</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">to_tango_colors</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">to_tango_colors</span><span class="p">(</span><span class="n">pred</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                   <span class="n">c</span><span class="o">=</span><span class="n">tango_color</span><span class="p">(</span><span class="s1">&#39;aluminium&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                   <span class="n">c</span><span class="o">=</span><span class="n">to_tango_colors</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">c_w_</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([(</span><span class="n">model</span><span class="o">.</span><span class="n">_compute_distance</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">c_w_</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span>
+                                             <span class="n">model</span><span class="o">.</span><span class="n">w_</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                    <span class="nb">range</span><span class="p">(</span><span class="n">nb_prototype</span><span class="p">)],</span> <span class="n">key</span><span class="o">=</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">idxs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">d</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idxs</span><span class="p">:</span>
+            <span class="n">x_p</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">print_variance_covered</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">w_p</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">w_</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nb_prototype</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">idxs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_p</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">x_p</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">to_tango_colors</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                       <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+            <span class="c1"># ax.scatter(X_p[:, 0], X_p[:, 1], c=pred, marker=&#39;.&#39;)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">w_p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">w_p</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                       <span class="n">c</span><span class="o">=</span><span class="n">tango_color</span><span class="p">(</span><span class="s1">&#39;aluminium&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">w_p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">w_p</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                       <span class="n">c</span><span class="o">=</span><span class="n">tango_color</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">to_tango_colors</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">to_tango_colors</span><span class="p">(</span><span class="n">pred</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                   <span class="n">c</span><span class="o">=</span><span class="n">tango_color</span><span class="p">(</span><span class="s1">&#39;aluminium&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                   <span class="n">c</span><span class="o">=</span><span class="n">to_tango_colors</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">c_w_</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+        <span class="n">x_p</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">print_variance_covered</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">w_p</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">w_</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
+
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_p</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">x_p</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">to_tango_colors</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="c1"># ax.scatter(X_p[:, 0], X_p[:, 1], c=pred, marker=&#39;.&#39;)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">w_p</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">w_p</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                   <span class="n">c</span><span class="o">=</span><span class="n">tango_color</span><span class="p">(</span><span class="s1">&#39;aluminium&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">w_p</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">w_p</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+                   <span class="n">c</span><span class="o">=</span><span class="n">to_tango_colors</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">c_w_</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;skyblue&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;#729fcf&#39;</span><span class="p">,</span> <span class="s1">&#39;#3465a4&#39;</span><span class="p">,</span> <span class="s1">&#39;#204a87&#39;</span><span class="p">],</span>
+    <span class="s2">&quot;scarletred&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;#ef2929&#39;</span><span class="p">,</span> <span class="s1">&#39;#cc0000&#39;</span><span class="p">,</span> <span class="s1">&#39;#a40000&#39;</span><span class="p">],</span>
+    <span class="s2">&quot;orange&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;#fcaf3e&#39;</span><span class="p">,</span> <span class="s1">&#39;#f57900&#39;</span><span class="p">,</span> <span class="s1">&#39;#ce5c00&#39;</span><span class="p">],</span>
+    <span class="s2">&quot;plum&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;#ad7fa8&#39;</span><span class="p">,</span> <span class="s1">&#39;#75507b&#39;</span><span class="p">,</span> <span class="s1">&#39;#5c3566&#39;</span><span class="p">],</span>
+    <span class="s2">&quot;chameleon&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;#8ae234&#39;</span><span class="p">,</span> <span class="s1">&#39;#73d216&#39;</span><span class="p">,</span> <span class="s1">&#39;#4e9a06&#39;</span><span class="p">],</span>
+    <span class="s2">&quot;butter&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;#fce94f&#39;</span><span class="p">,</span> <span class="s1">&#39;edd400&#39;</span><span class="p">,</span> <span class="s1">&#39;#c4a000&#39;</span><span class="p">],</span>
+    <span class="s2">&quot;chocolate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;#e9b96e&#39;</span><span class="p">,</span> <span class="s1">&#39;#c17d11&#39;</span><span class="p">,</span> <span class="s1">&#39;#8f5902&#39;</span><span class="p">],</span>
+    <span class="s2">&quot;aluminium&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;#eeeeec&#39;</span><span class="p">,</span> <span class="s1">&#39;#d3d7cf&#39;</span><span class="p">,</span> <span class="s1">&#39;#babdb6&#39;</span><span class="p">,</span> <span class="s1">&#39;#888a85&#39;</span><span class="p">,</span> <span class="s1">&#39;#555753&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;#2e3436&#39;</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">color_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">colors</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+
+<span class="k">def</span> <span class="nf">tango_color</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">brightness</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">color_names</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">color_names</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">color_names</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">colors</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">colors</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">brightness</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a valid color&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">to_tango_colors</span><span class="p">(</span><span class="n">elems</span><span class="p">,</span> <span class="n">brightness</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">elem_set</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">elems</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">tango_color</span><span class="p">(</span><span class="n">elem_set</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">brightness</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elems</span><span class="p">]</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Joris Jensen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
