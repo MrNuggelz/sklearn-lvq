@@ -1,3 +1,13 @@
+"""
+==============
+GLVQ Benchmark
+==============
+This example shows the differences between the 4 different GLVQ implementations and LMNN.
+The Image Segmentation dataset is used for training and test. Each plot shows the projection
+and classification from each implementation. Because Glvq can't project the data on its own
+a PCA is used.
+
+"""
 from __future__ import with_statement
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,6 +16,8 @@ from sklearn.decomposition import PCA
 
 from glvq import GlvqModel, GrlvqModel, LgmlvqModel, GmlvqModel
 from glvq.plot_2d import to_tango_colors, tango_color
+
+print(__doc__)
 
 
 def plot(data, target, target_p, prototype, prototype_label, p):
