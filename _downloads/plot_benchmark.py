@@ -2,9 +2,9 @@
 ==============
 GLVQ Benchmark
 ==============
-This example shows the different between the four glvq implementations and lmnn.
-Each model is fitted with the image segmentation dataset. Afterwards the data is
-projected/transformed and plotted. Because GLVQ can't project the date by itself
+This example shows the differences between the 4 different GLVQ implementations and LMNN.
+The Image Segmentation dataset is used for training and test. Each plot shows the projection
+and classification from each implementation. Because Glvq can't project the data on its own
 a PCA is used.
 
 """
@@ -18,6 +18,7 @@ from glvq import GlvqModel, GrlvqModel, LgmlvqModel, GmlvqModel
 from glvq.plot_2d import to_tango_colors, tango_color
 
 print(__doc__)
+
 
 def plot(data, target, target_p, prototype, prototype_label, p):
     p.scatter(data[:, 0], data[:, 1], c=to_tango_colors(target, 0), alpha=0.5)

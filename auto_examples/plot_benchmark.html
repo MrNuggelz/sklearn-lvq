@@ -171,14 +171,14 @@
             
   <div class="section" id="glvq-benchmark">
 <span id="sphx-glr-auto-examples-plot-benchmark-py"></span><h1>GLVQ Benchmark<a class="headerlink" href="#glvq-benchmark" title="Permalink to this headline">¶</a></h1>
-<p>This example shows the different between the four glvq implementations and lmnn.
-Each model is fitted with the image segmentation dataset. Afterwards the data is
-projected/transformed and plotted. Because GLVQ can’t project the date by itself
+<p>This example shows the differences between the 4 different GLVQ implementations and LMNN.
+The Image Segmentation dataset is used for training and test. Each plot shows the projection
+and classification from each implementation. Because Glvq can’t project the data on its own
 a PCA is used.</p>
 <img alt="../_images/sphx_glr_plot_benchmark_001.png" class="align-center" src="../_images/sphx_glr_plot_benchmark_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s1">&#39;variance coverd by projection:&#39;</span><span class="p">,</span> <span class="mf">97.18238963774769</span><span class="p">)</span>
-<span class="p">(</span><span class="s1">&#39;variance coverd by projection:&#39;</span><span class="p">,</span> <span class="mf">99.02605980229788</span><span class="p">)</span>
+<div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s1">&#39;variance coverd by projection:&#39;</span><span class="p">,</span> <span class="mf">96.096538888561284</span><span class="p">)</span>
+<span class="p">(</span><span class="s1">&#39;variance coverd by projection:&#39;</span><span class="p">,</span> <span class="mf">97.163281489791487</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="line-block">
@@ -194,6 +194,7 @@ a PCA is used.</p>
 <span class="kn">from</span> <span class="nn">glvq.plot_2d</span> <span class="kn">import</span> <span class="n">to_tango_colors</span><span class="p">,</span> <span class="n">tango_color</span>
 
 <span class="k">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
+
 
 <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">target_p</span><span class="p">,</span> <span class="n">prototype</span><span class="p">,</span> <span class="n">prototype_label</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
     <span class="n">p</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">to_tango_colors</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
@@ -272,7 +273,7 @@ a PCA is used.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  19.423 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  15.041 seconds)</p>
 <div class="sphx-glr-footer docutils container">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" href="../_downloads/plot_benchmark.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_benchmark.py</span></code></a></div>

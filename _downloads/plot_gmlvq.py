@@ -2,12 +2,11 @@
 ===============================================
 Generalized Matrix Learning Vector Quantization
 ===============================================
-This example shows the different glvq algorithms and how they project
-different data sets. The data sets are chosen to show the strength of each
-algorithm. Each plot shows for each data point which class it belongs to
-(big circle) and which class it was classified to (smaller circle). It also
-shows the prototypes (light blue circle). The projected data is shown in the
-right plot.
+This example shows how GMLVQ projects and classifies.
+The plot shows the target class of each data point
+(big circle) and which class was predicted (smaller circle). It also
+shows the prototypes (black diamond) and their labels (small point inside the diamond).
+The projected data is shown in the right plot.
 
 """
 import matplotlib.pyplot as plt

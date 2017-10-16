@@ -171,12 +171,10 @@
             
   <div class="section" id="generalized-learning-vector-quantization">
 <span id="sphx-glr-auto-examples-plot-glvq-py"></span><h1>Generalized Learning Vector Quantization<a class="headerlink" href="#generalized-learning-vector-quantization" title="Permalink to this headline">¶</a></h1>
-<p>This example shows the different glvq algorithms and how they project
-different data sets. The data sets are chosen to show the strength of each
-algorithm. Each plot shows for each data point which class it belongs to
-(big circle) and which class it was classified to (smaller circle). It also
-shows the prototypes (light blue circle). The projected data is shown in the
-right plot.</p>
+<p>This example shows how GLVQ classifies.
+The plot shows the target class of each data point
+(big circle) and which class was predicted (smaller circle). It also
+shows the prototypes (black diamond) and their labels (small point inside the diamond).</p>
 <img alt="../_images/sphx_glr_plot_glvq_001.png" class="align-center" src="../_images/sphx_glr_plot_glvq_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="n">GLVQ</span><span class="p">:</span>
@@ -190,6 +188,7 @@ right plot.</p>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 
 <span class="kn">from</span> <span class="nn">glvq</span> <span class="kn">import</span> <span class="n">GlvqModel</span>
+<span class="kn">from</span> <span class="nn">glvq.plot_2d</span> <span class="kn">import</span> <span class="n">to_tango_colors</span><span class="p">,</span> <span class="n">tango_color</span>
 
 <span class="k">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
 
@@ -204,16 +203,19 @@ right plot.</p>
 <span class="n">glvq</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">toy_data</span><span class="p">,</span> <span class="n">toy_label</span><span class="p">)</span>
 <span class="n">pred</span> <span class="o">=</span> <span class="n">glvq</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">toy_data</span><span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">toy_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">toy_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">toy_label</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">toy_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">toy_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">pred</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">glvq</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">glvq</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">toy_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">toy_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">to_tango_colors</span><span class="p">(</span><span class="n">toy_label</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">toy_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">toy_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">to_tango_colors</span><span class="p">(</span><span class="n">pred</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">glvq</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">glvq</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="n">c</span><span class="o">=</span><span class="n">tango_color</span><span class="p">(</span><span class="s1">&#39;aluminium&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">glvq</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">glvq</span><span class="o">.</span><span class="n">w_</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="n">c</span><span class="o">=</span><span class="n">to_tango_colors</span><span class="p">(</span><span class="n">glvq</span><span class="o">.</span><span class="n">c_w_</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
 
 <span class="k">print</span><span class="p">(</span><span class="s1">&#39;classification accuracy:&#39;</span><span class="p">,</span> <span class="n">glvq</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">toy_data</span><span class="p">,</span> <span class="n">toy_label</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  0.058 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.061 seconds)</p>
 <div class="sphx-glr-footer docutils container">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" href="../_downloads/plot_glvq.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_glvq.py</span></code></a></div>
