@@ -28,11 +28,11 @@ toy_data = np.append(
                                   size=nb_ppc),
     np.random.multivariate_normal([9, 0], np.array([[5, 4], [4, 6]]),
                                   size=nb_ppc), axis=0)
-mrslvq = MrslvqModel()
+mrslvq = MrslvqModel(sigma=10)
 mrslvq.fit(toy_data, toy_label)
-mrslvq.project(mrslvq.w_, 2)
 
 print('classification accuracy:', mrslvq.score(toy_data, toy_label))
+#mrslvq.omega_ = np.asarray([[1,-0.11587113],[-0.11597687,0]])
 plot2d(mrslvq, toy_data, toy_label, 1, 'mrslvq')
 plt.show()
 

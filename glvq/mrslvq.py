@@ -6,44 +6,48 @@
 
 from __future__ import division
 
+import pdb
+
 import numpy as np
 from scipy.optimize import minimize
-from scipy.spatial.distance import cdist
-
-from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils import validation
-from sklearn.utils.multiclass import unique_labels
-from sklearn.utils.validation import check_is_fitted
-
 from glvq.rslvq import RslvqModel
 
 
 class MrslvqModel(RslvqModel):
-    """Generalized Learning Vector Quantization
+    """Matrix Robust Soft Learning Vector Quantization
 
     Parameters
     ----------
 
     prototypes_per_class : int or list of int, optional (default=1)
-        Number of prototypes per class. Use list to specify different
-        numbers per class.
+        Number of prototypes per class. Use list to specify different numbers
+        per class.
 
-    initial_prototypes : array-like, shape =  [n_prototypes, n_features + 1],
-     optional
+    initial_prototypes : array-like,
+     shape =  [n_prototypes, n_features + 1], optional
         Prototypes to start with. If not given initialization near the class
-        means. Class label must be placed as last entry of each prototype.
+        means. Class label must be placed as last entry of each prototype
 
-    max_iter : int, optional (default=2500)
+    initial_matrix : array-like, shape = [dim, n_features], optional
+        Relevance matrix to start with.
+        If not given random initialization for rectangular matrix and unity
+        for squared matrix.
+
+    dim : int, optional (default=nb_features)
+        Maximum rank or projection dimensions
+
+    max_iter : int, optional (default=500)
         The maximum number of iterations.
 
     gtol : float, optional (default=1e-5)
-        Gradient norm must be less than gtol before successful termination
-        of bfgs.
+        Gradient norm must be less than gtol before successful
+        termination of l-bfgs-b.
 
     display : boolean, optional (default=False)
         Print information about the bfgs steps.
 
-    random_state : int, RandomState instance or None, optional
+    random_state : int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
         If None, the random number generator is the RandomState instance used
@@ -62,26 +66,132 @@ class MrslvqModel(RslvqModel):
     classes_ : array-like, shape = [n_classes]
         Array containing labels.
 
+    dim_ : int
+        Maximum rank or projection dimensions
+
+    omega_ : array-like, shape = [dim, n_features]
+        Relevance matrix
+
     See also
     --------
-    GrlvqModel, GmlvqModel, LgmlvqModel
+    GlvqModel, GrlvqModel, LgmlvqModel
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 sigma=1, learn_rate=0.1, initial_matrix=None,
-                 regularization=0.0, dim=None, max_iter=2500, display=False,
-                 random_state=None):
-        super(MrslvqModel, self).__init__(prototypes_per_class,
-                                          initial_prototypes, sigma,
-                                          learn_rate,
-                                          max_iter, display, random_state)
+                 sigma=1, initial_matrix=None, regularization=0.0, dim=None,
+                 max_iter=1000, display=False, random_state=None):
+        super(MrslvqModel, self).__init__(sigma=sigma,
+                                          random_state=random_state,
+                                          prototypes_per_class=prototypes_per_class,
+                                          initial_prototypes=initial_prototypes,
+                                          display=display, max_iter=max_iter)
+        self.regularization = regularization
         self.initial_matrix = initial_matrix
         self.initialdim = dim
 
-    def _optimize(self, x, y, random_state):
-        nb_epochs = 500
-        nb_samples, nb_features = x.shape
+    def _optgrad(self, variables, training_data, label_equals_prototype,
+                 random_state, lr_relevances=0, lr_prototypes=1):
+        n_data, n_dim = training_data.shape
+        nb_prototypes = self.c_w_.size
+        variables = variables.reshape(variables.size // n_dim, n_dim)
+        prototypes = variables[:nb_prototypes]
+        omega = variables[nb_prototypes:]
 
+        g = np.zeros(variables.shape)
+
+        if lr_relevances > 0:
+            gw = np.zeros([omega.shape[0], n_dim])
+
+        oo = omega.T.dot(omega)
+        c = 1 / self.sigma
+        for i in range(n_data):
+            xi = training_data[i]
+            c_xi = label_equals_prototype[i]
+            for j in range(prototypes.shape[0]):
+                d = (xi - prototypes[j])[np.newaxis].T
+                p = self.p(j, xi, prototypes=prototypes, omega=omega)
+                if self.c_w_[j] == c_xi:
+                    pj = self.p(j, xi, prototypes=prototypes, y=c_xi, omega=omega)
+                if lr_prototypes > 0:
+                    if self.c_w_[j] == c_xi:
+                        g[j] += (c * (pj - p) * oo.dot(d)).ravel()
+                    else:
+                        g[j] -= (c * p * oo.dot(d)).ravel()
+                if lr_relevances > 0:
+                    if self.c_w_[j] == c_xi:
+                        gw -= (pj - p) / self.sigma * (omega.dot(d).dot(d.T))
+                    else:
+                        gw += p / self.sigma * (omega.dot(d).dot(d.T))
+        f3 = 0
+        if self.regularization:
+            f3 = np.linalg.pinv(omega).conj().T
+        if lr_relevances > 0:
+            g[nb_prototypes:] = 2 / n_data \
+                                * lr_relevances * gw - self.regularization * f3
+        if lr_prototypes > 0:
+            g[:nb_prototypes] = 1 / n_data * lr_prototypes \
+                                * g[:nb_prototypes].dot(omega.T.dot(omega))
+        g *= -(1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
+        return g.ravel()
+
+    def _optfun(self, variables, training_data, label_equals_prototype):
+        """
+        sum_i^l log(p(e_i,y_i|w)/p(e_i,w))
+        :param variables:
+        :param training_data:
+        :param label_equals_prototype:
+        :return:
+        """
+        n_data, n_dim = training_data.shape
+        nb_prototypes = self.c_w_.size
+        variables = variables.reshape(variables.size // n_dim, n_dim)
+        prototypes = variables[:nb_prototypes]
+        omega = variables[nb_prototypes:]
+        print(np.linalg.eig(omega.T.dot(omega)))
+
+
+        out = 0
+        for i in range(n_data):
+            xi = training_data[i]
+            y = label_equals_prototype[i]
+            fs = [self.costf(xi, w, self.sigma, omega=omega) for w in
+                  prototypes]
+            # fs = []
+            # for w in prototypes:
+            #     fs.append(self.costf(xi,w,self.sigma,omega=omega))
+            fs_max = max(fs)
+            s1 = sum([np.math.exp(fs[i] - fs_max) for i in range(len(fs))
+                      if self.c_w_[i] == y])
+            s2 = sum([np.math.exp(f - fs_max) for f in fs])
+            s1 += 0.0000001
+            s2 += 0.0000001
+            out += np.math.log(s1 / s2)
+        # print('1:',-out)
+        # out2 = 0
+        # omega = np.asarray([[0.9,0],[0,0.1]])
+        # for i in range(n_data):
+        #     xi = training_data[i]
+        #     y = label_equals_prototype[i]
+        #     # fs = [self.costf(xi, w, self.sigma, omega=omega) for w in
+        #     #       prototypes]
+        #     fs = []
+        #     for w in prototypes:
+        #         fs.append(self.costf(xi,w,self.sigma,omega=omega))
+        #     fs_max = max(fs)
+        #     s1 = sum([np.math.exp(fs[i] - fs_max) for i in range(len(fs))
+        #               if self.c_w_[i] == y])
+        #     s2 = sum([np.math.exp(f - fs_max) for f in fs])
+        #     s1 += 0.0000001
+        #     s2 += 0.0000001
+        #     out2 += np.math.log(s1 / s2)
+        # print('2:',-out2)
+        print(-out)
+        return -out
+
+    def _optimize(self, x, y, random_state):
+        if not isinstance(self.regularization,
+                          float) or self.regularization < 0:
+            raise ValueError("regularization must be a positive float ")
         nb_prototypes, nb_features = self.w_.shape
         if self.initialdim is None:
             self.dim_ = nb_features
@@ -103,52 +213,58 @@ class MrslvqModel(RslvqModel):
                     "found=%d\n"
                     "expected=%d" % (self.omega_.shape[1], nb_features))
 
-        for epoch in range(nb_epochs):
-            order = random_state.permutation(nb_samples)
-            c = self.learn_rate / self.sigma
-            s = 0
-            for i in range(nb_samples):
-                index = order[i]
-                xi = x[index]
-                c_xi = y[index]
-                for j in range(self.w_.shape[0]):
-                    oo = self.omega_.T.dot(self.omega_)
-                    d = (xi - self.w_[j])[np.newaxis].T
-                    if self.c_w_[j] == c_xi:
-                        ps = self.p(j, xi, c_xi) - self.p(j, xi)
-                        change = (c * ps * oo.dot(d)).T[0]
-                        self.w_[j] += change
-                        self.omega_ += ps / self.sigma * self.omega_.dot(
-                            d).dot(d.T)
-                    else:
-                        change = (c * self.p(j, xi) * oo.dot(d)).T[0]
-                        self.w_[j] -= change
-                        self.omega_ -= self.p(j, xi) / self.sigma * \
-                                       self.omega_.dot(d).dot(d.T)
-                    self.omega_ /= np.sqrt(
-                        np.sum(np.diag(self.omega_.T.dot(self.omega_))))
-                    oo = self.omega_.T.dot(self.omega_)
+        variables = np.append(self.w_, self.omega_, axis=0)
+        label_equals_prototype = y
+        method = 'l-bfgs-b'
+        method = 'bfgs'
+        res = minimize(
+            fun=lambda vs:
+            self._optfun(vs, x, label_equals_prototype=y),
+            jac=lambda vs:
+            self._optgrad(vs, x, label_equals_prototype=y,
+                          random_state=random_state,
+                          lr_prototypes=1, lr_relevances=0),
+            method=method, x0=variables,
+            options={'disp': self.display, 'gtol': self.gtol,
+                     'maxiter': self.max_iter})
+        n_iter = res.nit
+        res = minimize(
+            fun=lambda vs:
+            self._optfun(vs, x, label_equals_prototype=label_equals_prototype),
+            jac=lambda vs:
+            self._optgrad(vs, x, label_equals_prototype=label_equals_prototype,
+                          random_state=random_state,
+                          lr_prototypes=0, lr_relevances=1),
+            method=method, x0=res.x,
+            options={'disp': self.display, 'gtol': self.gtol,
+                     'maxiter': self.max_iter})
+        n_iter = max(n_iter, res.nit)
+        res = minimize(
+            fun=lambda vs:
+            self._optfun(vs, x, label_equals_prototype=label_equals_prototype),
+            jac=lambda vs:
+            self._optgrad(vs, x, label_equals_prototype=label_equals_prototype,
+                          random_state=random_state,
+                          lr_prototypes=1, lr_relevances=1),
+            method=method, x0=res.x,
+            options={'disp': self.display, 'gtol': self.gtol,
+                     'maxiter': self.max_iter})
+        n_iter = max(n_iter, res.nit)
+        out = res.x.reshape(res.x.size // nb_features, nb_features)
+        self.w_ = out[:nb_prototypes]
+        self.omega_ = out[nb_prototypes:]
+        self.omega_ /= np.math.sqrt(
+            np.sum(np.diag(self.omega_.T.dot(self.omega_))))
+        self.n_iter_ = n_iter
 
-        self.n_iter_ = nb_epochs
-
-    def f(self, x, w):
+    @staticmethod
+    def costf(x, w, sigma, **kwargs):
+        if 'omega' not in kwargs:
+            print()
+        omega = kwargs['omega']
         d = (x - w)[np.newaxis].T
-        d = d.T.dot(self.omega_.T).dot(self.omega_).dot(d)
-        return -d / (2 * self.sigma)
-
-    def p(self, j, e, y=None):
-        if y is None:
-            fs = [self.f(e, w) for w in self.w_]
-        else:
-            fs = [self.f(e, self.w_[i]) for i in range(self.w_.shape[0]) if
-                  self.c_w_[i] == y]
-        fs_max = max(fs)
-        s = sum([np.math.exp(f - fs_max) for f in fs])
-        if s == 0:
-            print(s)
-            print("booom")
-        o = np.math.exp(self.f(e, self.w_[j]) - fs_max) / s
-        return o
+        d = d.T.dot(omega.T).dot(omega).dot(d)
+        return -d / (2 * sigma)
 
     def _compute_distance(self, x, w=None, omega=None):
         if w is None:
@@ -186,9 +302,8 @@ class MrslvqModel(RslvqModel):
         if print_variance_covered:
             print('variance coverd by projection:',
                   v.sum() / v.sum() * 100)
-        v = np.where(np.logical_and(v < 0,v > -0.1), 0, v) #set negative eigenvalues to 0
+        v = np.where(np.logical_and(v < 0, v > -0.1), 0,
+                     v)  # set negative eigenvalues to 0
         if np.any(v < 0):
             print("boom")
-        if np.any(np.sqrt(v)):
-            print("pewpew")
         return x.dot(u[:, idx][:, :dims].dot(np.diag(np.sqrt(v))))
