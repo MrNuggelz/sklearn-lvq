@@ -6,6 +6,7 @@
 
 from __future__ import division
 
+import math
 import numpy as np
 from scipy.optimize import minimize
 from scipy.spatial.distance import cdist
@@ -16,8 +17,9 @@ from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_is_fitted
 
 
+# TODO: add sigma for every prototype
 class RslvqModel(BaseEstimator, ClassifierMixin):
-    """Generalized Learning Vector Quantization
+    """Robust Soft Learning Vector Quantization
 
     Parameters
     ----------
@@ -66,15 +68,62 @@ class RslvqModel(BaseEstimator, ClassifierMixin):
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 sigma=0.18, learn_rate=0.1, max_iter=2500,
-                 display=False, random_state=None):
+                 max_iter=2500, gtol=1e-5,
+                 display=False, random_state=None, sigma=0.5):
         self.random_state = random_state
         self.initial_prototypes = initial_prototypes
         self.prototypes_per_class = prototypes_per_class
         self.display = display
         self.max_iter = max_iter
-        self.learn_rate = learn_rate
+        self.gtol = gtol
         self.sigma = sigma
+
+    def _optgrad(self, variables, training_data, label_equals_prototype,
+                 random_state):
+        n_data, n_dim = training_data.shape
+        nb_prototypes = self.c_w_.size
+        prototypes = variables.reshape(nb_prototypes, n_dim)
+
+        g = np.zeros(prototypes.shape)
+        for i in range(n_data):
+            xi = training_data[i]
+            c_xi = label_equals_prototype[i]
+            for j in range(prototypes.shape[0]):
+                d = (xi - prototypes[j])
+                c = 1 / self.sigma
+                if self.c_w_[j] == c_xi:
+                    g[j] += c * (self.p(j, xi, prototypes=prototypes, y=c_xi) -
+                                 self.p(j, xi, prototypes=prototypes)) * d
+                else:
+                    g[j] -= c * self.p(j, xi, prototypes=prototypes) * d
+        g /= n_data
+        g *= -(1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
+        return g.ravel()
+
+    def _optfun(self, variables, training_data, label_equals_prototype):
+        """
+        sum_i^l log(p(e_i,y_i|w)/p(e_i,w))
+        :param variables:
+        :param training_data:
+        :param label_equals_prototype:
+        :return:
+        """
+        n_data, n_dim = training_data.shape
+        nb_prototypes = self.c_w_.size
+        prototypes = variables.reshape(nb_prototypes, n_dim)
+
+        out = 0
+
+        for i in range(n_data):
+            xi = training_data[i]
+            y = label_equals_prototype[i]
+            fs = [self.costf(xi, w, self.sigma) for w in prototypes]
+            fs_max = max(fs)
+            s1 = sum([np.math.exp(fs[i] - fs_max) for i in range(len(fs))
+                      if self.c_w_[i] == y])
+            s2 = sum([np.math.exp(f - fs_max) for f in fs])
+            out += math.log(s1 / s2)
+        return -out
 
     def _validate_train_parms(self, train_set, train_lab):
         random_state = validation.check_random_state(self.random_state)
@@ -139,39 +188,40 @@ class RslvqModel(BaseEstimator, ClassifierMixin):
         return train_set, train_lab, random_state
 
     def _optimize(self, x, y, random_state):
-        nb_epochs = 500
-        nb_samples, nb_features = x.shape
+        label_equals_prototype = y
+        res = minimize(
+            fun=lambda vs: self._optfun(
+                variables=vs, training_data=x,
+                label_equals_prototype=label_equals_prototype),
+            jac=lambda vs: self._optgrad(
+                variables=vs, training_data=x,
+                label_equals_prototype=label_equals_prototype,
+                random_state=random_state),
+            method='l-bfgs-b', x0=self.w_,
+            options={'disp': False, 'gtol': self.gtol,
+                     'maxiter': self.max_iter})
+        self.w_ = res.x.reshape(self.w_.shape)
+        self.n_iter_ = res.nit
 
-        for epoch in range(nb_epochs):
-            order = random_state.permutation(nb_samples)
-            c = self.learn_rate / self.sigma
-            for i in range(nb_samples):
-                index = order[i]
-                xi = x[index]
-                c_xi = y[index]
-                for j in range(self.w_.shape[0]):
-                    d = (xi - self.w_[j])
-                    if self.c_w_[j] == c_xi:
-                        self.w_[j] += c * (
-                            self.p(j, xi, c_xi) - self.p(j, xi)) * d
-                    else:
-                        self.w_[j] -= c * self.p(j, xi) * d
-        self.n_iter_ = nb_epochs
-
-    def f(self, x, w):
+    @staticmethod
+    def costf(x, w, sigma, **kwargs):
         d = (x - w)[np.newaxis].T
         d = d.T.dot(d)
-        return - d / (2 * self.sigma)
+        return -d / (2 * sigma)
 
-    def p(self, j, e, y=None):
-        d_min = np.min(self._compute_distance([e]))
+    def p(self, j, e, y=None, prototypes=None, **kwargs):
+        if prototypes is None:
+            prototypes = self.w_
         if y is None:
-            s = sum([np.math.exp(self.f(e, w)-d_min) for w in self.w_])
+            fs = [self.costf(e, w, self.sigma, **kwargs) for w in prototypes]
         else:
-            s = sum([np.math.exp(self.f(e, self.w_[i])-d_min)
-                     for i in range(self.w_.shape[0])
-                     if self.c_w_[i] == y])
-        return np.math.exp(self.f(e, self.w_[j])-d_min) / s
+            fs = [self.costf(e, prototypes[i], self.sigma, **kwargs) for i in
+                  range(prototypes.shape[0]) if
+                  self.c_w_[i] == y]
+        fs_max = max(fs)
+        s = sum([np.math.exp(f - fs_max) for f in fs])
+        o = np.math.exp(self.costf(e, prototypes[j], self.sigma, **kwargs) - fs_max) / s
+        return o
 
     def fit(self, x, y):
         """Fit the GLVQ model to the given training data and parameters using

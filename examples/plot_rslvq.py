@@ -18,33 +18,25 @@ from glvq.rslvq import RslvqModel
 
 print(__doc__)
 
-for i in range(11):
+nb_ppc = 100
+print('RSLVQ:')
+x = np.append(
+    np.random.multivariate_normal([0, 0], np.eye(2) / 2, size=nb_ppc),
+    np.random.multivariate_normal([5, 0], np.eye(2) / 2, size=nb_ppc), axis=0)
+y = np.append(np.zeros(nb_ppc), np.ones(nb_ppc), axis=0)
 
-    nb_ppc = 100
-    print("iteraton",i+1)
-    print('RSLVQ:')
-    x = np.append(
-        np.random.multivariate_normal([0, 0], np.eye(2) / 2, size=nb_ppc),
-        np.random.multivariate_normal([5, 0], np.eye(2) / 2, size=nb_ppc), axis=0)
-    y = np.append(np.zeros(nb_ppc), np.ones(nb_ppc), axis=0)
+rslvq = RslvqModel(initial_prototypes=[[5,0,0],[0,0,1]])
+rslvq.fit(x, y)
+print('classification accuracy:', rslvq.score(x, y))
 
-    rslvq = RslvqModel()
-    rslvq.fit(x, y)
-    print('classification accuracy:', rslvq.score(x, y))
-    if i == 10:
-        pred = rslvq.predict(x)
+pred = rslvq.predict(x)
 
-        plt.scatter(x[:, 0], x[:, 1], c=y)
-        plt.scatter(x[:, 0], x[:, 1], c=pred, marker='.')
-        plt.scatter(rslvq.w_[:, 0], rslvq.w_[:, 1], c=rslvq.c_w_, marker='D')
-        plt.axis('equal')
+plt.scatter(x[:, 0], x[:, 1], c=to_tango_colors(y), alpha=0.5)
+plt.scatter(x[:, 0], x[:, 1], c=to_tango_colors(pred), marker='.')
+plt.scatter(rslvq.w_[:, 0], rslvq.w_[:, 1],
+           c=tango_color('aluminium', 5), marker='D')
+plt.scatter(rslvq.w_[:, 0], rslvq.w_[:, 1],
+           c=to_tango_colors(rslvq.c_w_, 0), marker='.')
+plt.axis('equal')
 
-        plt.scatter(x[:, 0], x[:, 1], c=to_tango_colors(y), alpha=0.5)
-        plt.scatter(x[:, 0], x[:, 1], c=to_tango_colors(pred), marker='.')
-        plt.scatter(rslvq.w_[:, 0], rslvq.w_[:, 1],
-                   c=tango_color('aluminium', 5), marker='D')
-        plt.scatter(rslvq.w_[:, 0], rslvq.w_[:, 1],
-                   c=to_tango_colors(rslvq.c_w_, 0), marker='.')
-        plt.axis('equal')
-
-        plt.show()
+plt.show()
