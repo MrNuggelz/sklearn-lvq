@@ -14,7 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from glvq import plot2d
-from glvq.mrslvq import MrslvqModel
+from glvq.lmrslvq import LmrslvqModel
 from glvq.rslvq import RslvqModel
 
 print(__doc__)
@@ -22,18 +22,16 @@ print(__doc__)
 nb_ppc = 100
 toy_label = np.append(np.zeros(nb_ppc), np.ones(nb_ppc), axis=0)
 
-print('MRSLVQ:')
+print('LMRSLVQ:')
 toy_data = np.append(
-    np.random.multivariate_normal([0, 0], np.array([[5, 4], [4, 6]]),
+    np.random.multivariate_normal([0, 1], np.array([[5, -4], [-4, 6]]),
                                   size=nb_ppc),
-    np.random.multivariate_normal([9, 0], np.array([[5, 4], [4, 6]]),
+    np.random.multivariate_normal([0, 0], np.array([[5, 4], [4, 6]]),
                                   size=nb_ppc), axis=0)
-mrslvq = MrslvqModel(sigma=1)
+mrslvq = LmrslvqModel(sigma=10)
 mrslvq.fit(toy_data, toy_label)
+plot2d(mrslvq, toy_data, toy_label, 1, 'lmrslvq')
 
 print('classification accuracy:', mrslvq.score(toy_data, toy_label))
-#mrslvq.omega_ = np.asarray([[1,-0.11587113],[-0.11597687,0]])
-plot2d(mrslvq, toy_data, toy_label, 1, 'mrslvq')
 plt.show()
-
 

@@ -147,14 +147,13 @@ class MrslvqModel(RslvqModel):
         variables = variables.reshape(variables.size // n_dim, n_dim)
         prototypes = variables[:nb_prototypes]
         omega = variables[nb_prototypes:]
-        print(np.linalg.eig(omega.T.dot(omega)))
 
 
         out = 0
         for i in range(n_data):
             xi = training_data[i]
             y = label_equals_prototype[i]
-            fs = [self.costf(xi, w, self.sigma, omega=omega) for w in
+            fs = [self.costf(xi, w, omega=omega) for w in
                   prototypes]
             # fs = []
             # for w in prototypes:
@@ -166,26 +165,6 @@ class MrslvqModel(RslvqModel):
             s1 += 0.0000001
             s2 += 0.0000001
             out += np.math.log(s1 / s2)
-        # print('1:',-out)
-        # out2 = 0
-        # omega = np.asarray([[0.9,0],[0,0.1]])
-        # for i in range(n_data):
-        #     xi = training_data[i]
-        #     y = label_equals_prototype[i]
-        #     # fs = [self.costf(xi, w, self.sigma, omega=omega) for w in
-        #     #       prototypes]
-        #     fs = []
-        #     for w in prototypes:
-        #         fs.append(self.costf(xi,w,self.sigma,omega=omega))
-        #     fs_max = max(fs)
-        #     s1 = sum([np.math.exp(fs[i] - fs_max) for i in range(len(fs))
-        #               if self.c_w_[i] == y])
-        #     s2 = sum([np.math.exp(f - fs_max) for f in fs])
-        #     s1 += 0.0000001
-        #     s2 += 0.0000001
-        #     out2 += np.math.log(s1 / s2)
-        # print('2:',-out2)
-        print(-out)
         return -out
 
     def _optimize(self, x, y, random_state):
@@ -257,26 +236,14 @@ class MrslvqModel(RslvqModel):
             np.sum(np.diag(self.omega_.T.dot(self.omega_))))
         self.n_iter_ = n_iter
 
-    @staticmethod
-    def costf(x, w, sigma, **kwargs):
-        if 'omega' not in kwargs:
-            print()
-        omega = kwargs['omega']
+    def costf(self, x, w,  **kwargs):
+        if 'omega' in kwargs:
+            omega = kwargs['omega']
+        else:
+            omega = self.omega_
         d = (x - w)[np.newaxis].T
         d = d.T.dot(omega.T).dot(omega).dot(d)
-        return -d / (2 * sigma)
-
-    def _compute_distance(self, x, w=None, omega=None):
-        if w is None:
-            w = self.w_
-        if omega is None:
-            omega = self.omega_
-        nb_samples = x.shape[0]
-        nb_prototypes = w.shape[0]
-        distance = np.zeros([nb_prototypes, nb_samples])
-        for i in range(nb_prototypes):
-            distance[i] = np.sum((x - w[i]).dot(omega.T) ** 2, 1)
-        return distance.T
+        return -d / (2 * self.sigma)
 
     def project(self, x, dims, print_variance_covered=False):
         """Projects the data input data X using the relevance matrix of trained

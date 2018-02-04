@@ -117,7 +117,7 @@ class RslvqModel(BaseEstimator, ClassifierMixin):
         for i in range(n_data):
             xi = training_data[i]
             y = label_equals_prototype[i]
-            fs = [self.costf(xi, w, self.sigma) for w in prototypes]
+            fs = [self.costf(xi, w) for w in prototypes]
             fs_max = max(fs)
             s1 = sum([np.math.exp(fs[i] - fs_max) for i in range(len(fs))
                       if self.c_w_[i] == y])
@@ -167,7 +167,7 @@ class RslvqModel(BaseEstimator, ClassifierMixin):
                 mean = np.mean(
                     train_set[train_lab == self.classes_[actClass], :], 0)
                 self.w_[pos:pos + nb_prot] = mean + (
-                    random_state.rand(nb_prot, nb_features) * 2 - 1)
+                        random_state.rand(nb_prot, nb_features) * 2 - 1)
                 self.c_w_[pos:pos + nb_prot] = self.classes_[actClass]
                 pos += nb_prot
         else:
@@ -203,24 +203,24 @@ class RslvqModel(BaseEstimator, ClassifierMixin):
         self.w_ = res.x.reshape(self.w_.shape)
         self.n_iter_ = res.nit
 
-    @staticmethod
-    def costf(x, w, sigma, **kwargs):
+    def costf(self, x, w, **kwargs):
         d = (x - w)[np.newaxis].T
         d = d.T.dot(d)
-        return -d / (2 * sigma)
+        return -d / (2 * self.sigma)
 
     def p(self, j, e, y=None, prototypes=None, **kwargs):
         if prototypes is None:
             prototypes = self.w_
         if y is None:
-            fs = [self.costf(e, w, self.sigma, **kwargs) for w in prototypes]
+            fs = [self.costf(e, w, **kwargs) for w in prototypes]
         else:
-            fs = [self.costf(e, prototypes[i], self.sigma, **kwargs) for i in
+            fs = [self.costf(e, prototypes[i], **kwargs) for i in
                   range(prototypes.shape[0]) if
                   self.c_w_[i] == y]
         fs_max = max(fs)
         s = sum([np.math.exp(f - fs_max) for f in fs])
-        o = np.math.exp(self.costf(e, prototypes[j], self.sigma, **kwargs) - fs_max) / s
+        o = np.math.exp(
+            self.costf(e, prototypes[j], **kwargs) - fs_max) / s
         return o
 
     def fit(self, x, y):
@@ -247,11 +247,6 @@ class RslvqModel(BaseEstimator, ClassifierMixin):
         self._optimize(x, y, random_state)
         return self
 
-    def _compute_distance(self, x, w=None):
-        if w is None:
-            w = self.w_
-        return cdist(x, w, 'euclidean')
-
     def predict(self, x):
         """Predict class membership index for each input sample.
 
@@ -275,5 +270,11 @@ class RslvqModel(BaseEstimator, ClassifierMixin):
             raise ValueError("X has wrong number of features\n"
                              "found=%d\n"
                              "expected=%d" % (self.w_.shape[1], x.shape[1]))
-        dist = self._compute_distance(x)
-        return (self.c_w_[dist.argmin(1)])
+
+        def foo(e):
+            fun = np.vectorize(lambda w: self.costf(e, w),
+                               signature='(n)->()')
+            pred = fun(self.w_).argmax()
+            return self.c_w_[pred]
+
+        return np.vectorize(foo, signature='(n)->()')(x)

@@ -78,11 +78,12 @@ class GrlvqModel(GlvqModel):
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 initial_relevances=None, regularization=0.0,
-                 max_iter=2500, gtol=1e-5, display=False, random_state=None):
+                 initial_relevances=None, regularization=0.0, beta=2,
+                 max_iter=2500, gtol=1e-5, display=False,
+                 random_state=None):
         super(GrlvqModel, self).__init__(prototypes_per_class,
-                                         initial_prototypes, max_iter, gtol,
-                                         display, random_state)
+                                         initial_prototypes, max_iter,
+                                         gtol, beta, display, random_state)
         self.regularization = regularization
         self.initial_relevances = initial_relevances
 
@@ -105,6 +106,9 @@ class GrlvqModel(GlvqModel):
         pidxcorrect = d_correct.argmin(1)
 
         distcorrectpluswrong = distcorrect + distwrong
+        distcorectminuswrong = distcorrect - distwrong
+        mu = distcorectminuswrong / distcorrectpluswrong
+        mu = np.vectorize(self.phi_prime)(mu)
 
         g = np.zeros(variables.shape)
         distcorrectpluswrong = 4 / distcorrectpluswrong ** 2
@@ -116,8 +120,8 @@ class GrlvqModel(GlvqModel):
             idxc = i == pidxcorrect
             idxw = i == pidxwrong
 
-            dcd = distcorrect[idxw] * distcorrectpluswrong[idxw]
-            dwd = distwrong[idxc] * distcorrectpluswrong[idxc]
+            dcd = mu[idxw] * distcorrect[idxw] * distcorrectpluswrong[idxw]
+            dwd = mu[idxc] * distwrong[idxc] * distcorrectpluswrong[idxc]
             if lr_relevances > 0:
                 difc = training_data[idxc] - variables[i]
                 difw = training_data[idxw] - variables[i]
@@ -166,7 +170,7 @@ class GrlvqModel(GlvqModel):
             reg_term = self.regularization * log(
                 np.linalg.det(omega_t.conj().T.dot(omega_t)))
             return mu.sum(0) - reg_term  # f
-        return mu.sum(0)
+        return np.vectorize(self.phi)(mu).sum(0)
 
     def _optimize(self, x, y, random_state):
         if not isinstance(self.regularization,
