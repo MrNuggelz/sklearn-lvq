@@ -76,7 +76,7 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 max_iter=2500, gtol=1e-5, beta=2,
+                 max_iter=2500, gtol=1e-5, beta=2, C=None,
                  display=False, random_state=None):
         self.random_state = random_state
         self.initial_prototypes = initial_prototypes
@@ -85,6 +85,7 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
         self.max_iter = max_iter
         self.beta = beta
         self.gtol = gtol
+        self.c = C
 
     def phi(self, x):
         return 1 / (1 + np.math.exp(-self.beta * x))
@@ -148,6 +149,7 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
         distcorrectpluswrong = distcorrect + distwrong
         distcorectminuswrong = distcorrect - distwrong
         mu = distcorectminuswrong / distcorrectpluswrong
+        mu *= self.c_[label_equals_prototype.argmax(1),d_wrong.argmin(1)]
 
         return np.vectorize(self.phi)(mu).sum(0)
 
@@ -215,6 +217,13 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
                     "prototype labels and test data classes do not match\n"
                     "classes={}\n"
                     "prototype labels={}\n".format(self.classes_, self.c_w_))
+
+        if self.c is None:
+            self.c_ = np.ones((nb_classes,nb_classes))
+        else:
+            self.c_ = validation.check_array(self.c)
+            if self.c_.shape != (nb_classes,nb_classes):
+                raise ValueError("C must be of shape (nb_classes,nb_classes)")
         return train_set, train_lab, random_state
 
     def _optimize(self, x, y, random_state):

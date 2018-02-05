@@ -79,11 +79,11 @@ class GrlvqModel(GlvqModel):
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
                  initial_relevances=None, regularization=0.0, beta=2,
-                 max_iter=2500, gtol=1e-5, display=False,
+                 max_iter=2500, gtol=1e-5, display=False, C=None,
                  random_state=None):
         super(GrlvqModel, self).__init__(prototypes_per_class,
                                          initial_prototypes, max_iter,
-                                         gtol, beta, display, random_state)
+                                         gtol, beta, C, display, random_state)
         self.regularization = regularization
         self.initial_relevances = initial_relevances
 
@@ -165,6 +165,7 @@ class GrlvqModel(GlvqModel):
         distcorrectpluswrong = distcorrect + distwrong
         distcorectminuswrong = distcorrect - distwrong
         mu = distcorectminuswrong / distcorrectpluswrong
+        mu *= self.c_[label_equals_prototype.argmax(1),d_wrong.argmin(1)]
 
         if self.regularization > 0:
             reg_term = self.regularization * log(

@@ -88,12 +88,12 @@ class LgmlvqModel(GlvqModel):
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 initial_matrices=None, regularization=0.0, beta=2,
+                 initial_matrices=None, regularization=0.0, beta=2, C=None,
                  dim=None, classwise=False, max_iter=2500, gtol=1e-5,
                  display=False, random_state=None):
         super(LgmlvqModel, self).__init__(prototypes_per_class,
                                           initial_prototypes, max_iter,
-                                          gtol, beta, display, random_state)
+                                          gtol, beta, C, display, random_state)
         self.regularization = regularization
         self.initial_matrices = initial_matrices
         self.classwise = classwise
@@ -205,6 +205,7 @@ class LgmlvqModel(GlvqModel):
         distcorrectpluswrong = distcorrect + distwrong
         distcorectminuswrong = distcorrect - distwrong
         mu = distcorectminuswrong / distcorrectpluswrong
+        mu *= self.c_[label_equals_prototype.argmax(1),d_wrong.argmin(1)]
 
         if sum(self.regularization_) > 0:
             def test(x):
