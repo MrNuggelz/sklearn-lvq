@@ -213,7 +213,7 @@ class LgmlvqModel(GlvqModel):
 
             t = np.array([test(x) for x in psis])
             reg_term = self.regularization_ * t
-            return mu - 1 / nb_samples * reg_term[
+            return np.vectorize(self.phi)(mu) - 1 / nb_samples * reg_term[
                 pidxcorrect] - 1 / nb_samples * reg_term[pidxwrong]
         return np.vectorize(self.phi)(mu).sum(0)
 

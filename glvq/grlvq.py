@@ -15,8 +15,6 @@ from .glvq import GlvqModel, _squared_euclidean
 from sklearn.utils import validation
 
 
-# TODO: implement custom optfun for grlvq without omega
-
 class GrlvqModel(GlvqModel):
     """Generalized Relevance Learning Vector Quantization
 
@@ -90,11 +88,13 @@ class GrlvqModel(GlvqModel):
     def _optgrad(self, variables, training_data, label_equals_prototype,
                  random_state, lr_relevances=0, lr_prototypes=1):
         n_data, n_dim = training_data.shape
-        variables = variables.reshape(variables.size // n_dim, n_dim)
         nb_prototypes = self.c_w_.shape[0]
-        omega_t = variables[nb_prototypes:].conj().T
-        dist = _squared_euclidean(training_data.dot(omega_t),
-                                  variables[:nb_prototypes].dot(omega_t))
+        prototypes = variables.reshape(variables.size // n_dim, n_dim)[
+                     :nb_prototypes]
+        lambd = variables[prototypes.size:]
+
+        dist = _squared_euclidean(lambd * training_data,
+                                  lambd * prototypes)
         d_wrong = dist.copy()
         d_wrong[label_equals_prototype] = np.inf
         distwrong = d_wrong.min(1)
@@ -110,11 +110,9 @@ class GrlvqModel(GlvqModel):
         mu = distcorectminuswrong / distcorrectpluswrong
         mu = np.vectorize(self.phi_prime)(mu)
 
-        g = np.zeros(variables.shape)
+        g = np.zeros(prototypes.shape)
         distcorrectpluswrong = 4 / distcorrectpluswrong ** 2
-
-        if lr_relevances > 0:
-            gw = np.zeros([omega_t.shape[0], n_dim])
+        gw = np.zeros(lambd.size)
 
         for i in range(nb_prototypes):
             idxc = i == pidxcorrect
@@ -125,9 +123,7 @@ class GrlvqModel(GlvqModel):
             if lr_relevances > 0:
                 difc = training_data[idxc] - variables[i]
                 difw = training_data[idxw] - variables[i]
-                gw = gw - np.dot(difw * dcd[np.newaxis].T, omega_t).T \
-                    .dot(difw) + np.dot(difc * dwd[np.newaxis].T,
-                                        omega_t).T.dot(difc)
+                gw -= dcd.dot(difw ** 2) - dwd.dot(difc ** 2)
                 if lr_prototypes > 0:
                     g[i] = dcd.dot(difw) - dwd.dot(difc)
             elif lr_prototypes > 0:
@@ -136,24 +132,25 @@ class GrlvqModel(GlvqModel):
                        (dwd.sum(0) - dcd.sum(0)) * variables[i]
         f3 = 0
         if self.regularization:
-            f3 = np.linalg.pinv(omega_t.conj().T).conj().T
+            f3 = np.diag(np.linalg.pinv(np.math.sqrt(np.diag(lambd))))
         if lr_relevances > 0:
-            g[nb_prototypes:] = 2 / n_data * lr_relevances * \
-                                gw - self.regularization * f3
+            gw = 2 / n_data * lr_relevances * \
+                 gw - self.regularization * f3
         if lr_prototypes > 0:
             g[:nb_prototypes] = 1 / n_data * lr_prototypes * \
-                                g[:nb_prototypes].dot(omega_t.dot(omega_t.T))
+                                g[:nb_prototypes] * lambd
         g = g * (1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
-        return g.ravel()
+        return np.append(g.ravel(), gw, axis=0)
 
     def _optfun(self, variables, training_data, label_equals_prototype):
         n_data, n_dim = training_data.shape
-        variables = variables.reshape(variables.size // n_dim, n_dim)
         nb_prototypes = self.c_w_.shape[0]
-        omega_t = variables[nb_prototypes:]  # .conj().T
+        prototypes = variables.reshape(variables.size // n_dim, n_dim)[
+                     :nb_prototypes]
+        lambd = variables[prototypes.size:]
 
-        dist = _squared_euclidean(training_data.dot(omega_t),
-                                  variables[:nb_prototypes].dot(omega_t))
+        dist = _squared_euclidean(lambd * training_data,
+                                  lambd * prototypes)
         d_wrong = dist.copy()
         d_wrong[label_equals_prototype] = np.inf
         distwrong = d_wrong.min(1)
@@ -165,12 +162,8 @@ class GrlvqModel(GlvqModel):
         distcorrectpluswrong = distcorrect + distwrong
         distcorectminuswrong = distcorrect - distwrong
         mu = distcorectminuswrong / distcorrectpluswrong
-        mu *= self.c_[label_equals_prototype.argmax(1),d_wrong.argmin(1)]
+        mu *= self.c_[label_equals_prototype.argmax(1), d_wrong.argmin(1)]
 
-        if self.regularization > 0:
-            reg_term = self.regularization * log(
-                np.linalg.det(omega_t.conj().T.dot(omega_t)))
-            return mu.sum(0) - reg_term  # f
         return np.vectorize(self.phi)(mu).sum(0)
 
     def _optimize(self, x, y, random_state):
@@ -190,7 +183,7 @@ class GrlvqModel(GlvqModel):
                                  "length=%d" % (
                                      nb_features, self.lambda_.size))
         self.lambda_ /= np.sum(self.lambda_)
-        variables = np.append(self.w_, np.diag(np.sqrt(self.lambda_)), axis=0)
+        variables = np.append(self.w_.ravel(), self.lambda_, axis=0)
         label_equals_prototype = y[np.newaxis].T == self.c_w_
         method = 'l-bfgs-b'
         res = minimize(

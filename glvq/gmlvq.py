@@ -133,9 +133,8 @@ class GmlvqModel(GlvqModel):
             if lr_relevances > 0:
                 difc = training_data[idxc] - variables[i]
                 difw = training_data[idxw] - variables[i]
-                gw -= np.dot(difw * dcd[np.newaxis].T, omega_t).T \
-                          .dot(difw) + np.dot(difc * dwd[np.newaxis].T,
-                                              omega_t).T.dot(difc)
+                gw -= np.dot(difw * dcd[np.newaxis].T, omega_t).T.dot(difw) - \
+                      np.dot(difc * dwd[np.newaxis].T, omega_t).T.dot(difc)
                 if lr_prototypes > 0:
                     g[i] = dcd.dot(difw) - dwd.dot(difc)
             elif lr_prototypes > 0:
@@ -177,7 +176,7 @@ class GmlvqModel(GlvqModel):
         if self.regularization > 0:
             reg_term = self.regularization * log(
                 np.linalg.det(omega_t.conj().T.dot(omega_t)))
-            return mu.sum(0) - reg_term  # f
+            return np.vectorize(self.phi)(mu).sum(0) - reg_term  # f
         return np.vectorize(self.phi)(mu).sum(0)
 
     def _optimize(self, x, y, random_state):
