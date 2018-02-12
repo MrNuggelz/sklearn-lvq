@@ -88,12 +88,12 @@ class LgmlvqModel(GlvqModel):
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 initial_matrices=None, regularization=0.0, beta=2, C=None,
+                 initial_matrices=None, regularization=0.0,
                  dim=None, classwise=False, max_iter=2500, gtol=1e-5,
                  display=False, random_state=None):
         super(LgmlvqModel, self).__init__(prototypes_per_class,
-                                          initial_prototypes, max_iter,
-                                          gtol, beta, C, display, random_state)
+                                          initial_prototypes, max_iter, gtol,
+                                          display, random_state)
         self.regularization = regularization
         self.initial_matrices = initial_matrices
         self.classwise = classwise
@@ -127,9 +127,6 @@ class LgmlvqModel(GlvqModel):
         pidxcorrect = d_correct.argmin(1)
 
         distcorrectpluswrong = distcorrect + distwrong
-        distcorectminuswrong = distcorrect - distwrong
-        mu = distcorectminuswrong / distcorrectpluswrong
-        mu = np.vectorize(self.phi_prime)(mu)
 
         g = np.zeros(variables.shape)
         normfactors = 4 / distcorrectpluswrong ** 2
@@ -146,8 +143,8 @@ class LgmlvqModel(GlvqModel):
                     0]  # test if works
             else:
                 right_idx = i
-            dcd = mu[idxw] * distcorrect[idxw] * normfactors[idxw]
-            dwd = mu[idxc] * distwrong[idxc] * normfactors[idxc]
+            dcd = distcorrect[idxw] * normfactors[idxw]
+            dwd = distwrong[idxc] * normfactors[idxc]
 
             difc = training_data[idxc] - variables[i]
             difw = training_data[idxw] - variables[i]
@@ -157,8 +154,8 @@ class LgmlvqModel(GlvqModel):
             if lr_relevances > 0:
                 gw[right_idx] = gw[right_idx] - (difw * dcd[np.newaxis].T).dot(
                     psis[right_idx].conj().T).T.dot(difw) + \
-                                (difc * dwd[np.newaxis].T).dot(
-                                    psis[right_idx].conj().T).T.dot(difc)
+                               (difc * dwd[np.newaxis].T).dot(
+                                   psis[right_idx].conj().T).T.dot(difc)
         if lr_relevances > 0:
             if sum(self.regularization_) > 0:
                 regmatrices = np.zeros([sum(self.dim_), nb_features])
@@ -167,7 +164,7 @@ class LgmlvqModel(GlvqModel):
                         self.dim_[:i + 1])] = \
                         self.regularization_[i] * np.linalg.pinv(psis[i])
                 g[nb_prototypes:] = 2 / nb_samples * lr_relevances * \
-                                    np.concatenate(gw) - regmatrices
+                    np.concatenate(gw) - regmatrices
             else:
                 g[nb_prototypes:] = 2 / nb_samples * lr_relevances * \
                                     np.concatenate(gw)
@@ -205,7 +202,6 @@ class LgmlvqModel(GlvqModel):
         distcorrectpluswrong = distcorrect + distwrong
         distcorectminuswrong = distcorrect - distwrong
         mu = distcorectminuswrong / distcorrectpluswrong
-        mu *= self.c_[label_equals_prototype.argmax(1),d_wrong.argmin(1)]
 
         if sum(self.regularization_) > 0:
             def test(x):
@@ -213,9 +209,9 @@ class LgmlvqModel(GlvqModel):
 
             t = np.array([test(x) for x in psis])
             reg_term = self.regularization_ * t
-            return np.vectorize(self.phi)(mu) - 1 / nb_samples * reg_term[
+            return mu - 1 / nb_samples * reg_term[
                 pidxcorrect] - 1 / nb_samples * reg_term[pidxwrong]
-        return np.vectorize(self.phi)(mu).sum(0)
+        return mu.sum(0)
 
     def _optimize(self, x, y, random_state):
         nb_prototypes, nb_features = self.w_.shape
@@ -332,7 +328,8 @@ class LgmlvqModel(GlvqModel):
         self.omegas_ = np.split(out[nb_prototypes:], indices[:-1])  # .conj().T
         self.n_iter_ = n_iter
 
-    def _compute_distance(self, x, w=None, psis=None):
+    def _compute_distance(self, x, w=None,
+                          psis=None):
         if w is None:
             w = self.w_
         if psis is None:

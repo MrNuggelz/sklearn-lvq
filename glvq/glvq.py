@@ -76,23 +76,14 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 max_iter=2500, gtol=1e-5, beta=2, C=None,
+                 max_iter=2500, gtol=1e-5,
                  display=False, random_state=None):
         self.random_state = random_state
         self.initial_prototypes = initial_prototypes
         self.prototypes_per_class = prototypes_per_class
         self.display = display
         self.max_iter = max_iter
-        self.beta = beta
         self.gtol = gtol
-        self.c = C
-
-    def phi(self, x):
-        return 1 / (1 + np.math.exp(-self.beta * x))
-
-    def phi_prime(self, x):
-        return self.beta * np.math.exp(self.beta * x) / (
-                    1 + np.math.exp(self.beta * x)) ** 2
 
     def _optgrad(self, variables, training_data, label_equals_prototype,
                  random_state):
@@ -112,9 +103,6 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
         pidxcorrect = d_correct.argmin(1)
 
         distcorrectpluswrong = distcorrect + distwrong
-        distcorectminuswrong = distcorrect - distwrong
-        mu = distcorectminuswrong / distcorrectpluswrong
-        mu = np.vectorize(self.phi_prime)(mu)
 
         g = np.zeros(prototypes.shape)
         distcorrectpluswrong = 4 / distcorrectpluswrong ** 2
@@ -123,8 +111,8 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
             idxc = i == pidxcorrect
             idxw = i == pidxwrong
 
-            dcd = mu[idxw] * distcorrect[idxw] * distcorrectpluswrong[idxw]
-            dwd = mu[idxc] * distwrong[idxc] * distcorrectpluswrong[idxc]
+            dcd = distcorrect[idxw] * distcorrectpluswrong[idxw]
+            dwd = distwrong[idxc] * distcorrectpluswrong[idxc]
             g[i] = dcd.dot(training_data[idxw]) - dwd.dot(
                 training_data[idxc]) + (dwd.sum(0) -
                                         dcd.sum(0)) * prototypes[i]
@@ -149,14 +137,11 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
         distcorrectpluswrong = distcorrect + distwrong
         distcorectminuswrong = distcorrect - distwrong
         mu = distcorectminuswrong / distcorrectpluswrong
-        mu *= self.c_[label_equals_prototype.argmax(1),d_wrong.argmin(1)]
 
-        return np.vectorize(self.phi)(mu).sum(0)
+        return mu.sum(0)
 
     def _validate_train_parms(self, train_set, train_lab):
         random_state = validation.check_random_state(self.random_state)
-        if not isinstance(self.beta, int):
-            raise ValueError("beta must a an integer")
         if not isinstance(self.display, bool):
             raise ValueError("display must be a boolean")
         if not isinstance(self.max_iter, int) or self.max_iter < 1:
@@ -199,7 +184,7 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
                 mean = np.mean(
                     train_set[train_lab == self.classes_[actClass], :], 0)
                 self.w_[pos:pos + nb_prot] = mean + (
-                        random_state.rand(nb_prot, nb_features) * 2 - 1)
+                    random_state.rand(nb_prot, nb_features) * 2 - 1)
                 self.c_w_[pos:pos + nb_prot] = self.classes_[actClass]
                 pos += nb_prot
         else:
@@ -217,13 +202,6 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
                     "prototype labels and test data classes do not match\n"
                     "classes={}\n"
                     "prototype labels={}\n".format(self.classes_, self.c_w_))
-
-        if self.c is None:
-            self.c_ = np.ones((nb_classes,nb_classes))
-        else:
-            self.c_ = validation.check_array(self.c)
-            if self.c_.shape != (nb_classes,nb_classes):
-                raise ValueError("C must be of shape (nb_classes,nb_classes)")
         return train_set, train_lab, random_state
 
     def _optimize(self, x, y, random_state):
