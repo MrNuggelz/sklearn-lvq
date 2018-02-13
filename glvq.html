@@ -214,9 +214,9 @@ Sato, Atsushi, and Keiji Yamada - Advances in neural information processing syst
 </div>
 <div class="section" id="generalized-learning-vector-quantizaton-glvq">
 <h2>Generalized Learning Vector Quantizaton (GLVQ)<a class="headerlink" href="#generalized-learning-vector-quantizaton-glvq" title="Permalink to this headline">¶</a></h2>
-<p>A GLVQ model can be constructed by initializing <a class="reference internal" href="modules/generated/glvq.GlvqModel.html#glvq.GlvqModel" title="glvq.GlvqModel"><code class="xref py py-class docutils literal"><span class="pre">GlvqModel</span></code></a> with the
+<p>A GLVQ model can be constructed by initializing <a class="reference internal" href="modules/generated/glvq.GlvqModel.html#glvq.GlvqModel" title="glvq.GlvqModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlvqModel</span></code></a> with the
 desired hyper-parameters, e.g. the number of prototypes, and the initial
-positions of the prototypes and then calling the <a class="reference internal" href="modules/generated/glvq.GlvqModel.html#glvq.GlvqModel.fit" title="glvq.GlvqModel.fit"><code class="xref py py-meth docutils literal"><span class="pre">GlvqModel.fit</span></code></a> function with the
+positions of the prototypes and then calling the <a class="reference internal" href="modules/generated/glvq.GlvqModel.html#glvq.GlvqModel.fit" title="glvq.GlvqModel.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GlvqModel.fit</span></code></a> function with the
 input data. The resulting model will contain the learned prototype
 positions and prototype labels which can be retrieved as properties <cite>w_</cite>
 and <cite>c_w_</cite>. Classifications of new data can be made via the predict
@@ -244,7 +244,7 @@ right side plot shows the data and prototypes multiplied with the
 feature relevances. As can be seen, GRLVQ correctly dismisses the second
 dimension, which is non-discriminative, and emphasizes the first
 dimension, which is sufficient for class discrimination.</p>
-<a class="reference external image-reference" href="auto_examples/plot_grlvq.html"><img alt="_images/sphx_glr_plot_grlvq_001.png" src="_images/sphx_glr_plot_grlvq_001.png" /></a>
+<a class="reference external image-reference" href="auto_examples/plot_grlvq.html"><img alt="auto_examples/images/sphx_glr_plot_grlvq_001.png" src="auto_examples/images/sphx_glr_plot_grlvq_001.png" /></a>
 <div class="topic">
 <p class="topic-title first">References:</p>
 <ul class="simple">
@@ -306,7 +306,7 @@ K. Bunte, P. Schneider, B. Hammer, F.-M. Schleif, T. Villmann and M. Biehl - Neu
 </div>
 <div class="section" id="localized-generalized-matrix-learning-vector-quantization-lgmlvq">
 <h2>Localized Generalized Matrix Learning Vector Quantization (LGMLVQ)<a class="headerlink" href="#localized-generalized-matrix-learning-vector-quantization-lgmlvq" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="modules/generated/glvq.LgmlvqModel.html#glvq.LgmlvqModel" title="glvq.LgmlvqModel"><code class="xref py py-class docutils literal"><span class="pre">LgmlvqModel</span></code></a> extends GLVQ by giving each prototype/class relevances for each feature. This way LGMLVQ is able to project the data for better
+<p><a class="reference internal" href="modules/generated/glvq.LgmlvqModel.html#glvq.LgmlvqModel" title="glvq.LgmlvqModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">LgmlvqModel</span></code></a> extends GLVQ by giving each prototype/class relevances for each feature. This way LGMLVQ is able to project the data for better
 classification.</p>
 <p>Especially in multi-class data sets, the ideal projection <img class="math" src="_images/math/cd30e0b91d2b53728ae09ccac9d857b79b3adfcb.png" alt="\Omega"/> may be
 different for each class, or even each prototype. Localized Generalized
@@ -342,8 +342,8 @@ Petra Schneider, Michael Biehl and Barbara Hammer - Neural Computation, vol. 21,
 </div>
 <div class="section" id="dimensionality-reducation">
 <h2>Dimensionality Reducation<a class="headerlink" href="#dimensionality-reducation" title="Permalink to this headline">¶</a></h2>
-<p>The relevances learned by a <a class="reference internal" href="modules/generated/glvq.GrlvqModel.html#glvq.GrlvqModel" title="glvq.GrlvqModel"><code class="xref py py-class docutils literal"><span class="pre">GrlvqModel</span></code></a> and the relevance matrices
-learned by a <a class="reference internal" href="modules/generated/glvq.GmlvqModel.html#glvq.GmlvqModel" title="glvq.GmlvqModel"><code class="xref py py-class docutils literal"><span class="pre">GmlvqModel</span></code></a> or a <a class="reference internal" href="modules/generated/glvq.LgmlvqModel.html#glvq.LgmlvqModel" title="glvq.LgmlvqModel"><code class="xref py py-class docutils literal"><span class="pre">LgmlvqModel</span></code></a> can be applied for
+<p>The relevances learned by a <a class="reference internal" href="modules/generated/glvq.GrlvqModel.html#glvq.GrlvqModel" title="glvq.GrlvqModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">GrlvqModel</span></code></a> and the relevance matrices
+learned by a <a class="reference internal" href="modules/generated/glvq.GmlvqModel.html#glvq.GmlvqModel" title="glvq.GmlvqModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">GmlvqModel</span></code></a> or a <a class="reference internal" href="modules/generated/glvq.LgmlvqModel.html#glvq.LgmlvqModel" title="glvq.LgmlvqModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">LgmlvqModel</span></code></a> can be applied for
 dimensionality reduction by projecting the data on the eigenvectors of
 the relevance matrix which correspond to the largest eigenvalues.</p>
 </div>
