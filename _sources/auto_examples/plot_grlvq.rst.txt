@@ -1,12 +1,12 @@
 
 
-.. _sphx_glr_auto_examples_plot_gmlvq.py:
+.. _sphx_glr_auto_examples_plot_grlvq.py:
 
 
-===============================================
-Generalized Matrix Learning Vector Quantization
-===============================================
-This example shows how GMLVQ projects and classifies.
+==================================================
+Generalized Relevance Learning Vector Quantization
+==================================================
+This example shows how GRLVQ projects and classifies.
 The plot shows the target class of each data point
 (big circle) and which class was predicted (smaller circle). It also
 shows the prototypes (black diamond) and their labels (small point inside the diamond).
@@ -16,7 +16,7 @@ The projected data is shown in the right plot.
 
 
 
-.. image:: /auto_examples/images/sphx_glr_plot_gmlvq_001.png
+.. image:: /auto_examples/images/sphx_glr_plot_grlvq_001.png
     :align: center
 
 
@@ -24,7 +24,7 @@ The projected data is shown in the right plot.
 
  Out::
 
-    GMLVQ:
+    GRLVQ:
     ('variance coverd by projection:', 100.0)
     ('classification accuracy:', 1.0)
 
@@ -36,30 +36,31 @@ The projected data is shown in the right plot.
 
 .. code-block:: python
 
-    import matplotlib.pyplot as plt
     import numpy as np
+    import matplotlib.pyplot as plt
 
-    from glvq import GmlvqModel, plot2d
+    from glvq import GrlvqModel,plot2d
 
     print(__doc__)
+
 
     nb_ppc = 100
     toy_label = np.append(np.zeros(nb_ppc), np.ones(nb_ppc), axis=0)
 
-    print('GMLVQ:')
+    print('GRLVQ:')
     toy_data = np.append(
-        np.random.multivariate_normal([0, 0], np.array([[5, 4], [4, 6]]),
+        np.random.multivariate_normal([0, 0], np.array([[0.3, 0], [0, 4]]),
                                       size=nb_ppc),
-        np.random.multivariate_normal([9, 0], np.array([[5, 4], [4, 6]]),
+        np.random.multivariate_normal([4, 4], np.array([[0.3, 0], [0, 4]]),
                                       size=nb_ppc), axis=0)
-    gmlvq = GmlvqModel()
-    gmlvq.fit(toy_data, toy_label)
-    plot2d(gmlvq, toy_data, toy_label, 1, 'gmlvq')
+    grlvq = GrlvqModel()
+    grlvq.fit(toy_data, toy_label)
+    plot2d(grlvq, toy_data, toy_label, 1, 'grlvq')
 
-    print('classification accuracy:', gmlvq.score(toy_data, toy_label))
+    print('classification accuracy:', grlvq.score(toy_data, toy_label))
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.391 seconds)
+**Total running time of the script:** ( 0 minutes  3.914 seconds)
 
 
 
@@ -70,13 +71,13 @@ The projected data is shown in the right plot.
 
   .. container:: sphx-glr-download
 
-     :download:`Download Python source code: plot_gmlvq.py <plot_gmlvq.py>`
+     :download:`Download Python source code: plot_grlvq.py <plot_grlvq.py>`
 
 
 
   .. container:: sphx-glr-download
 
-     :download:`Download Jupyter notebook: plot_gmlvq.ipynb <plot_gmlvq.ipynb>`
+     :download:`Download Jupyter notebook: plot_grlvq.ipynb <plot_grlvq.ipynb>`
 
 
 .. only:: html

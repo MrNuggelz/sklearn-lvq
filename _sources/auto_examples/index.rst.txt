@@ -33,6 +33,26 @@ Examples
 
 .. only:: html
 
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_grlvq_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_grlvq.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_grlvq
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="">
+
+.. only:: html
+
     .. figure:: /auto_examples/images/thumb/sphx_glr_plot_lgmlvq_thumb.png
 
         :ref:`sphx_glr_auto_examples_plot_lgmlvq.py`
