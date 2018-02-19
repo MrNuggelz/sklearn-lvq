@@ -67,7 +67,7 @@ def test_grlvq_iris():
     check_estimator(GrlvqModel)
     model = GrlvqModel(regularization=0.5)
     model.fit(iris.data, iris.target)
-    assert_greater(model.score(iris.data, iris.target), 0.89)
+    assert_greater(model.score(iris.data, iris.target), 0.94)
 
     model = GrlvqModel(initial_prototypes=[[0, 0, 0], [4, 4, 1]])
     nb_ppc = 10
