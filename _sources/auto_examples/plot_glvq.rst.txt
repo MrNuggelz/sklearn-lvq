@@ -24,7 +24,7 @@ shows the prototypes (black diamond) and their labels (small point inside the di
  Out::
 
     GLVQ:
-    ('classification accuracy:', 1.0)
+    ('classification accuracy:', 0.995)
 
 
 
