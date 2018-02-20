@@ -92,6 +92,7 @@ class GrlvqModel(GlvqModel):
         prototypes = variables.reshape(variables.size // n_dim, n_dim)[
                      :nb_prototypes]
         lambd = variables[prototypes.size:]
+        lambd[lambd < 0] = 0
 
         dist = _squared_euclidean(lambd * training_data,
                                   lambd * prototypes)
@@ -121,26 +122,27 @@ class GrlvqModel(GlvqModel):
             dcd = mu[idxw] * distcorrect[idxw] * distcorrectpluswrong[idxw]
             dwd = mu[idxc] * distwrong[idxc] * distcorrectpluswrong[idxc]
             if lr_relevances > 0:
-                difc = training_data[idxc] - variables[i]
-                difw = training_data[idxw] - variables[i]
+                difc = training_data[idxc] - prototypes[i]
+                difw = training_data[idxw] - prototypes[i]
                 gw -= dcd.dot(difw ** 2) - dwd.dot(difc ** 2)
                 if lr_prototypes > 0:
                     g[i] = dcd.dot(difw) - dwd.dot(difc)
             elif lr_prototypes > 0:
                 g[i] = dcd.dot(training_data[idxw]) - \
                        dwd.dot(training_data[idxc]) + \
-                       (dwd.sum(0) - dcd.sum(0)) * variables[i]
+                       (dwd.sum(0) - dcd.sum(0)) * prototypes[i]
         f3 = 0
         if self.regularization:
-            f3 = np.diag(np.linalg.pinv(np.math.sqrt(np.diag(lambd))))
+            f3 = np.diag(np.linalg.pinv(np.sqrt(np.diag(lambd))))
         if lr_relevances > 0:
             gw = 2 / n_data * lr_relevances * \
                  gw - self.regularization * f3
         if lr_prototypes > 0:
             g[:nb_prototypes] = 1 / n_data * lr_prototypes * \
                                 g[:nb_prototypes] * lambd
+        g = np.append(g.ravel(), gw, axis=0)
         g = g * (1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
-        return np.append(g.ravel(), gw, axis=0)
+        return g
 
     def _optfun(self, variables, training_data, label_equals_prototype):
         n_data, n_dim = training_data.shape
@@ -202,7 +204,7 @@ class GrlvqModel(GlvqModel):
             jac=lambda vs: self._optgrad(
                 vs, x, label_equals_prototype=label_equals_prototype,
                 lr_prototypes=0, lr_relevances=1, random_state=random_state),
-            method=method, x0=variables,
+            method=method, x0=res.x,
             options={'disp': self.display, 'gtol': self.gtol,
                      'maxiter': self.max_iter})
         n_iter = max(n_iter, res.nit)
@@ -212,13 +214,12 @@ class GrlvqModel(GlvqModel):
             jac=lambda vs: self._optgrad(
                 vs, x, label_equals_prototype=label_equals_prototype,
                 lr_prototypes=1, lr_relevances=1, random_state=random_state),
-            method=method, x0=variables,
+            method=method, x0=res.x,
             options={'disp': self.display, 'gtol': self.gtol,
                      'maxiter': self.max_iter})
         n_iter = max(n_iter, res.nit)
-        out = res.x.reshape(res.x.size // nb_features, nb_features)
-        self.w_ = out[:nb_prototypes]
-        self.lambda_ = np.diag(out[nb_prototypes:].T.dot(out[nb_prototypes:]))
+        self.w_ = res.x.reshape(res.x.size // nb_features, nb_features)[:nb_prototypes]
+        self.lambda_ = res.x[self.w_.size:]
         self.lambda_ = self.lambda_ / self.lambda_.sum()
         self.n_iter_ = n_iter
 
