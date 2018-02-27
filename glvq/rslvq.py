@@ -122,6 +122,8 @@ class RslvqModel(BaseEstimator, ClassifierMixin):
             s1 = sum([np.math.exp(fs[i] - fs_max) for i in range(len(fs))
                       if self.c_w_[i] == y])
             s2 = sum([np.math.exp(f - fs_max) for f in fs])
+            s1 += 0.0000001
+            s2 += 0.0000001
             out += math.log(s1 / s2)
         return -out
 
