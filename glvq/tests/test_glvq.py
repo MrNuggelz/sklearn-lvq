@@ -24,7 +24,9 @@ iris.target = iris.target[perm]
 
 def test_glvq_iris():
     check_estimator(GlvqModel)
-    model = GlvqModel()
+
+    c = [(0, 1, 0.9), (1, 0, 1.1)]
+    model = GlvqModel(prototypes_per_class=2, C=c)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), 0.94)
 
@@ -66,7 +68,8 @@ def test_glvq_iris():
 
 def test_grlvq_iris():
     check_estimator(GrlvqModel)
-    model = GrlvqModel(regularization=0.5)
+    c = [(0, 1, 0.9), (1, 0, 1.1)]
+    model = GrlvqModel(prototypes_per_class=2, C=c, regularization=0.5)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), 0.94)
 
@@ -87,11 +90,14 @@ def test_grlvq_iris():
     assert_raise_message(ValueError, 'regularization must be a positive float',
                          GrlvqModel(regularization=-1.0).fit, iris.data,
                          iris.target)
+    GrlvqModel(prototypes_per_class=2).fit(
+        iris.data, iris.target)
 
 
 def test_gmlvq_iris():
     check_estimator(GmlvqModel)
-    model = GmlvqModel(regularization=0.5)
+    c = [(0, 1, 0.9), (1, 0, 1.1)]
+    model = GmlvqModel(prototypes_per_class=2, C=c, regularization=0.5)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), 0.94)
 
@@ -116,6 +122,8 @@ def test_gmlvq_iris():
                          iris.data, iris.target)
     assert_raise_message(ValueError, 'dim must be an positive int',
                          GmlvqModel(dim=0).fit, iris.data, iris.target)
+    GmlvqModel(dim=1, prototypes_per_class=2).fit(
+        iris.data, iris.target)
 
 
 def test_lgmlvq_iris():
@@ -145,7 +153,7 @@ def test_lgmlvq_iris():
                          LgmlvqModel(
                              initial_matrices=[[[1, 2], [3, 4], [5, 6]]]).fit,
                          iris.data, iris.target)
-    assert_raise_message(ValueError, 'each matrix should have',
+    assert_raise_message(ValueError, 'each matrix must have',
                          LgmlvqModel(
                              initial_matrices=[[[1]], [[1]], [[1]]]).fit,
                          iris.data, iris.target)
@@ -153,7 +161,7 @@ def test_lgmlvq_iris():
                          LgmlvqModel(initial_matrices=[[[1, 2, 3]]],
                                      classwise=True).fit, iris.data,
                          iris.target)
-    assert_raise_message(ValueError, 'each matrix should have',
+    assert_raise_message(ValueError, 'each matrix must have',
                          LgmlvqModel(initial_matrices=[[[1]], [[1]], [[1]]],
                                      classwise=True).fit, iris.data,
                          iris.target)
@@ -174,8 +182,8 @@ def test_lgmlvq_iris():
     model.fit(iris.data, iris.target)
 
     model = LgmlvqModel(initial_prototypes=[[0, 2, 1], [1, 6, 2]],
-                        initial_matrices=[np.ones([2, 2]), np.ones([2, 2])],
-                        dim=[2, 2])
+                        initial_matrices=[np.ones([1, 2]), np.ones([1, 2])],
+                        dim=[1, 1])
     x = np.array([[0, 0], [0, 4], [1, 4], [1, 8]])
     y = np.array([1, 1, 2, 2])
     model.fit(x, y)
@@ -221,6 +229,7 @@ def test_rslvq_iris():
                          iris.target)
     assert_raise_message(ValueError, 'X has wrong number of features',
                          model.predict, [[1, 2], [3, 4]])
+
 
 def test_mrslvq_iris():
     check_estimator(MrslvqModel)

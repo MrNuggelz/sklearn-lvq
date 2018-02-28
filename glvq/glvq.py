@@ -14,6 +14,7 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils import validation
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_is_fitted
+from itertools import product
 
 
 def _squared_euclidean(a, b=None):
@@ -43,6 +44,16 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
 
     max_iter : int, optional (default=2500)
         The maximum number of iterations.
+
+    beta : int, optional (default=2)
+        Used inside phi.
+        1 / (1 + np.math.exp(-beta * x))
+
+    C : array-like, shape = [2,3] ,optional
+        Weights for wrong classification of form (y_real,y_pred,weight)
+        Per default all weights are one, meaning you only need to specify
+        the weights not equal one.
+
 
     gtol : float, optional (default=1e-5)
         Gradient norm must be less than gtol before successful termination
@@ -92,7 +103,7 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
 
     def phi_prime(self, x):
         return self.beta * np.math.exp(self.beta * x) / (
-                    1 + np.math.exp(self.beta * x)) ** 2
+                1 + np.math.exp(self.beta * x)) ** 2
 
     def _optgrad(self, variables, training_data, label_equals_prototype,
                  random_state):
@@ -149,7 +160,8 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
         distcorrectpluswrong = distcorrect + distwrong
         distcorectminuswrong = distcorrect - distwrong
         mu = distcorectminuswrong / distcorrectpluswrong
-        mu *= self.c_[label_equals_prototype.argmax(1),d_wrong.argmin(1)]
+        [self.map_to_int(x) for x in self.c_w_[label_equals_prototype.argmax(1)]]
+        mu *= self.c_[label_equals_prototype.argmax(1), d_wrong.argmin(1)]  # y_real, y_pred
 
         return np.vectorize(self.phi)(mu).sum(0)
 
@@ -218,13 +230,18 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
                     "classes={}\n"
                     "prototype labels={}\n".format(self.classes_, self.c_w_))
 
-        if self.c is None:
-            self.c_ = np.ones((nb_classes,nb_classes))
-        else:
-            self.c_ = validation.check_array(self.c)
-            if self.c_.shape != (nb_classes,nb_classes):
-                raise ValueError("C must be of shape (nb_classes,nb_classes)")
+        self.c_ = np.ones((self.c_w_.size, self.c_w_.size))
+        if self.c is not None:
+            self.c = validation.check_array(self.c)
+            if self.c.shape != (2, 3):
+                raise ValueError("C must be shape (2,3)")
+            for k1, k2, v in self.c:
+                self.c_[tuple(zip(*product(self.map_to_int(k1), self.map_to_int(k2))))] = float(v)
+
         return train_set, train_lab, random_state
+
+    def map_to_int(self, item):
+        return np.where(self.c_w_ == item)[0]
 
     def _optimize(self, x, y, random_state):
         label_equals_prototype = y[np.newaxis].T == self.c_w_

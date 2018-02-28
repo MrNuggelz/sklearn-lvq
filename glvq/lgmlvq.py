@@ -155,10 +155,8 @@ class LgmlvqModel(GlvqModel):
                 g[i] = (dcd.dot(difw) - dwd.dot(difc)).dot(
                     psis[right_idx].conj().T).dot(psis[right_idx])
             if lr_relevances > 0:
-                gw[right_idx] = gw[right_idx] - (difw * dcd[np.newaxis].T).dot(
-                    psis[right_idx].conj().T).T.dot(difw) + \
-                                (difc * dwd[np.newaxis].T).dot(
-                                    psis[right_idx].conj().T).T.dot(difc)
+                gw[right_idx] -= (difw * dcd[np.newaxis].T).dot(psis[right_idx].conj().T).T.dot(difw) - \
+                                 (difc * dwd[np.newaxis].T).dot(psis[right_idx].conj().T).T.dot(difc)
         if lr_relevances > 0:
             if sum(self.regularization_) > 0:
                 regmatrices = np.zeros([sum(self.dim_), nb_features])
@@ -205,7 +203,7 @@ class LgmlvqModel(GlvqModel):
         distcorrectpluswrong = distcorrect + distwrong
         distcorectminuswrong = distcorrect - distwrong
         mu = distcorectminuswrong / distcorrectpluswrong
-        mu *= self.c_[label_equals_prototype.argmax(1),d_wrong.argmin(1)]
+        mu *= self.c_[label_equals_prototype.argmax(1), d_wrong.argmin(1)]
 
         if sum(self.regularization_) > 0:
             def test(x):
@@ -254,26 +252,20 @@ class LgmlvqModel(GlvqModel):
                 raise ValueError("initial matrices must be a list")
             self.omegas_ = list(map(lambda v: validation.check_array(v),
                                     self.initial_matrices))
-            if self.classwise:
-                if len(self.omegas_) != nb_classes:
-                    raise ValueError("length of matrices wrong\n"
-                                     "found=%d\n"
-                                     "expected=%d" % (
-                                         len(self.omegas_), nb_classes))
-                elif np.sum(map(lambda v: v.shape[1],
-                                self.omegas_)) != nb_features * \
-                        len(self.omegas_):
-                    raise ValueError(
-                        "each matrix should have %d columns" % nb_features)
+            if self.classwise and len(self.omegas_) != nb_classes:
+                raise ValueError("length of matrices wrong\n"
+                                 "found=%d\n"
+                                 "expected=%d" % (
+                                     len(self.omegas_), nb_classes))
             elif len(self.omegas_) != nb_prototypes:
                 raise ValueError("length of matrices wrong\n"
                                  "found=%d\n"
                                  "expected=%d" % (
                                      len(self.omegas_), nb_classes))
-            elif np.sum([v.shape[1] for v in self.omegas_]) != \
-                    nb_features * len(self.omegas_):
+            elif any(self.omegas_[i].shape != (self.dim_[i], nb_features)
+                     for i in range(len(self.omegas_))):
                 raise ValueError(
-                    "each matrix should have %d columns" % nb_features)
+                    "each matrix must have shape (%d,dim)" % nb_features)
 
         if isinstance(self.regularization, float):
             if self.regularization < 0:

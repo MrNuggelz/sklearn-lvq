@@ -100,8 +100,10 @@ class GmlvqModel(GlvqModel):
         variables = variables.reshape(variables.size // n_dim, n_dim)
         nb_prototypes = self.c_w_.shape[0]
         omega_t = variables[nb_prototypes:].conj().T
-        dist = _squared_euclidean(training_data.dot(omega_t),
-                                  variables[:nb_prototypes].dot(omega_t))
+        # dist = _squared_euclidean(training_data.dot(omega_t),
+        #                           variables[:nb_prototypes].dot(omega_t))
+        dist = self._compute_distance(training_data, variables[:nb_prototypes],
+                                      omega_t.T)
         d_wrong = dist.copy()
         d_wrong[label_equals_prototype] = np.inf
         distwrong = d_wrong.min(1)
@@ -122,7 +124,7 @@ class GmlvqModel(GlvqModel):
         distcorrectpluswrong = 4 / distcorrectpluswrong ** 2
 
         if lr_relevances > 0:
-            gw = np.zeros([omega_t.shape[0], n_dim])
+            gw = np.zeros(omega_t.T.shape)
 
         for i in range(nb_prototypes):
             idxc = i == pidxcorrect
@@ -159,8 +161,10 @@ class GmlvqModel(GlvqModel):
         nb_prototypes = self.c_w_.shape[0]
         omega_t = variables[nb_prototypes:]  # .conj().T
 
-        dist = _squared_euclidean(training_data.dot(omega_t),
-                                  variables[:nb_prototypes].dot(omega_t))
+        # dist = _squared_euclidean(training_data.dot(omega_t),
+        #                           variables[:nb_prototypes].dot(omega_t))
+        dist = self._compute_distance(training_data, variables[:nb_prototypes],
+                                      omega_t)
         d_wrong = dist.copy()
         d_wrong[label_equals_prototype] = np.inf
         distwrong = d_wrong.min(1)
