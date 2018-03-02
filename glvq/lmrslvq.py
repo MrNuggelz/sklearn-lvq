@@ -104,12 +104,16 @@ class LmrslvqModel(RslvqModel):
             xi = training_data[i]
             c_xi = label_equals_prototype[i]
             for j in range(prototypes.shape[0]):
-                oo = omegas[j].T.dot(omegas[j])
+                if len(omegas) == nb_prototypes:
+                    omega_index = j
+                else:
+                    omega_index = np.where(self.classes_ == self.c_w_[j])[0][0]
+                oo = omegas[omega_index].T.dot(omegas[omega_index])
                 d = (xi - prototypes[j])[np.newaxis].T
-                p = self.p(j, xi, prototypes=prototypes, omega=omegas[j])
+                p = self.p(j, xi, prototypes=prototypes, omega=omegas[omega_index])
                 if self.c_w_[j] == c_xi:
                     pj = self.p(j, xi, prototypes=prototypes, y=c_xi,
-                                omega=omegas[j])
+                                omega=omegas[omega_index])
                 if lr_prototypes > 0:
                     if self.c_w_[j] == c_xi:
                         g[j] += (c * (pj - p) * oo.dot(d)).ravel()
@@ -118,9 +122,9 @@ class LmrslvqModel(RslvqModel):
                 if lr_relevances > 0:
                     if self.c_w_[j] == c_xi:
                         gw -= (pj - p) / self.sigma * (
-                            omegas[j].dot(d).dot(d.T))
+                            omegas[omega_index].dot(d).dot(d.T))
                     else:
-                        gw += p / self.sigma * (omegas[j].dot(d).dot(d.T))
+                        gw += p / self.sigma * (omegas[omega_index].dot(d).dot(d.T))
         if lr_relevances > 0:
             if sum(self.regularization_) > 0:
                 regmatrices = np.zeros([sum(self.dim_), n_dim])
@@ -160,8 +164,12 @@ class LmrslvqModel(RslvqModel):
         for i in range(n_data):
             xi = training_data[i]
             y = label_equals_prototype[i]
-            fs = [self.costf(xi, prototypes[i], omega=omegas[i])
-                  for i in range(nb_prototypes)]
+            if len(omegas) == nb_prototypes:
+                fs = [self.costf(xi, prototypes[j], omega=omegas[j])
+                      for j in range(nb_prototypes)]
+            else:
+                fs = [self.costf(xi, prototypes[j], omega=omegas[np.where(self.classes_ == self.c_w_[j])[0][0]])
+                      for j in range(nb_prototypes)]
             fs_max = max(fs)
             s1 = sum([np.math.exp(fs[i] - fs_max) for i in range(len(fs))
                       if self.c_w_[i] == y])
@@ -299,28 +307,6 @@ class LmrslvqModel(RslvqModel):
         d = (x - w)[np.newaxis].T
         d = d.T.dot(omega.T).dot(omega).dot(d)
         return -d / (2 * self.sigma)
-
-    def _compute_distance(self, x, w=None, psis=None):
-        if w is None:
-            w = self.w_
-        if psis is None:
-            psis = self.omegas_
-        nb_samples = x.shape[0]
-        if len(w.shape) is 1:
-            nb_prototypes = 1
-        else:
-            nb_prototypes = w.shape[0]
-        distance = np.zeros([nb_prototypes, nb_samples])
-        if len(psis) == nb_prototypes:
-            for i in range(nb_prototypes):
-                distance[i] = np.sum(np.dot(x - w[i], psis[i].conj().T) ** 2,
-                                     1)
-            return np.transpose(distance)
-        for i in range(nb_prototypes):
-            matrix_idx = np.where(self.classes_ == self.c_w_[i])[0][0]
-            distance[i] = np.sum(
-                np.dot(x - w[i], psis[matrix_idx].conj().T) ** 2, 1)
-        return np.transpose(distance)
 
     def project(self, x, prototype_idx, dims, print_variance_covered=False):
         """Projects the data input data X using the relevance matrix of the

@@ -12,6 +12,7 @@ from sklearn.utils import check_random_state, shuffle
 from sklearn.utils.estimator_checks import check_estimator
 
 # also load the iris dataset
+from glvq.lmrslvq import LmrslvqModel
 from glvq.mrslvq import MrslvqModel
 from glvq.rslvq import RslvqModel
 
@@ -237,17 +238,6 @@ def test_mrslvq_iris():
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), 0.94)
 
-    # model = MrslvqModel(initial_prototypes=[[0, 0, 0], [4, 4, 1]])
-    # nb_ppc = 10
-    # x = np.append(
-    #     np.random.multivariate_normal([0, 0], np.array([[0.3, 0], [0, 4]]),
-    #                                   size=nb_ppc),
-    #     np.random.multivariate_normal([4, 4], np.array([[0.3, 0], [0, 4]]),
-    #                                   size=nb_ppc), axis=0)
-    # y = np.append(np.zeros(nb_ppc), np.ones(nb_ppc), axis=0)
-    # model.fit(x, y)
-    # assert_allclose(np.array([[1, 0], [0.2, 0]]), model.omega_, atol=0.3)
-
     assert_raise_message(ValueError, 'regularization must be a positive float',
                          MrslvqModel(regularization=-1.0).fit, iris.data,
                          iris.target)
@@ -258,3 +248,59 @@ def test_mrslvq_iris():
                          iris.data, iris.target)
     assert_raise_message(ValueError, 'dim must be an positive int',
                          MrslvqModel(dim=0).fit, iris.data, iris.target)
+
+def test_lmrslvq_iris():
+    check_estimator(LmrslvqModel)
+    model = LmrslvqModel()
+    model.fit(iris.data, iris.target)
+    assert_greater(model.score(iris.data, iris.target), 0.90)
+
+    assert_raise_message(ValueError, 'regularization must be a positive float',
+                         LmrslvqModel(regularization=-1.0).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError,
+                         'length of regularization'
+                         ' must be number of prototypes',
+                         LmrslvqModel(regularization=[-1.0]).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError,
+                         'length of regularization must be number of classes',
+                         LmrslvqModel(regularization=[-1.0],
+                                     classwise=True).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError, 'initial matrices must be a list',
+                         LmrslvqModel(initial_matrices=np.array(
+                             [[1, 2], [3, 4], [5, 6]])).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError, 'length of matrices wrong',
+                         LmrslvqModel(
+                             initial_matrices=[[[1, 2], [3, 4], [5, 6]]]).fit,
+                         iris.data, iris.target)
+    assert_raise_message(ValueError, 'each matrix should have',
+                         LmrslvqModel(
+                             initial_matrices=[[[1]], [[1]], [[1]]]).fit,
+                         iris.data, iris.target)
+    assert_raise_message(ValueError, 'length of matrices wrong',
+                         LmrslvqModel(initial_matrices=[[[1, 2, 3]]],
+                                     classwise=True).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError, 'each matrix should have',
+                         LmrslvqModel(initial_matrices=[[[1]], [[1]], [[1]]],
+                                     classwise=True).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError, 'classwise must be a boolean',
+                         LmrslvqModel(classwise="a").fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError, 'dim must be a list of positive ints',
+                         LmrslvqModel(dim=[-1]).fit, iris.data, iris.target)
+    assert_raise_message(ValueError, 'dim length must be number of prototypes',
+                         LmrslvqModel(dim=[1, 1]).fit, iris.data, iris.target)
+    assert_raise_message(ValueError, 'dim length must be number of classes',
+                         LmrslvqModel(dim=[1, 1], classwise=True).fit,
+                         iris.data, iris.target)
+
+    LmrslvqModel(classwise=True, dim=[1], prototypes_per_class=2).fit(
+        iris.data, iris.target)
+
+    model = LmrslvqModel(regularization=0.1)
+    model.fit(iris.data, iris.target)

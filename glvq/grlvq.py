@@ -92,7 +92,7 @@ class GrlvqModel(GlvqModel):
         prototypes = variables.reshape(variables.size // n_dim, n_dim)[
                      :nb_prototypes]
         lambd = variables[prototypes.size:]
-        lambd[lambd < 0] = 0
+        lambd[lambd < 0] = 0.0000001 #dirty fix if all values are smaller 0
 
         dist = _squared_euclidean(lambd * training_data,
                                   lambd * prototypes)
