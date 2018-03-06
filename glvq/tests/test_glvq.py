@@ -3,6 +3,7 @@ import numpy as np
 from glvq.glvq import GlvqModel
 from glvq.grlvq import GrlvqModel
 from glvq.gmlvq import GmlvqModel
+from glvq.grmlvq import GrmlvqModel
 from glvq.lgmlvq import LgmlvqModel
 from sklearn.utils.testing import assert_greater, assert_raise_message, \
     assert_allclose, set_random_state
@@ -124,6 +125,38 @@ def test_gmlvq_iris():
     assert_raise_message(ValueError, 'dim must be an positive int',
                          GmlvqModel(dim=0).fit, iris.data, iris.target)
     GmlvqModel(dim=1, prototypes_per_class=2).fit(
+        iris.data, iris.target)
+
+def test_grmlvq_iris():
+    check_estimator(GrmlvqModel)
+    c = [(0, 1, 0.9), (1, 0, 1.1)]
+    model = GrmlvqModel(prototypes_per_class=2, C=c, regularization=0.5)
+    model.fit(iris.data, iris.target)
+    assert_greater(model.score(iris.data, iris.target), 0.94)
+
+    model = GrmlvqModel(initial_prototypes=[[0, 0, 0], [4, 4, 1]])
+    nb_ppc = 10
+    x = np.append(
+        np.random.multivariate_normal([0, 0], np.array([[0.3, 0], [0, 4]]),
+                                      size=nb_ppc),
+        np.random.multivariate_normal([4, 4], np.array([[0.3, 0], [0, 4]]),
+                                      size=nb_ppc), axis=0)
+    y = np.append(np.zeros(nb_ppc), np.ones(nb_ppc), axis=0)
+    model.fit(x, y)
+    assert_allclose(np.array([0.9, 0.1]), model.lambda_, atol=0.3)
+    assert_allclose(np.array([[0.9, 0.2], [0.2, 0.3]]), model.omega_, atol=0.3)
+
+    assert_raise_message(ValueError, 'regularization must be a positive float',
+                         GrmlvqModel(regularization=-1.0).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError,
+                         'initial matrix has wrong number of features',
+                         GrmlvqModel(
+                             initial_matrix=[[1, 2], [3, 4], [5, 6]]).fit,
+                         iris.data, iris.target)
+    assert_raise_message(ValueError, 'dim must be an positive int',
+                         GrmlvqModel(dim=0).fit, iris.data, iris.target)
+    GrmlvqModel(dim=1, prototypes_per_class=2).fit(
         iris.data, iris.target)
 
 
@@ -253,7 +286,7 @@ def test_lmrslvq_iris():
     check_estimator(LmrslvqModel)
     model = LmrslvqModel()
     model.fit(iris.data, iris.target)
-    assert_greater(model.score(iris.data, iris.target), 0.90)
+    assert_greater(model.score(iris.data, iris.target), 0.94)
 
     assert_raise_message(ValueError, 'regularization must be a positive float',
                          LmrslvqModel(regularization=-1.0).fit, iris.data,

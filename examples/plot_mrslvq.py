@@ -13,9 +13,7 @@ right plot.
 import numpy as np
 import matplotlib.pyplot as plt
 
-from glvq import plot2d
-from glvq.mrslvq import MrslvqModel
-from glvq.rslvq import RslvqModel
+from glvq import plot2d, MrslvqModel
 
 print(__doc__)
 

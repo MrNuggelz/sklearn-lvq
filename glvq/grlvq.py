@@ -220,6 +220,7 @@ class GrlvqModel(GlvqModel):
         n_iter = max(n_iter, res.nit)
         self.w_ = res.x.reshape(res.x.size // nb_features, nb_features)[:nb_prototypes]
         self.lambda_ = res.x[self.w_.size:]
+        self.lambda_[self.lambda_ < 0] = 0.0000001
         self.lambda_ = self.lambda_ / self.lambda_.sum()
         self.n_iter_ = n_iter
 

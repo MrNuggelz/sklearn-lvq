@@ -6,12 +6,11 @@
 
 from __future__ import division
 
-import pdb
 
 import numpy as np
 from scipy.optimize import minimize
 from sklearn.utils import validation
-from glvq.rslvq import RslvqModel
+from .rslvq import RslvqModel
 
 
 class MrslvqModel(RslvqModel):
