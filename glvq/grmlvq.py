@@ -16,7 +16,7 @@ from .glvq import GlvqModel, _squared_euclidean
 from sklearn.utils import validation
 
 
-class GmlvqModel(GlvqModel):
+class GrmlvqModel(GlvqModel):
     """Generalized Matrix Learning Vector Quantization
 
     Parameters
@@ -85,25 +85,28 @@ class GmlvqModel(GlvqModel):
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None, C=None,
-                 initial_matrix=None, regularization=0.0, beta=2, dim=None,
+                 initial_matrix=None, regularization=0.0, beta=2, dim=None, initial_relevances=None,
                  max_iter=2500, gtol=1e-5, display=False, random_state=None):
-        super(GmlvqModel, self).__init__(prototypes_per_class,
-                                         initial_prototypes, max_iter,
-                                         gtol, beta, C, display, random_state)
+        super(GrmlvqModel, self).__init__(prototypes_per_class,
+                                          initial_prototypes, max_iter,
+                                          gtol, beta, C, display, random_state)
         self.regularization = regularization
+        self.initial_relevances = initial_relevances
         self.initial_matrix = initial_matrix
         self.initialdim = dim
 
     def _optgrad(self, variables, training_data, label_equals_prototype,
                  random_state, lr_relevances=0, lr_prototypes=1):
         n_data, n_dim = training_data.shape
-        variables = variables.reshape(variables.size // n_dim, n_dim)
         nb_prototypes = self.c_w_.shape[0]
+        lambd = variables[-n_dim:]
+        variables = variables[:-n_dim]
+        variables = variables.reshape(variables.size // n_dim, n_dim)
         omega_t = variables[nb_prototypes:].conj().T
         # dist = _squared_euclidean(training_data.dot(omega_t),
         #                           variables[:nb_prototypes].dot(omega_t))
         dist = self._compute_distance(training_data, variables[:nb_prototypes],
-                                      omega_t.T)
+                                      lambd, omega_t.T)
         d_wrong = dist.copy()
         d_wrong[label_equals_prototype] = np.inf
         distwrong = d_wrong.min(1)
@@ -122,6 +125,7 @@ class GmlvqModel(GlvqModel):
 
         g = np.zeros(variables.shape)
         distcorrectpluswrong = 4 / distcorrectpluswrong ** 2
+        gr = np.zeros(lambd.size)
 
         if lr_relevances > 0:
             gw = np.zeros(omega_t.T.shape)
@@ -135,6 +139,7 @@ class GmlvqModel(GlvqModel):
             if lr_relevances > 0:
                 difc = training_data[idxc] - variables[i]
                 difw = training_data[idxw] - variables[i]
+                gr -= dcd.dot(difw ** 2) - dwd.dot(difc ** 2)
                 gw -= np.dot(difw * dcd[np.newaxis].T, omega_t).T.dot(difw) - \
                       np.dot(difc * dwd[np.newaxis].T, omega_t).T.dot(difc)
                 if lr_prototypes > 0:
@@ -144,27 +149,34 @@ class GmlvqModel(GlvqModel):
                        dwd.dot(training_data[idxc]) + \
                        (dwd.sum(0) - dcd.sum(0)) * variables[i]
         f3 = 0
+        f3r = 0
         if self.regularization:
+            f3r = np.diag(np.linalg.pinv(np.sqrt(np.diag(lambd))))
             f3 = np.linalg.pinv(omega_t.conj().T).conj().T
         if lr_relevances > 0:
+            gr = 2 / n_data * lr_relevances * \
+                 gr - self.regularization * f3r
             g[nb_prototypes:] = 2 / n_data \
                                 * lr_relevances * gw - self.regularization * f3
         if lr_prototypes > 0:
             g[:nb_prototypes] = 1 / n_data * lr_prototypes \
                                 * g[:nb_prototypes].dot(omega_t.dot(omega_t.T))
+        g = np.append(g.ravel(), gr, axis=0)
         g = g * (1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
         return g.ravel()
 
     def _optfun(self, variables, training_data, label_equals_prototype):
         n_data, n_dim = training_data.shape
-        variables = variables.reshape(variables.size // n_dim, n_dim)
         nb_prototypes = self.c_w_.shape[0]
+        lambd = variables[-n_dim:]
+        variables = variables[:-n_dim]
+        variables = variables.reshape(variables.size // n_dim, n_dim)
         omega_t = variables[nb_prototypes:]  # .conj().T
 
         # dist = _squared_euclidean(training_data.dot(omega_t),
         #                           variables[:nb_prototypes].dot(omega_t))
         dist = self._compute_distance(training_data, variables[:nb_prototypes],
-                                      omega_t)
+                                      lambd, omega_t)
         d_wrong = dist.copy()
         d_wrong[label_equals_prototype] = np.inf
         distwrong = d_wrong.min(1)
@@ -188,6 +200,18 @@ class GmlvqModel(GlvqModel):
                           float) or self.regularization < 0:
             raise ValueError("regularization must be a positive float ")
         nb_prototypes, nb_features = self.w_.shape
+        if self.initial_relevances is None:
+            self.lambda_ = np.ones([nb_features])
+        else:
+            self.lambda_ = validation.column_or_1d(
+                validation.check_array(self.initial_relevances, dtype='float',
+                                       ensure_2d=False))
+            if self.lambda_.size != nb_features:
+                raise ValueError("length of initial relevances is wrong"
+                                 "features=%d"
+                                 "length=%d" % (
+                                     nb_features, self.lambda_.size))
+
         if self.initialdim is None:
             self.dim_ = nb_features
         elif not isinstance(self.initialdim, int) or self.initialdim <= 0:
@@ -209,6 +233,7 @@ class GmlvqModel(GlvqModel):
                     "expected=%d" % (self.omega_.shape[1], nb_features))
 
         variables = np.append(self.w_, self.omega_, axis=0)
+        variables = np.append(variables.ravel(), self.lambda_, axis=0)
         label_equals_prototype = y[np.newaxis].T == self.c_w_
         method = 'l-bfgs-b'
         res = minimize(
@@ -244,18 +269,25 @@ class GmlvqModel(GlvqModel):
             options={'disp': self.display, 'gtol': self.gtol,
                      'maxiter': self.max_iter})
         n_iter = max(n_iter, res.nit)
-        out = res.x.reshape(res.x.size // nb_features, nb_features)
+        self.lambda_ = res.x[-nb_features:]
+        self.lambda_[self.lambda_ < 0] = 0.0000001
+        self.lambda_ = self.lambda_ / self.lambda_.sum()
+        out = res.x[:-nb_features].reshape(res.x[:-nb_features].size // nb_features, nb_features)
         self.w_ = out[:nb_prototypes]
         self.omega_ = out[nb_prototypes:]
         self.omega_ /= math.sqrt(
             np.sum(np.diag(self.omega_.T.dot(self.omega_))))
         self.n_iter_ = n_iter
 
-    def _compute_distance(self, x, w=None, omega=None):
+    def _compute_distance(self, x, w=None, lambda_=None, omega=None):
         if w is None:
             w = self.w_
+        if lambda_ is None:
+            lambda_ = self.lambda_
         if omega is None:
             omega = self.omega_
+        x = lambda_ * x
+        w = lambda_ * w
         nb_samples = x.shape[0]
         nb_prototypes = w.shape[0]
         distance = np.zeros([nb_prototypes, nb_samples])

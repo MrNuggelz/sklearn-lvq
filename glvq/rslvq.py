@@ -6,6 +6,7 @@
 
 from __future__ import division
 
+import math
 import numpy as np
 from scipy.optimize import minimize
 from scipy.spatial.distance import cdist
@@ -14,21 +15,11 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils import validation
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_is_fitted
-from itertools import product
 
 
-def _squared_euclidean(a, b=None):
-    if b is None:
-        d = np.sum(a ** 2, 1)[np.newaxis].T + np.sum(a ** 2, 1) - 2 * a.dot(
-            a.T)
-    else:
-        d = np.sum(a ** 2, 1)[np.newaxis].T + np.sum(b ** 2, 1) - 2 * a.dot(
-            b.T)
-    return np.maximum(d, 0)
-
-
-class GlvqModel(BaseEstimator, ClassifierMixin):
-    """Generalized Learning Vector Quantization
+# TODO: add sigma for every prototype
+class RslvqModel(BaseEstimator, ClassifierMixin):
+    """Robust Soft Learning Vector Quantization
 
     Parameters
     ----------
@@ -44,16 +35,6 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
 
     max_iter : int, optional (default=2500)
         The maximum number of iterations.
-
-    beta : int, optional (default=2)
-        Used inside phi.
-        1 / (1 + np.math.exp(-beta * x))
-
-    C : array-like, shape = [2,3] ,optional
-        Weights for wrong classification of form (y_real,y_pred,weight)
-        Per default all weights are one, meaning you only need to specify
-        the weights not equal one.
-
 
     gtol : float, optional (default=1e-5)
         Gradient norm must be less than gtol before successful termination
@@ -87,23 +68,15 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 max_iter=2500, gtol=1e-5, beta=2, C=None,
-                 display=False, random_state=None):
+                 max_iter=2500, gtol=1e-5,
+                 display=False, random_state=None, sigma=0.5):
         self.random_state = random_state
         self.initial_prototypes = initial_prototypes
         self.prototypes_per_class = prototypes_per_class
         self.display = display
         self.max_iter = max_iter
-        self.beta = beta
         self.gtol = gtol
-        self.c = C
-
-    def phi(self, x):
-        return 1 / (1 + np.math.exp(-self.beta * x))
-
-    def phi_prime(self, x):
-        return self.beta * np.math.exp(self.beta * x) / (
-                1 + np.math.exp(self.beta * x)) ** 2
+        self.sigma = sigma
 
     def _optgrad(self, variables, training_data, label_equals_prototype,
                  random_state):
@@ -111,70 +84,55 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
         nb_prototypes = self.c_w_.size
         prototypes = variables.reshape(nb_prototypes, n_dim)
 
-        dist = _squared_euclidean(training_data, prototypes)
-        d_wrong = dist.copy()
-        d_wrong[label_equals_prototype] = np.inf
-        distwrong = d_wrong.min(1)
-        pidxwrong = d_wrong.argmin(1)
-
-        d_correct = dist
-        d_correct[np.invert(label_equals_prototype)] = np.inf
-        distcorrect = d_correct.min(1)
-        pidxcorrect = d_correct.argmin(1)
-
-        distcorrectpluswrong = distcorrect + distwrong
-        distcorectminuswrong = distcorrect - distwrong
-        mu = distcorectminuswrong / distcorrectpluswrong
-        mu = np.vectorize(self.phi_prime)(mu)
-
         g = np.zeros(prototypes.shape)
-        distcorrectpluswrong = 4 / distcorrectpluswrong ** 2
-
-        for i in range(nb_prototypes):
-            idxc = i == pidxcorrect
-            idxw = i == pidxwrong
-
-            dcd = mu[idxw] * distcorrect[idxw] * distcorrectpluswrong[idxw]
-            dwd = mu[idxc] * distwrong[idxc] * distcorrectpluswrong[idxc]
-            g[i] = dcd.dot(training_data[idxw]) - dwd.dot(
-                training_data[idxc]) + (dwd.sum(0) -
-                                        dcd.sum(0)) * prototypes[i]
-        g[:nb_prototypes] = 1 / n_data * g[:nb_prototypes]
-        g = g * (1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
+        for i in range(n_data):
+            xi = training_data[i]
+            c_xi = label_equals_prototype[i]
+            for j in range(prototypes.shape[0]):
+                d = (xi - prototypes[j])
+                c = 1 / self.sigma
+                if self.c_w_[j] == c_xi:
+                    g[j] += c * (self.p(j, xi, prototypes=prototypes, y=c_xi) -
+                                 self.p(j, xi, prototypes=prototypes)) * d
+                else:
+                    g[j] -= c * self.p(j, xi, prototypes=prototypes) * d
+        g /= n_data
+        g *= -(1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
         return g.ravel()
 
     def _optfun(self, variables, training_data, label_equals_prototype):
+        """
+        sum_i^l log(p(e_i,y_i|w)/p(e_i,w))
+        :param variables:
+        :param training_data:
+        :param label_equals_prototype:
+        :return:
+        """
         n_data, n_dim = training_data.shape
         nb_prototypes = self.c_w_.size
         prototypes = variables.reshape(nb_prototypes, n_dim)
 
-        dist = _squared_euclidean(training_data, prototypes)
-        d_wrong = dist.copy()
-        d_wrong[label_equals_prototype] = np.inf
-        distwrong = d_wrong.min(1)
+        out = 0
 
-        d_correct = dist
-        d_correct[np.invert(label_equals_prototype)] = np.inf
-        distcorrect = d_correct.min(1)
-
-        distcorrectpluswrong = distcorrect + distwrong
-        distcorectminuswrong = distcorrect - distwrong
-        mu = distcorectminuswrong / distcorrectpluswrong
-        [self.map_to_int(x) for x in self.c_w_[label_equals_prototype.argmax(1)]]
-        mu *= self.c_[label_equals_prototype.argmax(1), d_wrong.argmin(1)]  # y_real, y_pred
-
-        return np.vectorize(self.phi)(mu).sum(0)
+        for i in range(n_data):
+            xi = training_data[i]
+            y = label_equals_prototype[i]
+            fs = [self.costf(xi, w) for w in prototypes]
+            fs_max = max(fs)
+            s1 = sum([np.math.exp(fs[i] - fs_max) for i in range(len(fs))
+                      if self.c_w_[i] == y])
+            s2 = sum([np.math.exp(f - fs_max) for f in fs])
+            s1 += 0.0000001
+            s2 += 0.0000001
+            out += math.log(s1 / s2)
+        return -out
 
     def _validate_train_parms(self, train_set, train_lab):
         random_state = validation.check_random_state(self.random_state)
-        if not isinstance(self.beta, int):
-            raise ValueError("beta must a an integer")
         if not isinstance(self.display, bool):
             raise ValueError("display must be a boolean")
         if not isinstance(self.max_iter, int) or self.max_iter < 1:
             raise ValueError("max_iter must be an positive integer")
-        if not isinstance(self.gtol, float) or self.gtol <= 0:
-            raise ValueError("gtol must be a positive float")
         train_set, train_lab = validation.check_X_y(train_set, train_lab)
 
         self.classes_ = unique_labels(train_lab)
@@ -229,22 +187,10 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
                     "prototype labels and test data classes do not match\n"
                     "classes={}\n"
                     "prototype labels={}\n".format(self.classes_, self.c_w_))
-
-        self.c_ = np.ones((self.c_w_.size, self.c_w_.size))
-        if self.c is not None:
-            self.c = validation.check_array(self.c)
-            if self.c.shape != (2, 3):
-                raise ValueError("C must be shape (2,3)")
-            for k1, k2, v in self.c:
-                self.c_[tuple(zip(*product(self.map_to_int(k1), self.map_to_int(k2))))] = float(v)
-
         return train_set, train_lab, random_state
 
-    def map_to_int(self, item):
-        return np.where(self.c_w_ == item)[0]
-
     def _optimize(self, x, y, random_state):
-        label_equals_prototype = y[np.newaxis].T == self.c_w_
+        label_equals_prototype = y
         res = minimize(
             fun=lambda vs: self._optfun(
                 variables=vs, training_data=x,
@@ -254,10 +200,30 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
                 label_equals_prototype=label_equals_prototype,
                 random_state=random_state),
             method='l-bfgs-b', x0=self.w_,
-            options={'disp': self.display, 'gtol': self.gtol,
+            options={'disp': False, 'gtol': self.gtol,
                      'maxiter': self.max_iter})
         self.w_ = res.x.reshape(self.w_.shape)
         self.n_iter_ = res.nit
+
+    def costf(self, x, w, **kwargs):
+        d = (x - w)[np.newaxis].T
+        d = d.T.dot(d)
+        return -d / (2 * self.sigma)
+
+    def p(self, j, e, y=None, prototypes=None, **kwargs):
+        if prototypes is None:
+            prototypes = self.w_
+        if y is None:
+            fs = [self.costf(e, w, **kwargs) for w in prototypes]
+        else:
+            fs = [self.costf(e, prototypes[i], **kwargs) for i in
+                  range(prototypes.shape[0]) if
+                  self.c_w_[i] == y]
+        fs_max = max(fs)
+        s = sum([np.math.exp(f - fs_max) for f in fs])
+        o = np.math.exp(
+            self.costf(e, prototypes[j], **kwargs) - fs_max) / s
+        return o
 
     def fit(self, x, y):
         """Fit the GLVQ model to the given training data and parameters using
@@ -283,11 +249,6 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
         self._optimize(x, y, random_state)
         return self
 
-    def _compute_distance(self, x, w=None):
-        if w is None:
-            w = self.w_
-        return cdist(x, w, 'euclidean')
-
     def predict(self, x):
         """Predict class membership index for each input sample.
 
@@ -311,5 +272,11 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
             raise ValueError("X has wrong number of features\n"
                              "found=%d\n"
                              "expected=%d" % (self.w_.shape[1], x.shape[1]))
-        dist = self._compute_distance(x)
-        return (self.c_w_[dist.argmin(1)])
+
+        def foo(e):
+            fun = np.vectorize(lambda w: self.costf(e, w),
+                               signature='(n)->()')
+            pred = fun(self.w_).argmax()
+            return self.c_w_[pred]
+
+        return np.vectorize(foo, signature='(n)->()')(x)

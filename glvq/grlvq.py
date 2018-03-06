@@ -76,11 +76,12 @@ class GrlvqModel(GlvqModel):
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 initial_relevances=None, regularization=0.0,
-                 max_iter=2500, gtol=1e-5, display=False, random_state=None):
+                 initial_relevances=None, regularization=0.0, beta=2,
+                 max_iter=2500, gtol=1e-5, display=False, C=None,
+                 random_state=None):
         super(GrlvqModel, self).__init__(prototypes_per_class,
-                                         initial_prototypes, max_iter, gtol,
-                                         display, random_state)
+                                         initial_prototypes, max_iter,
+                                         gtol, beta, C, display, random_state)
         self.regularization = regularization
         self.initial_relevances = initial_relevances
 
@@ -91,7 +92,7 @@ class GrlvqModel(GlvqModel):
         prototypes = variables.reshape(variables.size // n_dim, n_dim)[
                      :nb_prototypes]
         lambd = variables[prototypes.size:]
-        lambd[lambd < 0] = 0
+        lambd[lambd < 0] = 0.0000001 #dirty fix if all values are smaller 0
 
         dist = _squared_euclidean(lambd * training_data,
                                   lambd * prototypes)
@@ -106,6 +107,9 @@ class GrlvqModel(GlvqModel):
         pidxcorrect = d_correct.argmin(1)
 
         distcorrectpluswrong = distcorrect + distwrong
+        distcorectminuswrong = distcorrect - distwrong
+        mu = distcorectminuswrong / distcorrectpluswrong
+        mu = np.vectorize(self.phi_prime)(mu)
 
         g = np.zeros(prototypes.shape)
         distcorrectpluswrong = 4 / distcorrectpluswrong ** 2
@@ -115,8 +119,8 @@ class GrlvqModel(GlvqModel):
             idxc = i == pidxcorrect
             idxw = i == pidxwrong
 
-            dcd = distcorrect[idxw] * distcorrectpluswrong[idxw]
-            dwd = distwrong[idxc] * distcorrectpluswrong[idxc]
+            dcd = mu[idxw] * distcorrect[idxw] * distcorrectpluswrong[idxw]
+            dwd = mu[idxc] * distwrong[idxc] * distcorrectpluswrong[idxc]
             if lr_relevances > 0:
                 difc = training_data[idxc] - prototypes[i]
                 difw = training_data[idxw] - prototypes[i]
@@ -160,8 +164,9 @@ class GrlvqModel(GlvqModel):
         distcorrectpluswrong = distcorrect + distwrong
         distcorectminuswrong = distcorrect - distwrong
         mu = distcorectminuswrong / distcorrectpluswrong
+        mu *= self.c_[label_equals_prototype.argmax(1), d_wrong.argmin(1)]
 
-        return mu.sum(0)
+        return np.vectorize(self.phi)(mu).sum(0)
 
     def _optimize(self, x, y, random_state):
         if not isinstance(self.regularization,
@@ -215,6 +220,7 @@ class GrlvqModel(GlvqModel):
         n_iter = max(n_iter, res.nit)
         self.w_ = res.x.reshape(res.x.size // nb_features, nb_features)[:nb_prototypes]
         self.lambda_ = res.x[self.w_.size:]
+        self.lambda_[self.lambda_ < 0] = 0.0000001
         self.lambda_ = self.lambda_ / self.lambda_.sum()
         self.n_iter_ = n_iter
 

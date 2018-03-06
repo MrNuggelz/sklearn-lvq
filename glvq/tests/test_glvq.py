@@ -3,15 +3,20 @@ import numpy as np
 from glvq.glvq import GlvqModel
 from glvq.grlvq import GrlvqModel
 from glvq.gmlvq import GmlvqModel
+from glvq.grmlvq import GrmlvqModel
 from glvq.lgmlvq import LgmlvqModel
 from sklearn.utils.testing import assert_greater, assert_raise_message, \
-    assert_allclose
+    assert_allclose, set_random_state
 
 from sklearn import datasets
-from sklearn.utils import check_random_state
+from sklearn.utils import check_random_state, shuffle
 from sklearn.utils.estimator_checks import check_estimator
 
 # also load the iris dataset
+from glvq.lmrslvq import LmrslvqModel
+from glvq.mrslvq import MrslvqModel
+from glvq.rslvq import RslvqModel
+
 iris = datasets.load_iris()
 rng = check_random_state(42)
 perm = rng.permutation(iris.target.size)
@@ -19,11 +24,11 @@ iris.data = iris.data[perm]
 iris.target = iris.target[perm]
 
 
-# TODO: grlvq not working with lbfgs-b
-
 def test_glvq_iris():
     check_estimator(GlvqModel)
-    model = GlvqModel()
+
+    c = [(0, 1, 0.9), (1, 0, 1.1)]
+    model = GlvqModel(prototypes_per_class=2, C=c)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), 0.94)
 
@@ -65,7 +70,8 @@ def test_glvq_iris():
 
 def test_grlvq_iris():
     check_estimator(GrlvqModel)
-    model = GrlvqModel(regularization=0.5)
+    c = [(0, 1, 0.9), (1, 0, 1.1)]
+    model = GrlvqModel(prototypes_per_class=2, C=c, regularization=0.5)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), 0.94)
 
@@ -86,11 +92,14 @@ def test_grlvq_iris():
     assert_raise_message(ValueError, 'regularization must be a positive float',
                          GrlvqModel(regularization=-1.0).fit, iris.data,
                          iris.target)
+    GrlvqModel(prototypes_per_class=2).fit(
+        iris.data, iris.target)
 
 
 def test_gmlvq_iris():
     check_estimator(GmlvqModel)
-    model = GmlvqModel(regularization=0.5)
+    c = [(0, 1, 0.9), (1, 0, 1.1)]
+    model = GmlvqModel(prototypes_per_class=2, C=c, regularization=0.5)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), 0.94)
 
@@ -115,6 +124,40 @@ def test_gmlvq_iris():
                          iris.data, iris.target)
     assert_raise_message(ValueError, 'dim must be an positive int',
                          GmlvqModel(dim=0).fit, iris.data, iris.target)
+    GmlvqModel(dim=1, prototypes_per_class=2).fit(
+        iris.data, iris.target)
+
+def test_grmlvq_iris():
+    check_estimator(GrmlvqModel)
+    c = [(0, 1, 0.9), (1, 0, 1.1)]
+    model = GrmlvqModel(prototypes_per_class=2, C=c, regularization=0.5)
+    model.fit(iris.data, iris.target)
+    assert_greater(model.score(iris.data, iris.target), 0.94)
+
+    model = GrmlvqModel(initial_prototypes=[[0, 0, 0], [4, 4, 1]])
+    nb_ppc = 10
+    x = np.append(
+        np.random.multivariate_normal([0, 0], np.array([[0.3, 0], [0, 4]]),
+                                      size=nb_ppc),
+        np.random.multivariate_normal([4, 4], np.array([[0.3, 0], [0, 4]]),
+                                      size=nb_ppc), axis=0)
+    y = np.append(np.zeros(nb_ppc), np.ones(nb_ppc), axis=0)
+    model.fit(x, y)
+    assert_allclose(np.array([0.9, 0.1]), model.lambda_, atol=0.3)
+    assert_allclose(np.array([[0.9, 0.2], [0.2, 0.3]]), model.omega_, atol=0.3)
+
+    assert_raise_message(ValueError, 'regularization must be a positive float',
+                         GrmlvqModel(regularization=-1.0).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError,
+                         'initial matrix has wrong number of features',
+                         GrmlvqModel(
+                             initial_matrix=[[1, 2], [3, 4], [5, 6]]).fit,
+                         iris.data, iris.target)
+    assert_raise_message(ValueError, 'dim must be an positive int',
+                         GrmlvqModel(dim=0).fit, iris.data, iris.target)
+    GrmlvqModel(dim=1, prototypes_per_class=2).fit(
+        iris.data, iris.target)
 
 
 def test_lgmlvq_iris():
@@ -144,7 +187,7 @@ def test_lgmlvq_iris():
                          LgmlvqModel(
                              initial_matrices=[[[1, 2], [3, 4], [5, 6]]]).fit,
                          iris.data, iris.target)
-    assert_raise_message(ValueError, 'each matrix should have',
+    assert_raise_message(ValueError, 'each matrix must have',
                          LgmlvqModel(
                              initial_matrices=[[[1]], [[1]], [[1]]]).fit,
                          iris.data, iris.target)
@@ -152,7 +195,7 @@ def test_lgmlvq_iris():
                          LgmlvqModel(initial_matrices=[[[1, 2, 3]]],
                                      classwise=True).fit, iris.data,
                          iris.target)
-    assert_raise_message(ValueError, 'each matrix should have',
+    assert_raise_message(ValueError, 'each matrix must have',
                          LgmlvqModel(initial_matrices=[[[1]], [[1]], [[1]]],
                                      classwise=True).fit, iris.data,
                          iris.target)
@@ -173,8 +216,124 @@ def test_lgmlvq_iris():
     model.fit(iris.data, iris.target)
 
     model = LgmlvqModel(initial_prototypes=[[0, 2, 1], [1, 6, 2]],
-                        initial_matrices=[np.ones([2, 2]), np.ones([2, 2])],
-                        dim=[2, 2])
+                        initial_matrices=[np.ones([1, 2]), np.ones([1, 2])],
+                        dim=[1, 1])
     x = np.array([[0, 0], [0, 4], [1, 4], [1, 8]])
     y = np.array([1, 1, 2, 2])
     model.fit(x, y)
+
+
+def test_rslvq_iris():
+    check_estimator(RslvqModel)
+    model = RslvqModel()
+    model.fit(iris.data, iris.target)
+    assert_greater(model.score(iris.data, iris.target), 0.94)
+
+    assert_raise_message(ValueError, 'display must be a boolean',
+                         GlvqModel(display='true').fit, iris.data, iris.target)
+    assert_raise_message(ValueError, 'gtol must be a positive float',
+                         GlvqModel(gtol=-1.0).fit, iris.data, iris.target)
+    assert_raise_message(ValueError, 'the initial prototypes have wrong shape',
+                         GlvqModel(initial_prototypes=[[1, 1], [2, 2]]).fit,
+                         iris.data, iris.target)
+    assert_raise_message(ValueError,
+                         'prototype labels and test data classes do not match',
+                         GlvqModel(initial_prototypes=[[1, 1, 1, 1, 'a'],
+                                                       [2, 2, 2, 2, 5],
+                                                       [2, 2, 2, 2, -3]]).fit,
+                         iris.data, iris.target)
+    assert_raise_message(ValueError, 'max_iter must be an positive integer',
+                         GlvqModel(max_iter='5').fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError, 'max_iter must be an positive integer',
+                         GlvqModel(max_iter=0).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError, 'max_iter must be an positive integer',
+                         GlvqModel(max_iter=-1).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError,
+                         'values in prototypes_per_class must be positive',
+                         GlvqModel(prototypes_per_class=np.zeros(
+                             np.unique(iris.target).size) - 1).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError,
+                         'length of prototypes per class'
+                         ' does not fit the number of',
+                         GlvqModel(prototypes_per_class=[1, 2]).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError, 'X has wrong number of features',
+                         model.predict, [[1, 2], [3, 4]])
+
+
+def test_mrslvq_iris():
+    check_estimator(MrslvqModel)
+    model = MrslvqModel()
+    model.fit(iris.data, iris.target)
+    assert_greater(model.score(iris.data, iris.target), 0.94)
+
+    assert_raise_message(ValueError, 'regularization must be a positive float',
+                         MrslvqModel(regularization=-1.0).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError,
+                         'initial matrix has wrong number of features',
+                         MrslvqModel(
+                             initial_matrix=[[1, 2], [3, 4], [5, 6]]).fit,
+                         iris.data, iris.target)
+    assert_raise_message(ValueError, 'dim must be an positive int',
+                         MrslvqModel(dim=0).fit, iris.data, iris.target)
+
+def test_lmrslvq_iris():
+    check_estimator(LmrslvqModel)
+    model = LmrslvqModel()
+    model.fit(iris.data, iris.target)
+    assert_greater(model.score(iris.data, iris.target), 0.94)
+
+    assert_raise_message(ValueError, 'regularization must be a positive float',
+                         LmrslvqModel(regularization=-1.0).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError,
+                         'length of regularization'
+                         ' must be number of prototypes',
+                         LmrslvqModel(regularization=[-1.0]).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError,
+                         'length of regularization must be number of classes',
+                         LmrslvqModel(regularization=[-1.0],
+                                     classwise=True).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError, 'initial matrices must be a list',
+                         LmrslvqModel(initial_matrices=np.array(
+                             [[1, 2], [3, 4], [5, 6]])).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError, 'length of matrices wrong',
+                         LmrslvqModel(
+                             initial_matrices=[[[1, 2], [3, 4], [5, 6]]]).fit,
+                         iris.data, iris.target)
+    assert_raise_message(ValueError, 'each matrix should have',
+                         LmrslvqModel(
+                             initial_matrices=[[[1]], [[1]], [[1]]]).fit,
+                         iris.data, iris.target)
+    assert_raise_message(ValueError, 'length of matrices wrong',
+                         LmrslvqModel(initial_matrices=[[[1, 2, 3]]],
+                                     classwise=True).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError, 'each matrix should have',
+                         LmrslvqModel(initial_matrices=[[[1]], [[1]], [[1]]],
+                                     classwise=True).fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError, 'classwise must be a boolean',
+                         LmrslvqModel(classwise="a").fit, iris.data,
+                         iris.target)
+    assert_raise_message(ValueError, 'dim must be a list of positive ints',
+                         LmrslvqModel(dim=[-1]).fit, iris.data, iris.target)
+    assert_raise_message(ValueError, 'dim length must be number of prototypes',
+                         LmrslvqModel(dim=[1, 1]).fit, iris.data, iris.target)
+    assert_raise_message(ValueError, 'dim length must be number of classes',
+                         LmrslvqModel(dim=[1, 1], classwise=True).fit,
+                         iris.data, iris.target)
+
+    LmrslvqModel(classwise=True, dim=[1], prototypes_per_class=2).fit(
+        iris.data, iris.target)
+
+    model = LmrslvqModel(regularization=0.1)
+    model.fit(iris.data, iris.target)
