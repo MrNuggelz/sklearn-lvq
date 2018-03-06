@@ -73,6 +73,66 @@ Examples
 
 .. only:: html
 
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_lmrslvq_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_lmrslvq.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_lmrslvq
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_mrslvq_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_mrslvq.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_mrslvq
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_rslvq_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_rslvq.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_rslvq
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="">
+
+.. only:: html
+
     .. figure:: /auto_examples/images/thumb/sphx_glr_plot_glvq_thumb.png
 
         :ref:`sphx_glr_auto_examples_plot_glvq.py`

@@ -173,7 +173,7 @@
 <h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">glvq</span></code>.GmlvqModel<a class="headerlink" href="#glvq-gmlvqmodel" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="glvq.GmlvqModel">
-<em class="property">class </em><code class="descclassname">glvq.</code><code class="descname">GmlvqModel</code><span class="sig-paren">(</span><em>prototypes_per_class=1</em>, <em>initial_prototypes=None</em>, <em>initial_matrix=None</em>, <em>regularization=0.0</em>, <em>dim=None</em>, <em>max_iter=2500</em>, <em>gtol=1e-05</em>, <em>display=False</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/glvq/gmlvq.html#GmlvqModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glvq.GmlvqModel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">glvq.</code><code class="descname">GmlvqModel</code><span class="sig-paren">(</span><em>prototypes_per_class=1</em>, <em>initial_prototypes=None</em>, <em>C=None</em>, <em>initial_matrix=None</em>, <em>regularization=0.0</em>, <em>beta=2</em>, <em>dim=None</em>, <em>max_iter=2500</em>, <em>gtol=1e-05</em>, <em>display=False</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/glvq/gmlvq.html#GmlvqModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glvq.GmlvqModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generalized Matrix Learning Vector Quantization</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -274,23 +274,32 @@ by <cite>np.random</cite>.</p>
 <tr class="row-even"><td><a class="reference internal" href="#glvq.GmlvqModel.get_params" title="glvq.GmlvqModel.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</td>
 <td>Get parameters for this estimator.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#glvq.GmlvqModel.predict" title="glvq.GmlvqModel.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(x)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_to_int</span></code>(item)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi</span></code>(x)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi_prime</span></code>(x)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#glvq.GmlvqModel.predict" title="glvq.GmlvqModel.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(x)</td>
 <td>Predict class membership index for each input sample.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#glvq.GmlvqModel.project" title="glvq.GmlvqModel.project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project</span></code></a>(x,&nbsp;dims[,&nbsp;print_variance_covered])</td>
-<td>Projects the data input data X using the relevance matrix of trained</td>
+<tr class="row-odd"><td><a class="reference internal" href="#glvq.GmlvqModel.project" title="glvq.GmlvqModel.project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project</span></code></a>(x,&nbsp;dims[,&nbsp;print_variance_covered])</td>
+<td>Projects the data input data X using the relevance matrix of trained model to dimension dim</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#glvq.GmlvqModel.score" title="glvq.GmlvqModel.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;y[,&nbsp;sample_weight])</td>
+<tr class="row-even"><td><a class="reference internal" href="#glvq.GmlvqModel.score" title="glvq.GmlvqModel.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;y[,&nbsp;sample_weight])</td>
 <td>Returns the mean accuracy on the given test data and labels.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#glvq.GmlvqModel.set_params" title="glvq.GmlvqModel.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#glvq.GmlvqModel.set_params" title="glvq.GmlvqModel.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
 <td>Set the parameters of this estimator.</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="glvq.GmlvqModel.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>prototypes_per_class=1</em>, <em>initial_prototypes=None</em>, <em>initial_matrix=None</em>, <em>regularization=0.0</em>, <em>dim=None</em>, <em>max_iter=2500</em>, <em>gtol=1e-05</em>, <em>display=False</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/glvq/gmlvq.html#GmlvqModel.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glvq.GmlvqModel.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>prototypes_per_class=1</em>, <em>initial_prototypes=None</em>, <em>C=None</em>, <em>initial_matrix=None</em>, <em>regularization=0.0</em>, <em>beta=2</em>, <em>dim=None</em>, <em>max_iter=2500</em>, <em>gtol=1e-05</em>, <em>display=False</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/glvq/gmlvq.html#GmlvqModel.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glvq.GmlvqModel.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>x.__init__(…) initializes x; see help(type(x)) for signature</p>
 </dd></dl>
 

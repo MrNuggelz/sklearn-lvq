@@ -175,6 +175,7 @@
 <span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="k">import</span> <span class="n">validation</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils.multiclass</span> <span class="k">import</span> <span class="n">unique_labels</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="k">import</span> <span class="n">check_is_fitted</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">product</span>
 
 
 <span class="k">def</span> <span class="nf">_squared_euclidean</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -204,6 +205,16 @@
 
 <span class="sd">    max_iter : int, optional (default=2500)</span>
 <span class="sd">        The maximum number of iterations.</span>
+
+<span class="sd">    beta : int, optional (default=2)</span>
+<span class="sd">        Used inside phi.</span>
+<span class="sd">        1 / (1 + np.math.exp(-beta * x))</span>
+
+<span class="sd">    C : array-like, shape = [2,3] ,optional</span>
+<span class="sd">        Weights for wrong classification of form (y_real,y_pred,weight)</span>
+<span class="sd">        Per default all weights are one, meaning you only need to specify</span>
+<span class="sd">        the weights not equal one.</span>
+
 
 <span class="sd">    gtol : float, optional (default=1e-5)</span>
 <span class="sd">        Gradient norm must be less than gtol before successful termination</span>
@@ -237,14 +248,23 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="GlvqModel.__init__"><a class="viewcode-back" href="../../modules/generated/glvq.GlvqModel.html#glvq.GlvqModel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prototypes_per_class</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">initial_prototypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">max_iter</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span> <span class="n">gtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
+                 <span class="n">max_iter</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span> <span class="n">gtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">display</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">initial_prototypes</span> <span class="o">=</span> <span class="n">initial_prototypes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prototypes_per_class</span> <span class="o">=</span> <span class="n">prototypes_per_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="n">display</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gtol</span> <span class="o">=</span> <span class="n">gtol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gtol</span> <span class="o">=</span> <span class="n">gtol</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">C</span>
+
+    <span class="k">def</span> <span class="nf">phi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">x</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">phi_prime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">x</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
 
     <span class="k">def</span> <span class="nf">_optgrad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">training_data</span><span class="p">,</span> <span class="n">label_equals_prototype</span><span class="p">,</span>
                  <span class="n">random_state</span><span class="p">):</span>
@@ -264,6 +284,9 @@
         <span class="n">pidxcorrect</span> <span class="o">=</span> <span class="n">d_correct</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="n">distcorrectpluswrong</span> <span class="o">=</span> <span class="n">distcorrect</span> <span class="o">+</span> <span class="n">distwrong</span>
+        <span class="n">distcorectminuswrong</span> <span class="o">=</span> <span class="n">distcorrect</span> <span class="o">-</span> <span class="n">distwrong</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">distcorectminuswrong</span> <span class="o">/</span> <span class="n">distcorrectpluswrong</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phi_prime</span><span class="p">)(</span><span class="n">mu</span><span class="p">)</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">prototypes</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
         <span class="n">distcorrectpluswrong</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">/</span> <span class="n">distcorrectpluswrong</span> <span class="o">**</span> <span class="mi">2</span>
@@ -272,8 +295,8 @@
             <span class="n">idxc</span> <span class="o">=</span> <span class="n">i</span> <span class="o">==</span> <span class="n">pidxcorrect</span>
             <span class="n">idxw</span> <span class="o">=</span> <span class="n">i</span> <span class="o">==</span> <span class="n">pidxwrong</span>
 
-            <span class="n">dcd</span> <span class="o">=</span> <span class="n">distcorrect</span><span class="p">[</span><span class="n">idxw</span><span class="p">]</span> <span class="o">*</span> <span class="n">distcorrectpluswrong</span><span class="p">[</span><span class="n">idxw</span><span class="p">]</span>
-            <span class="n">dwd</span> <span class="o">=</span> <span class="n">distwrong</span><span class="p">[</span><span class="n">idxc</span><span class="p">]</span> <span class="o">*</span> <span class="n">distcorrectpluswrong</span><span class="p">[</span><span class="n">idxc</span><span class="p">]</span>
+            <span class="n">dcd</span> <span class="o">=</span> <span class="n">mu</span><span class="p">[</span><span class="n">idxw</span><span class="p">]</span> <span class="o">*</span> <span class="n">distcorrect</span><span class="p">[</span><span class="n">idxw</span><span class="p">]</span> <span class="o">*</span> <span class="n">distcorrectpluswrong</span><span class="p">[</span><span class="n">idxw</span><span class="p">]</span>
+            <span class="n">dwd</span> <span class="o">=</span> <span class="n">mu</span><span class="p">[</span><span class="n">idxc</span><span class="p">]</span> <span class="o">*</span> <span class="n">distwrong</span><span class="p">[</span><span class="n">idxc</span><span class="p">]</span> <span class="o">*</span> <span class="n">distcorrectpluswrong</span><span class="p">[</span><span class="n">idxc</span><span class="p">]</span>
             <span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dcd</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">training_data</span><span class="p">[</span><span class="n">idxw</span><span class="p">])</span> <span class="o">-</span> <span class="n">dwd</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
                 <span class="n">training_data</span><span class="p">[</span><span class="n">idxc</span><span class="p">])</span> <span class="o">+</span> <span class="p">(</span><span class="n">dwd</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span>
                                         <span class="n">dcd</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">*</span> <span class="n">prototypes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
@@ -298,11 +321,15 @@
         <span class="n">distcorrectpluswrong</span> <span class="o">=</span> <span class="n">distcorrect</span> <span class="o">+</span> <span class="n">distwrong</span>
         <span class="n">distcorectminuswrong</span> <span class="o">=</span> <span class="n">distcorrect</span> <span class="o">-</span> <span class="n">distwrong</span>
         <span class="n">mu</span> <span class="o">=</span> <span class="n">distcorectminuswrong</span> <span class="o">/</span> <span class="n">distcorrectpluswrong</span>
+        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">map_to_int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span><span class="p">[</span><span class="n">label_equals_prototype</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="mi">1</span><span class="p">)]]</span>
+        <span class="n">mu</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">label_equals_prototype</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">d_wrong</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span>  <span class="c1"># y_real, y_pred</span>
 
-        <span class="k">return</span> <span class="n">mu</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">)(</span><span class="n">mu</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_validate_train_parms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_set</span><span class="p">,</span> <span class="n">train_lab</span><span class="p">):</span>
         <span class="n">random_state</span> <span class="o">=</span> <span class="n">validation</span><span class="o">.</span><span class="n">check_random_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;beta must a an integer&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;display must be a boolean&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -345,7 +372,7 @@
                 <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
                     <span class="n">train_set</span><span class="p">[</span><span class="n">train_lab</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">[</span><span class="n">actClass</span><span class="p">],</span> <span class="p">:],</span> <span class="mi">0</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">w_</span><span class="p">[</span><span class="n">pos</span><span class="p">:</span><span class="n">pos</span> <span class="o">+</span> <span class="n">nb_prot</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean</span> <span class="o">+</span> <span class="p">(</span>
-                    <span class="n">random_state</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">nb_prot</span><span class="p">,</span> <span class="n">nb_features</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="n">random_state</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">nb_prot</span><span class="p">,</span> <span class="n">nb_features</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span><span class="p">[</span><span class="n">pos</span><span class="p">:</span><span class="n">pos</span> <span class="o">+</span> <span class="n">nb_prot</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">[</span><span class="n">actClass</span><span class="p">]</span>
                 <span class="n">pos</span> <span class="o">+=</span> <span class="n">nb_prot</span>
         <span class="k">else</span><span class="p">:</span>
@@ -363,7 +390,19 @@
                     <span class="s2">&quot;prototype labels and test data classes do not match</span><span class="se">\n</span><span class="s2">&quot;</span>
                     <span class="s2">&quot;classes=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span>
                     <span class="s2">&quot;prototype labels=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">validation</span><span class="o">.</span><span class="n">check_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;C must be shape (2,3)&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">product</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_to_int</span><span class="p">(</span><span class="n">k1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_to_int</span><span class="p">(</span><span class="n">k2</span><span class="p">))))]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">train_set</span><span class="p">,</span> <span class="n">train_lab</span><span class="p">,</span> <span class="n">random_state</span>
+
+    <span class="k">def</span> <span class="nf">map_to_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span> <span class="o">==</span> <span class="n">item</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="p">):</span>
         <span class="n">label_equals_prototype</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span>

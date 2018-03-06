@@ -173,7 +173,7 @@
 <h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">glvq</span></code>.GlvqModel<a class="headerlink" href="#glvq-glvqmodel" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="glvq.GlvqModel">
-<em class="property">class </em><code class="descclassname">glvq.</code><code class="descname">GlvqModel</code><span class="sig-paren">(</span><em>prototypes_per_class=1</em>, <em>initial_prototypes=None</em>, <em>max_iter=2500</em>, <em>gtol=1e-05</em>, <em>display=False</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/glvq/glvq.html#GlvqModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glvq.GlvqModel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">glvq.</code><code class="descname">GlvqModel</code><span class="sig-paren">(</span><em>prototypes_per_class=1</em>, <em>initial_prototypes=None</em>, <em>max_iter=2500</em>, <em>gtol=1e-05</em>, <em>beta=2</em>, <em>C=None</em>, <em>display=False</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/glvq/glvq.html#GlvqModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glvq.GlvqModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generalized Learning Vector Quantization</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -196,6 +196,17 @@ means. Class label must be placed as last entry of each prototype.</p>
 <p><strong>max_iter</strong> : int, optional (default=2500)</p>
 <blockquote>
 <div><p>The maximum number of iterations.</p>
+</div></blockquote>
+<p><strong>beta</strong> : int, optional (default=2)</p>
+<blockquote>
+<div><p>Used inside phi.
+1 / (1 + np.math.exp(-beta * x))</p>
+</div></blockquote>
+<p><strong>C</strong> : array-like, shape = [2,3] ,optional</p>
+<blockquote>
+<div><p>Weights for wrong classification of form (y_real,y_pred,weight)
+Per default all weights are one, meaning you only need to specify
+the weights not equal one.</p>
 </div></blockquote>
 <p><strong>gtol</strong> : float, optional (default=1e-5)</p>
 <blockquote>
@@ -252,20 +263,29 @@ by <cite>np.random</cite>.</p>
 <tr class="row-even"><td><a class="reference internal" href="#glvq.GlvqModel.get_params" title="glvq.GlvqModel.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</td>
 <td>Get parameters for this estimator.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#glvq.GlvqModel.predict" title="glvq.GlvqModel.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(x)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_to_int</span></code>(item)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi</span></code>(x)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi_prime</span></code>(x)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#glvq.GlvqModel.predict" title="glvq.GlvqModel.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(x)</td>
 <td>Predict class membership index for each input sample.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#glvq.GlvqModel.score" title="glvq.GlvqModel.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;y[,&nbsp;sample_weight])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#glvq.GlvqModel.score" title="glvq.GlvqModel.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;y[,&nbsp;sample_weight])</td>
 <td>Returns the mean accuracy on the given test data and labels.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#glvq.GlvqModel.set_params" title="glvq.GlvqModel.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
+<tr class="row-even"><td><a class="reference internal" href="#glvq.GlvqModel.set_params" title="glvq.GlvqModel.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
 <td>Set the parameters of this estimator.</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="glvq.GlvqModel.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>prototypes_per_class=1</em>, <em>initial_prototypes=None</em>, <em>max_iter=2500</em>, <em>gtol=1e-05</em>, <em>display=False</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/glvq/glvq.html#GlvqModel.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glvq.GlvqModel.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>prototypes_per_class=1</em>, <em>initial_prototypes=None</em>, <em>max_iter=2500</em>, <em>gtol=1e-05</em>, <em>beta=2</em>, <em>C=None</em>, <em>display=False</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/glvq/glvq.html#GlvqModel.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glvq.GlvqModel.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>x.__init__(…) initializes x; see help(type(x)) for signature</p>
 </dd></dl>
 
