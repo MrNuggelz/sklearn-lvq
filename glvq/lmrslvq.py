@@ -303,6 +303,17 @@ class LmrslvqModel(RslvqModel):
         d = d.T.dot(omega.T).dot(omega).dot(d)
         return -d / (2 * self.sigma)
 
+    def _compute_distance(self, x, w=None):
+        if w is None:
+            w = self.w_
+
+        def foo(e):
+            fun = np.vectorize(lambda w: self.costf(e, w),
+                               signature='(n)->()')
+            return fun(w)
+
+        return np.vectorize(foo, signature='(n)->()')(x)
+
     def project(self, x, prototype_idx, dims, print_variance_covered=False):
         """Projects the data input data X using the relevance matrix of the
         prototype specified by prototype_idx to dimension dim
