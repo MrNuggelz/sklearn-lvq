@@ -64,7 +64,7 @@ shows the prototypes (black diamond) and their labels (small point inside the di
     print('classification accuracy:', glvq.score(toy_data, toy_label))
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.051 seconds)
+**Total running time of the script:** ( 0 minutes  0.044 seconds)
 
 
 

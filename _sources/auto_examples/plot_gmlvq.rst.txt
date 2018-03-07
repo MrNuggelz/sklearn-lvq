@@ -26,7 +26,7 @@ The projected data is shown in the right plot.
 
     GMLVQ:
     ('variance coverd by projection:', 100.0)
-    ('classification accuracy:', 0.995)
+    ('classification accuracy:', 1.0)
 
 
 
@@ -59,7 +59,7 @@ The projected data is shown in the right plot.
     print('classification accuracy:', gmlvq.score(toy_data, toy_label))
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.251 seconds)
+**Total running time of the script:** ( 0 minutes  0.386 seconds)
 
 
 
