@@ -47,4 +47,6 @@ and can be run with the `nosetests` command in the main directory.
 ## Documentation
 To build the documentation locally, ensure that you have sphinx, sphinx-gallery, pillow, sphinx_rt_theme, metric_learn and matplotlib by executing:
 
-$ pip install sphinx pillow sphinx-gallery sphinx_rtd_theme metric_learn
+```
+pip install sphinx pillow sphinx-gallery sphinx_rtd_theme metric_learn
+```
