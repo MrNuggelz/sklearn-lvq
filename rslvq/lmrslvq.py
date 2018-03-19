@@ -14,7 +14,7 @@ from .rslvq import RslvqModel
 
 
 class LmrslvqModel(RslvqModel):
-    """Generalized Learning Vector Quantization
+    """Localized Matrix Robust Soft Learning Vector Quantization
 
     Parameters
     ----------

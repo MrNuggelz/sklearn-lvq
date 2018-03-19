@@ -1,7 +1,7 @@
 """
-========================================
-Generalized Learning Vector Quantization
-========================================
+=========================================================
+Localized Matrix Robust Soft Learning Vector Quantization
+=========================================================
 This example shows the different glvq algorithms and how they project
 different data sets. The data sets are chosen to show the strength of each
 algorithm. Each plot shows for each data point which class it belongs to
@@ -13,7 +13,7 @@ right plot.
 import numpy as np
 import matplotlib.pyplot as plt
 
-from glvq import plot2d, LmrslvqModel
+from rslvq import plot2d, LmrslvqModel
 
 print(__doc__)
 
