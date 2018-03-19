@@ -15,7 +15,7 @@ from metric_learn import LMNN
 from sklearn.decomposition import PCA
 
 from glvq import GlvqModel, GrlvqModel, LgmlvqModel, GmlvqModel
-from glvq.plot_2d import to_tango_colors, tango_color
+from plot_2d import to_tango_colors, tango_color
 
 print(__doc__)
 

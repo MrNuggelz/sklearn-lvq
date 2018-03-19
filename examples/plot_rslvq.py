@@ -1,6 +1,6 @@
 """
 ========================================
-Generalized Learning Vector Quantization
+Robust Soft Learning Vector Quantization
 ========================================
 This example shows the different glvq algorithms and how they project
 different data sets. The data sets are chosen to show the strength of each
@@ -13,8 +13,8 @@ right plot.
 import numpy as np
 import matplotlib.pyplot as plt
 
-from glvq import RslvqModel
-from glvq.plot_2d import to_tango_colors, tango_color
+from rslvq import RslvqModel
+from plot_2d import to_tango_colors, tango_color
 
 print(__doc__)
 
