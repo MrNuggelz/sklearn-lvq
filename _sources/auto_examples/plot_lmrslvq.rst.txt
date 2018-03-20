@@ -3,9 +3,9 @@
 .. _sphx_glr_auto_examples_plot_lmrslvq.py:
 
 
-========================================
-Generalized Learning Vector Quantization
-========================================
+=========================================================
+Localized Matrix Robust Soft Learning Vector Quantization
+=========================================================
 This example shows the different glvq algorithms and how they project
 different data sets. The data sets are chosen to show the strength of each
 algorithm. Each plot shows for each data point which class it belongs to
@@ -28,7 +28,7 @@ right plot.
     LMRSLVQ:
     ('variance coverd by projection:', 100.0)
     ('variance coverd by projection:', 100.0)
-    ('classification accuracy:', 0.735)
+    ('classification accuracy:', 0.715)
 
 
 
@@ -41,7 +41,7 @@ right plot.
     import numpy as np
     import matplotlib.pyplot as plt
 
-    from glvq import plot2d, LmrslvqModel
+    from rslvq import plot2d, LmrslvqModel
 
     print(__doc__)
 
@@ -62,7 +62,7 @@ right plot.
     plt.show()
 
 
-**Total running time of the script:** ( 0 minutes  8.663 seconds)
+**Total running time of the script:** ( 0 minutes  3.597 seconds)
 
 
 

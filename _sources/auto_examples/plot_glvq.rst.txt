@@ -38,7 +38,7 @@ shows the prototypes (black diamond) and their labels (small point inside the di
     import matplotlib.pyplot as plt
 
     from glvq import GlvqModel
-    from glvq.plot_2d import to_tango_colors, tango_color
+    from plot_2d import to_tango_colors, tango_color, plot2d
 
     print(__doc__)
 

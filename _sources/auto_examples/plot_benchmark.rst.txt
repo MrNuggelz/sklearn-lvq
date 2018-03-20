@@ -23,8 +23,8 @@ a PCA is used.
 
  Out::
 
-    ('variance coverd by projection:', 97.650852395555)
-    ('variance coverd by projection:', 98.47723334890874)
+    ('variance coverd by projection:', 96.27169207687545)
+    ('variance coverd by projection:', 98.33858765920853)
 
 
 
@@ -41,7 +41,7 @@ a PCA is used.
     from sklearn.decomposition import PCA
 
     from glvq import GlvqModel, GrlvqModel, LgmlvqModel, GmlvqModel
-    from glvq.plot_2d import to_tango_colors, tango_color
+    from plot_2d import to_tango_colors, tango_color
 
     print(__doc__)
 
@@ -122,7 +122,7 @@ a PCA is used.
 
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  24.821 seconds)
+**Total running time of the script:** ( 0 minutes  23.284 seconds)
 
 
 

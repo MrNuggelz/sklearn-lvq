@@ -93,6 +93,26 @@ Examples
 
 .. only:: html
 
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_grmlvq_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_grmlvq.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_grmlvq
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="">
+
+.. only:: html
+
     .. figure:: /auto_examples/images/thumb/sphx_glr_plot_mrslvq_thumb.png
 
         :ref:`sphx_glr_auto_examples_plot_mrslvq.py`

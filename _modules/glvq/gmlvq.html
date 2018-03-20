@@ -92,7 +92,6 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules/glvqapi.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../glvq.html">Generalized Learning Vector Quantization</a></li>
 </ul>
@@ -212,6 +211,15 @@
 <span class="sd">        Gradient norm must be less than gtol before successful</span>
 <span class="sd">        termination of l-bfgs-b.</span>
 
+<span class="sd">    beta : int, optional (default=2)</span>
+<span class="sd">        Used inside phi.</span>
+<span class="sd">        1 / (1 + np.math.exp(-beta * x))</span>
+
+<span class="sd">    C : array-like, shape = [2,3] ,optional</span>
+<span class="sd">        Weights for wrong classification of form (y_real,y_pred,weight)</span>
+<span class="sd">        Per default all weights are one, meaning you only need to specify</span>
+<span class="sd">        the weights not equal one.</span>
+
 <span class="sd">    display : boolean, optional (default=False)</span>
 <span class="sd">        Print information about the bfgs steps.</span>
 
@@ -245,9 +253,10 @@
 <span class="sd">    GlvqModel, GrlvqModel, LgmlvqModel</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="GmlvqModel.__init__"><a class="viewcode-back" href="../../modules/generated/glvq.GmlvqModel.html#glvq.GmlvqModel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prototypes_per_class</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">initial_prototypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">initial_matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regularization</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">max_iter</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span> <span class="n">gtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="GmlvqModel.__init__"><a class="viewcode-back" href="../../modules/generated/glvq.GmlvqModel.html#glvq.GmlvqModel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prototypes_per_class</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">initial_prototypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">initial_matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regularization</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">max_iter</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span> <span class="n">gtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">GmlvqModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">prototypes_per_class</span><span class="p">,</span>
                                          <span class="n">initial_prototypes</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span>
                                          <span class="n">gtol</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">display</span><span class="p">,</span> <span class="n">random_state</span><span class="p">)</span>

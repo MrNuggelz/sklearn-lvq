@@ -15,6 +15,10 @@ API
    GrlvqModel
    GmlvqModel
    LgmlvqModel
+   RslvqModel
+   MrslvqModel
+   LmrslvqModel
+
 
 .. autosummary::
    :toctree: generated/

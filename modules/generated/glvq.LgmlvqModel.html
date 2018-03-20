@@ -37,10 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="sklearn-glvq 1.0 documentation" href="../../index.html"/>
-        <link rel="up" title="API" href="../glvqapi.html"/>
-        <link rel="next" title="glvq.plot2d" href="glvq.plot2d.html"/>
-        <link rel="prev" title="glvq.GmlvqModel" href="glvq.GmlvqModel.html"/> 
+    <link rel="top" title="sklearn-glvq 1.0 documentation" href="../../index.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -93,15 +90,7 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../glvqapi.html">API</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="glvq.GlvqModel.html"><code class="docutils literal notranslate"><span class="pre">glvq</span></code>.GlvqModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="glvq.GrlvqModel.html"><code class="docutils literal notranslate"><span class="pre">glvq</span></code>.GrlvqModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="glvq.GmlvqModel.html"><code class="docutils literal notranslate"><span class="pre">glvq</span></code>.GmlvqModel</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">glvq</span></code>.LgmlvqModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="glvq.plot2d.html"><code class="docutils literal notranslate"><span class="pre">glvq</span></code>.plot2d</a></li>
-</ul>
-</li>
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../glvq.html">Generalized Learning Vector Quantization</a></li>
 </ul>
@@ -148,8 +137,6 @@
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="../glvqapi.html">API</a> &raquo;</li>
-        
       <li><code class="docutils literal notranslate"><span class="pre">glvq</span></code>.LgmlvqModel</li>
     
     
@@ -173,7 +160,7 @@
 <h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">glvq</span></code>.LgmlvqModel<a class="headerlink" href="#glvq-lgmlvqmodel" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="glvq.LgmlvqModel">
-<em class="property">class </em><code class="descclassname">glvq.</code><code class="descname">LgmlvqModel</code><span class="sig-paren">(</span><em>prototypes_per_class=1</em>, <em>initial_prototypes=None</em>, <em>initial_matrices=None</em>, <em>regularization=0.0</em>, <em>beta=2</em>, <em>C=None</em>, <em>dim=None</em>, <em>classwise=False</em>, <em>max_iter=2500</em>, <em>gtol=1e-05</em>, <em>display=False</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/glvq/lgmlvq.html#LgmlvqModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glvq.LgmlvqModel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">glvq.</code><code class="descname">LgmlvqModel</code><span class="sig-paren">(</span><em>prototypes_per_class=1</em>, <em>initial_prototypes=None</em>, <em>initial_matrices=None</em>, <em>regularization=0.0</em>, <em>dim=None</em>, <em>classwise=False</em>, <em>max_iter=2500</em>, <em>gtol=1e-05</em>, <em>beta=2</em>, <em>C=None</em>, <em>display=False</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/glvq/lgmlvq.html#LgmlvqModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glvq.LgmlvqModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Localized Generalized Matrix Learning Vector Quantization</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -224,6 +211,17 @@ If false, each prototype has one relevance matrix.</p>
 <blockquote>
 <div><p>Gradient norm must be less than gtol before successful termination
 of l-bfgs-b.</p>
+</div></blockquote>
+<p><strong>beta</strong> : int, optional (default=2)</p>
+<blockquote>
+<div><p>Used inside phi.
+1 / (1 + np.math.exp(-beta * x))</p>
+</div></blockquote>
+<p><strong>C</strong> : array-like, shape = [2,3] ,optional</p>
+<blockquote>
+<div><p>Weights for wrong classification of form (y_real,y_pred,weight)
+Per default all weights are one, meaning you only need to specify
+the weights not equal one.</p>
 </div></blockquote>
 <p><strong>display</strong> : boolean, optional (default=False)</p>
 <blockquote>
@@ -284,32 +282,45 @@ by <cite>np.random</cite>.</p>
 <tr class="row-even"><td><a class="reference internal" href="#glvq.LgmlvqModel.get_params" title="glvq.LgmlvqModel.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</td>
 <td>Get parameters for this estimator.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_to_int</span></code>(item)</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#glvq.LgmlvqModel.phi" title="glvq.LgmlvqModel.phi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi</span></code></a>(x)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi</span></code>(x)</td>
-<td></td>
+</tbody>
+</table>
+</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi_prime</span></code>(x)</td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#glvq.LgmlvqModel.phi_prime" title="glvq.LgmlvqModel.phi_prime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi_prime</span></code></a>(x)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#glvq.LgmlvqModel.predict" title="glvq.LgmlvqModel.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(x)</td>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#glvq.LgmlvqModel.predict" title="glvq.LgmlvqModel.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(x)</td>
 <td>Predict class membership index for each input sample.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#glvq.LgmlvqModel.project" title="glvq.LgmlvqModel.project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project</span></code></a>(x,&nbsp;prototype_idx,&nbsp;dims[,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="#glvq.LgmlvqModel.project" title="glvq.LgmlvqModel.project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project</span></code></a>(x,&nbsp;prototype_idx,&nbsp;dims[,&nbsp;…])</td>
 <td>Projects the data input data X using the relevance matrix of the prototype specified by prototype_idx to dimension dim</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#glvq.LgmlvqModel.score" title="glvq.LgmlvqModel.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;y[,&nbsp;sample_weight])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#glvq.LgmlvqModel.score" title="glvq.LgmlvqModel.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;y[,&nbsp;sample_weight])</td>
 <td>Returns the mean accuracy on the given test data and labels.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#glvq.LgmlvqModel.set_params" title="glvq.LgmlvqModel.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
+<tr class="row-even"><td><a class="reference internal" href="#glvq.LgmlvqModel.set_params" title="glvq.LgmlvqModel.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
 <td>Set the parameters of this estimator.</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="glvq.LgmlvqModel.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>prototypes_per_class=1</em>, <em>initial_prototypes=None</em>, <em>initial_matrices=None</em>, <em>regularization=0.0</em>, <em>beta=2</em>, <em>C=None</em>, <em>dim=None</em>, <em>classwise=False</em>, <em>max_iter=2500</em>, <em>gtol=1e-05</em>, <em>display=False</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/glvq/lgmlvq.html#LgmlvqModel.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glvq.LgmlvqModel.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>prototypes_per_class=1</em>, <em>initial_prototypes=None</em>, <em>initial_matrices=None</em>, <em>regularization=0.0</em>, <em>dim=None</em>, <em>classwise=False</em>, <em>max_iter=2500</em>, <em>gtol=1e-05</em>, <em>beta=2</em>, <em>C=None</em>, <em>display=False</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/glvq/lgmlvq.html#LgmlvqModel.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glvq.LgmlvqModel.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>x.__init__(…) initializes x; see help(type(x)) for signature</p>
 </dd></dl>
 
@@ -361,6 +372,32 @@ contained subobjects that are estimators.</p>
 <div><p>Parameter names mapped to their values.</p>
 </div></blockquote>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="glvq.LgmlvqModel.phi">
+<code class="descname">phi</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#glvq.LgmlvqModel.phi" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> : input value</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="glvq.LgmlvqModel.phi_prime">
+<code class="descname">phi_prime</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#glvq.LgmlvqModel.phi_prime" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> : input value</td>
 </tr>
 </tbody>
 </table>
@@ -490,15 +527,6 @@ component of a nested object.</p>
            </div>
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="glvq.plot2d.html" class="btn btn-neutral float-right" title="glvq.plot2d" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="glvq.GmlvqModel.html" class="btn btn-neutral" title="glvq.GmlvqModel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>
