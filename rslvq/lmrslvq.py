@@ -28,6 +28,25 @@ class LmrslvqModel(RslvqModel):
         Prototypes to start with. If not given initialization near the class
         means. Class label must be placed as last entry of each prototype.
 
+    initial_matrices : list of array-like, optional
+        Matrices to start with. If not given random initialization
+
+    regularization : float or array-like, shape = [n_classes/n_prototypes],
+     optional (default=0.0)
+        Values between 0 and 1. Regularization is done by the log determinant
+        of the relevance matrix. Without regularization relevances may
+        degenerate to zero.
+
+    dim : int, optional
+        Maximum rank or projection dimensions
+
+    classwise : boolean, optional
+        If true, each class has one relevance matrix.
+        If false, each prototype has one relevance matrix.
+
+    sigma : float, optional (default=0.5)
+        Variance for the distribution.
+
     max_iter : int, optional (default=2500)
         The maximum number of iterations.
 
@@ -57,20 +76,28 @@ class LmrslvqModel(RslvqModel):
     classes_ : array-like, shape = [n_classes]
         Array containing labels.
 
+    omegas_ : list of array-like
+        Relevance Matrices
+
+    dim_ : list of int
+        Maximum rank of projection
+
+    regularization_ : array-like, shape = [n_classes/n_prototypes]
+        Values between 0 and 1
     See also
     --------
-    GrlvqModel, GmlvqModel, LgmlvqModel
+    RslvqModel, MrslvqModel
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 sigma=1, initial_matrices=None, regularization=0.0, dim=None,
-                 classwise=False, max_iter=2500, display=False,
+                 initial_matrices=None, regularization=0.0, dim=None,
+                 classwise=False, sigma=1, max_iter=2500, gtol=1e-5, display=False,
                  random_state=None):
         super(LmrslvqModel, self).__init__(sigma=sigma,
                                            random_state=random_state,
                                            prototypes_per_class=prototypes_per_class,
                                            initial_prototypes=initial_prototypes,
-                                           display=display, max_iter=max_iter)
+                                           gtol=gtol, display=display, max_iter=max_iter)
         self.regularization = regularization
         self.initial_matrices = initial_matrices
         self.classwise = classwise
@@ -105,10 +132,10 @@ class LmrslvqModel(RslvqModel):
                     omega_index = np.where(self.classes_ == self.c_w_[j])[0][0]
                 oo = omegas[omega_index].T.dot(omegas[omega_index])
                 d = (xi - prototypes[j])[np.newaxis].T
-                p = self.p(j, xi, prototypes=prototypes, omega=omegas[omega_index])
+                p = self._p(j, xi, prototypes=prototypes, omega=omegas[omega_index])
                 if self.c_w_[j] == c_xi:
-                    pj = self.p(j, xi, prototypes=prototypes, y=c_xi,
-                                omega=omegas[omega_index])
+                    pj = self._p(j, xi, prototypes=prototypes, y=c_xi,
+                                 omega=omegas[omega_index])
                 if lr_prototypes > 0:
                     if self.c_w_[j] == c_xi:
                         g[j] += (c * (pj - p) * oo.dot(d)).ravel()
@@ -139,13 +166,6 @@ class LmrslvqModel(RslvqModel):
         return g.ravel()
 
     def _optfun(self, variables, training_data, label_equals_prototype):
-        """
-        sum_i^l log(p(e_i,y_i|w)/p(e_i,w))
-        :param variables:
-        :param training_data:
-        :param label_equals_prototype:
-        :return:
-        """
         n_data, n_dim = training_data.shape
         nb_prototypes = self.c_w_.size
         variables = variables.reshape(variables.size // n_dim, n_dim)
@@ -160,10 +180,10 @@ class LmrslvqModel(RslvqModel):
             xi = training_data[i]
             y = label_equals_prototype[i]
             if len(omegas) == nb_prototypes:
-                fs = [self.costf(xi, prototypes[j], omega=omegas[j])
+                fs = [self._costf(xi, prototypes[j], omega=omegas[j])
                       for j in range(nb_prototypes)]
             else:
-                fs = [self.costf(xi, prototypes[j], omega=omegas[np.where(self.classes_ == self.c_w_[j])[0][0]])
+                fs = [self._costf(xi, prototypes[j], omega=omegas[np.where(self.classes_ == self.c_w_[j])[0][0]])
                       for j in range(nb_prototypes)]
             fs_max = max(fs)
             s1 = sum([np.math.exp(fs[i] - fs_max) for i in range(len(fs))
@@ -289,12 +309,12 @@ class LmrslvqModel(RslvqModel):
         self.omegas_ = np.split(out[nb_prototypes:], indices[:-1])  # .conj().T
         self.n_iter_ = n_iter
 
-    def f(self, x, i):
+    def _f(self, x, i):
         d = (x - self.w_[i])[np.newaxis].T
         d = d.T.dot(self.omegas_[i].T).dot(self.omegas_[i]).dot(d)
         return -d / (2 * self.sigma)
 
-    def costf(self, x, w, **kwargs):
+    def _costf(self, x, w, **kwargs):
         if 'omega' in kwargs:
             omega = kwargs['omega']
         else:
@@ -308,7 +328,7 @@ class LmrslvqModel(RslvqModel):
             w = self.w_
 
         def foo(e):
-            fun = np.vectorize(lambda w: self.costf(e, w),
+            fun = np.vectorize(lambda w: self._costf(e, w),
                                signature='(n)->()')
             return fun(w)
 

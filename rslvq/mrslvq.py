@@ -6,7 +6,6 @@
 
 from __future__ import division
 
-
 import numpy as np
 from scipy.optimize import minimize
 from sklearn.utils import validation
@@ -33,8 +32,16 @@ class MrslvqModel(RslvqModel):
         If not given random initialization for rectangular matrix and unity
         for squared matrix.
 
+    regularization : float, optional (default=0.0)
+        Value between 0 and 1. Regularization is done by the log determinant
+        of the relevance matrix. Without regularization relevances may
+        degenerate to zero.
+
     dim : int, optional (default=nb_features)
         Maximum rank or projection dimensions
+
+    sigma : float, optional (default=0.5)
+        Variance for the distribution.
 
     max_iter : int, optional (default=500)
         The maximum number of iterations.
@@ -73,17 +80,17 @@ class MrslvqModel(RslvqModel):
 
     See also
     --------
-    GlvqModel, GrlvqModel, LgmlvqModel
+    RslvqModel, LmrslvqModel
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 sigma=1, initial_matrix=None, regularization=0.0, dim=None,
-                 max_iter=1000, display=False, random_state=None):
+                 initial_matrix=None, regularization=0.0, dim=None,
+                 sigma=1, max_iter=1000, gtol=1e-5, display=False, random_state=None):
         super(MrslvqModel, self).__init__(sigma=sigma,
                                           random_state=random_state,
                                           prototypes_per_class=prototypes_per_class,
                                           initial_prototypes=initial_prototypes,
-                                          display=display, max_iter=max_iter)
+                                          gtol=gtol, display=display, max_iter=max_iter)
         self.regularization = regularization
         self.initial_matrix = initial_matrix
         self.initialdim = dim
@@ -108,9 +115,9 @@ class MrslvqModel(RslvqModel):
             c_xi = label_equals_prototype[i]
             for j in range(prototypes.shape[0]):
                 d = (xi - prototypes[j])[np.newaxis].T
-                p = self.p(j, xi, prototypes=prototypes, omega=omega)
+                p = self._p(j, xi, prototypes=prototypes, omega=omega)
                 if self.c_w_[j] == c_xi:
-                    pj = self.p(j, xi, prototypes=prototypes, y=c_xi, omega=omega)
+                    pj = self._p(j, xi, prototypes=prototypes, y=c_xi, omega=omega)
                 if lr_prototypes > 0:
                     if self.c_w_[j] == c_xi:
                         g[j] += (c * (pj - p) * oo.dot(d)).ravel()
@@ -134,25 +141,17 @@ class MrslvqModel(RslvqModel):
         return g.ravel()
 
     def _optfun(self, variables, training_data, label_equals_prototype):
-        """
-        sum_i^l log(p(e_i,y_i|w)/p(e_i,w))
-        :param variables:
-        :param training_data:
-        :param label_equals_prototype:
-        :return:
-        """
         n_data, n_dim = training_data.shape
         nb_prototypes = self.c_w_.size
         variables = variables.reshape(variables.size // n_dim, n_dim)
         prototypes = variables[:nb_prototypes]
         omega = variables[nb_prototypes:]
 
-
         out = 0
         for i in range(n_data):
             xi = training_data[i]
             y = label_equals_prototype[i]
-            fs = [self.costf(xi, w, omega=omega) for w in
+            fs = [self._costf(xi, w, omega=omega) for w in
                   prototypes]
             # fs = []
             # for w in prototypes:
@@ -235,7 +234,7 @@ class MrslvqModel(RslvqModel):
             np.sum(np.diag(self.omega_.T.dot(self.omega_))))
         self.n_iter_ = n_iter
 
-    def costf(self, x, w,  **kwargs):
+    def _costf(self, x, w, **kwargs):
         if 'omega' in kwargs:
             omega = kwargs['omega']
         else:

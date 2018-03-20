@@ -33,6 +33,9 @@ class RslvqModel(BaseEstimator, ClassifierMixin):
         Prototypes to start with. If not given initialization near the class
         means. Class label must be placed as last entry of each prototype.
 
+    sigma : float, optional (default=0.5)
+        Variance for the distribution.
+
     max_iter : int, optional (default=2500)
         The maximum number of iterations.
 
@@ -64,12 +67,12 @@ class RslvqModel(BaseEstimator, ClassifierMixin):
 
     See also
     --------
-    GrlvqModel, GmlvqModel, LgmlvqModel
+    MslvqModel, LmrslvqModel
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 max_iter=2500, gtol=1e-5,
-                 display=False, random_state=None, sigma=0.5):
+                 sigma=0.5, max_iter=2500, gtol=1e-5,
+                 display=False, random_state=None):
         self.random_state = random_state
         self.initial_prototypes = initial_prototypes
         self.prototypes_per_class = prototypes_per_class
@@ -92,22 +95,15 @@ class RslvqModel(BaseEstimator, ClassifierMixin):
                 d = (xi - prototypes[j])
                 c = 1 / self.sigma
                 if self.c_w_[j] == c_xi:
-                    g[j] += c * (self.p(j, xi, prototypes=prototypes, y=c_xi) -
-                                 self.p(j, xi, prototypes=prototypes)) * d
+                    g[j] += c * (self._p(j, xi, prototypes=prototypes, y=c_xi) -
+                                 self._p(j, xi, prototypes=prototypes)) * d
                 else:
-                    g[j] -= c * self.p(j, xi, prototypes=prototypes) * d
+                    g[j] -= c * self._p(j, xi, prototypes=prototypes) * d
         g /= n_data
         g *= -(1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
         return g.ravel()
 
     def _optfun(self, variables, training_data, label_equals_prototype):
-        """
-        sum_i^l log(p(e_i,y_i|w)/p(e_i,w))
-        :param variables:
-        :param training_data:
-        :param label_equals_prototype:
-        :return:
-        """
         n_data, n_dim = training_data.shape
         nb_prototypes = self.c_w_.size
         prototypes = variables.reshape(nb_prototypes, n_dim)
@@ -117,7 +113,7 @@ class RslvqModel(BaseEstimator, ClassifierMixin):
         for i in range(n_data):
             xi = training_data[i]
             y = label_equals_prototype[i]
-            fs = [self.costf(xi, w) for w in prototypes]
+            fs = [self._costf(xi, w) for w in prototypes]
             fs_max = max(fs)
             s1 = sum([np.math.exp(fs[i] - fs_max) for i in range(len(fs))
                       if self.c_w_[i] == y])
@@ -133,6 +129,8 @@ class RslvqModel(BaseEstimator, ClassifierMixin):
             raise ValueError("display must be a boolean")
         if not isinstance(self.max_iter, int) or self.max_iter < 1:
             raise ValueError("max_iter must be an positive integer")
+        if not isinstance(self.gtol, float) or self.gtol <= 0:
+            raise ValueError("gtol must be a positive float")
         train_set, train_lab = validation.check_X_y(train_set, train_lab)
 
         self.classes_ = unique_labels(train_lab)
@@ -205,28 +203,28 @@ class RslvqModel(BaseEstimator, ClassifierMixin):
         self.w_ = res.x.reshape(self.w_.shape)
         self.n_iter_ = res.nit
 
-    def costf(self, x, w, **kwargs):
+    def _costf(self, x, w, **kwargs):
         d = (x - w)[np.newaxis].T
         d = d.T.dot(d)
         return -d / (2 * self.sigma)
 
-    def p(self, j, e, y=None, prototypes=None, **kwargs):
+    def _p(self, j, e, y=None, prototypes=None, **kwargs):
         if prototypes is None:
             prototypes = self.w_
         if y is None:
-            fs = [self.costf(e, w, **kwargs) for w in prototypes]
+            fs = [self._costf(e, w, **kwargs) for w in prototypes]
         else:
-            fs = [self.costf(e, prototypes[i], **kwargs) for i in
+            fs = [self._costf(e, prototypes[i], **kwargs) for i in
                   range(prototypes.shape[0]) if
                   self.c_w_[i] == y]
         fs_max = max(fs)
         s = sum([np.math.exp(f - fs_max) for f in fs])
         o = np.math.exp(
-            self.costf(e, prototypes[j], **kwargs) - fs_max) / s
+            self._costf(e, prototypes[j], **kwargs) - fs_max) / s
         return o
 
     def fit(self, x, y):
-        """Fit the GLVQ model to the given training data and parameters using
+        """Fit the RSLVQ model to the given training data and parameters using
         l-bfgs-b.
 
         Parameters
@@ -274,7 +272,7 @@ class RslvqModel(BaseEstimator, ClassifierMixin):
                              "expected=%d" % (self.w_.shape[1], x.shape[1]))
 
         def foo(e):
-            fun = np.vectorize(lambda w: self.costf(e, w),
+            fun = np.vectorize(lambda w: self._costf(e, w),
                                signature='(n)->()')
             pred = fun(self.w_).argmax()
             return self.c_w_[pred]

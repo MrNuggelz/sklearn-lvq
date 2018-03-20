@@ -45,6 +45,15 @@ class GrlvqModel(GlvqModel):
         Gradient norm must be less than gtol before successful termination
         of l-bfgs-b.
 
+    beta : int, optional (default=2)
+        Used inside phi.
+        1 / (1 + np.math.exp(-beta * x))
+
+    C : array-like, shape = [2,3] ,optional
+        Weights for wrong classification of form (y_real,y_pred,weight)
+        Per default all weights are one, meaning you only need to specify
+        the weights not equal one.
+
     display : boolean, optional (default=False)
         Print information about the bfgs steps.
 
@@ -76,8 +85,8 @@ class GrlvqModel(GlvqModel):
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 initial_relevances=None, regularization=0.0, beta=2,
-                 max_iter=2500, gtol=1e-5, display=False, C=None,
+                 initial_relevances=None, regularization=0.0,
+                 max_iter=2500, gtol=1e-5, beta=2, C=None, display=False,
                  random_state=None):
         super(GrlvqModel, self).__init__(prototypes_per_class,
                                          initial_prototypes, max_iter,
@@ -92,7 +101,7 @@ class GrlvqModel(GlvqModel):
         prototypes = variables.reshape(variables.size // n_dim, n_dim)[
                      :nb_prototypes]
         lambd = variables[prototypes.size:]
-        lambd[lambd < 0] = 0.0000001 #dirty fix if all values are smaller 0
+        lambd[lambd < 0] = 0.0000001  # dirty fix if all values are smaller 0
 
         dist = _squared_euclidean(lambd * training_data,
                                   lambd * prototypes)

@@ -45,6 +45,10 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
     max_iter : int, optional (default=2500)
         The maximum number of iterations.
 
+    gtol : float, optional (default=1e-5)
+        Gradient norm must be less than gtol before successful termination
+        of bfgs.
+
     beta : int, optional (default=2)
         Used inside phi.
         1 / (1 + np.math.exp(-beta * x))
@@ -53,11 +57,6 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
         Weights for wrong classification of form (y_real,y_pred,weight)
         Per default all weights are one, meaning you only need to specify
         the weights not equal one.
-
-
-    gtol : float, optional (default=1e-5)
-        Gradient norm must be less than gtol before successful termination
-        of bfgs.
 
     display : boolean, optional (default=False)
         Print information about the bfgs steps.
@@ -98,10 +97,25 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
         self.gtol = gtol
         self.c = C
 
+
     def phi(self, x):
+        """
+        Parameters
+        ----------
+
+        x : input value
+
+        """
         return 1 / (1 + np.math.exp(-self.beta * x))
 
     def phi_prime(self, x):
+        """
+        Parameters
+        ----------
+
+        x : input value
+
+        """
         return self.beta * np.math.exp(self.beta * x) / (
                 1 + np.math.exp(self.beta * x)) ** 2
 
@@ -160,7 +174,7 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
         distcorrectpluswrong = distcorrect + distwrong
         distcorectminuswrong = distcorrect - distwrong
         mu = distcorectminuswrong / distcorrectpluswrong
-        [self.map_to_int(x) for x in self.c_w_[label_equals_prototype.argmax(1)]]
+        [self._map_to_int(x) for x in self.c_w_[label_equals_prototype.argmax(1)]]
         mu *= self.c_[label_equals_prototype.argmax(1), d_wrong.argmin(1)]  # y_real, y_pred
 
         return np.vectorize(self.phi)(mu).sum(0)
@@ -236,11 +250,11 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
             if self.c.shape != (2, 3):
                 raise ValueError("C must be shape (2,3)")
             for k1, k2, v in self.c:
-                self.c_[tuple(zip(*product(self.map_to_int(k1), self.map_to_int(k2))))] = float(v)
+                self.c_[tuple(zip(*product(self._map_to_int(k1), self._map_to_int(k2))))] = float(v)
 
         return train_set, train_lab, random_state
 
-    def map_to_int(self, item):
+    def _map_to_int(self, item):
         return np.where(self.c_w_ == item)[0]
 
     def _optimize(self, x, y, random_state):
@@ -313,3 +327,25 @@ class GlvqModel(BaseEstimator, ClassifierMixin):
                              "expected=%d" % (self.w_.shape[1], x.shape[1]))
         dist = self._compute_distance(x)
         return (self.c_w_[dist.argmin(1)])
+
+    def project(self, x, dims, print_variance_covered=False):
+        """Projects the data input data X using the relevance matrix of trained
+        model to dimension dim
+
+        Parameters
+        ----------
+        x : array-like, shape = [n,n_features]
+          input data for project
+        dims : int
+          dimension to project to
+        print_variance_covered : boolean
+          flag to print the covered variance of the projection
+
+        Returns
+        --------
+        C : array, shape = [n,n_features]
+            Returns predicted values.
+        """
+        if print_variance_covered:
+            print('not implemented!')
+        return x[:, :dims]
