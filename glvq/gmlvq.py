@@ -51,6 +51,15 @@ class GmlvqModel(GlvqModel):
         Gradient norm must be less than gtol before successful
         termination of l-bfgs-b.
 
+    beta : int, optional (default=2)
+        Used inside phi.
+        1 / (1 + np.math.exp(-beta * x))
+
+    C : array-like, shape = [2,3] ,optional
+        Weights for wrong classification of form (y_real,y_pred,weight)
+        Per default all weights are one, meaning you only need to specify
+        the weights not equal one.
+
     display : boolean, optional (default=False)
         Print information about the bfgs steps.
 
@@ -84,9 +93,10 @@ class GmlvqModel(GlvqModel):
     GlvqModel, GrlvqModel, LgmlvqModel
     """
 
-    def __init__(self, prototypes_per_class=1, initial_prototypes=None, C=None,
-                 initial_matrix=None, regularization=0.0, beta=2, dim=None,
-                 max_iter=2500, gtol=1e-5, display=False, random_state=None):
+    def __init__(self, prototypes_per_class=1, initial_prototypes=None,
+                 initial_matrix=None, regularization=0.0, dim=None,
+                 max_iter=2500, gtol=1e-5, beta=2, C=None, display=False,
+                 random_state=None):
         super(GmlvqModel, self).__init__(prototypes_per_class,
                                          initial_prototypes, max_iter,
                                          gtol, beta, C, display, random_state)
