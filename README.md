@@ -13,7 +13,7 @@ provided by Biehl, Schneider and Bunte (http://matlabserver.cs.rug.nl/gmlvqweb/w
 
 ## Important Links
 - scikit-learn (http://scikit-learn.org/)
-- documentation (https://techfak.uni-bielefeld.de/~jjensen/sklearn-glvq/)
+- documentation (https://mrnuggelz.github.io/sklearn-glvq/)
 
 ## Installation
 Before you can install this module you need to install `numpy` and `scipy`:
