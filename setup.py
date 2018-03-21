@@ -1,6 +1,6 @@
 from __future__ import print_function
 import sys
-from setuptools import setup, find_packages
+from setuptools import setup
 
 with open('requirements.txt') as f:
     INSTALL_REQUIRES = [l.strip() for l in f.readlines() if l]
@@ -29,19 +29,20 @@ CLASSIFIERS = [
     'Operating System :: Microsoft :: Windows',
 ]
 
-version='1.0.3'
+version = '1.0.3'
 
 setup(name='sklearn-glvq',
       version=version,
       description='sklearn compatible Generalized Learning Vector '
-                  'Quantization implementation',
+                  'Quantization and Robust Soft Learning Vector Quantization implementation',
       author='Joris Jensen',
       url='https://github.com/MrNuggelz/sklearn-glvq',
       download_url='https://github.com/MrNuggelz/sklearn-glvq/releases/tag/{}'.format(version),
       tests_require=['nose'],
       platforms=['any'],
       license='BSD-3-Clause',
-      packages=['glvq'],
+      py_modules=['plot_2d'],
+      packages=['glvq', 'rslvq'],
       install_requires=INSTALL_REQUIRES,
       author_email='jjensen@techfak.uni-bielefeld.de',
       classifiers=CLASSIFIERS,
