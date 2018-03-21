@@ -60,7 +60,7 @@ The projected data is shown in the right plot.
     print('classification accuracy:', grlvq.score(toy_data, toy_label))
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  3.597 seconds)
+**Total running time of the script:** ( 0 minutes  6.433 seconds)
 
 
 

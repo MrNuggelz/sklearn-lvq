@@ -28,7 +28,7 @@ right plot.
     LMRSLVQ:
     ('variance coverd by projection:', 100.0)
     ('variance coverd by projection:', 100.0)
-    ('classification accuracy:', 0.715)
+    ('classification accuracy:', 0.76)
 
 
 
@@ -62,7 +62,7 @@ right plot.
     plt.show()
 
 
-**Total running time of the script:** ( 0 minutes  3.597 seconds)
+**Total running time of the script:** ( 0 minutes  4.004 seconds)
 
 
 
