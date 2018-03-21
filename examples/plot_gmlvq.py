@@ -12,7 +12,8 @@ The projected data is shown in the right plot.
 import matplotlib.pyplot as plt
 import numpy as np
 
-from glvq import GmlvqModel, plot2d
+from sklearn_lvq import GmlvqModel
+from sklearn_lvq.utils import plot2d
 
 print(__doc__)
 

@@ -16,17 +16,12 @@ from sklearn.utils.testing import _get_func_name
 from sklearn.utils.testing import ignore_warnings
 from sklearn.utils.deprecation import _is_deprecated
 
-import glvq
-import rslvq
+import sklearn_lvq
 
-# PUBLIC_MODULES = [pckg[1] for pckg in walk_packages(prefix='glvq.',
-#                                                         path=glvq.__path__)
-#                       if not ("._" in pckg[1] or ".tests." in pckg[1])]
-PUBLIC_MODULES = [pckg[1] for pckg in walk_packages(prefix='rslvq.',
-                                                        path=rslvq.__path__)
-                      if not ("._" in pckg[1] or ".tests." in pckg[1])]
+PUBLIC_MODULES = [pckg[1] for pckg in walk_packages(prefix='sklearn_lvq.',
+                                                    path=sklearn_lvq.__path__)
+                  if not ("._" in pckg[1] or ".tests." in pckg[1])]
 PUBLIC_MODULES = set(PUBLIC_MODULES)
-
 
 # Methods where y param should be ignored if y=None by default
 _METHODS_IGNORE_NONE_Y = [
@@ -119,8 +114,8 @@ def test_docstring_parameters():
 @ignore_warnings(category=DeprecationWarning)
 def test_tabs():
     # Test that there are no tabs in our source files
-    for importer, modname, ispkg in walk_packages(glvq.__path__,
-                                                  prefix='glvq.'):
+    for importer, modname, ispkg in walk_packages(sklearn_lvq.__path__,
+                                                  prefix='sklearn_lvq.'):
         # because we don't import
         mod = importlib.import_module(modname)
         try:
@@ -130,6 +125,7 @@ def test_tabs():
         assert '\t' not in source, ('"%s" has tabs, please remove them ',
                                     'or add it to theignore list'
                                     % modname)
+
 
 def check_docstring_parameters(func, doc=None, ignore=None, class_name=None):
     """Helper to check docstring
@@ -156,8 +152,7 @@ def check_docstring_parameters(func, doc=None, ignore=None, class_name=None):
     ignore = [] if ignore is None else ignore
 
     func_name = _get_func_name(func, class_name=class_name)
-    if not (func_name.startswith('glvq.') or
-            func_name.startswith('rslvq.')):
+    if not func_name.startswith('sklearn_lvq.'):
         return incorrect
     # Don't check docstring for property-functions
     if inspect.isdatadescriptor(func):
@@ -193,7 +188,7 @@ def check_docstring_parameters(func, doc=None, ignore=None, class_name=None):
                               'colon ("%s")' % name]
             else:
                 incorrect += [func_name + ' Incorrect type definition for '
-                              'param: "%s" (type definition was "%s")'
+                                          'param: "%s" (type definition was "%s")'
                               % (name.split(':')[0], type_definition)]
         if '*' not in name:
             param_names.append(name.split(':')[0].strip('` '))

@@ -31,7 +31,7 @@ CLASSIFIERS = [
 
 version = '1.0.3'
 
-setup(name='sklearn-glvq',
+setup(name='sklearn-lvq',
       version=version,
       description='sklearn compatible Generalized Learning Vector '
                   'Quantization and Robust Soft Learning Vector Quantization implementation',
@@ -41,8 +41,7 @@ setup(name='sklearn-glvq',
       tests_require=['nose'],
       platforms=['any'],
       license='BSD-3-Clause',
-      py_modules=['plot_2d'],
-      packages=['glvq', 'rslvq'],
+      packages=['sklearn_lvq'],
       install_requires=INSTALL_REQUIRES,
       author_email='jjensen@techfak.uni-bielefeld.de',
       classifiers=CLASSIFIERS,

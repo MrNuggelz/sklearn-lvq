@@ -4,18 +4,23 @@ import matplotlib.pyplot as plt
 from sklearn.utils import validation
 
 
-def plot2d(model, x, y, figure, title="", prototype_count=-1):
+def plot2d(model, x, y, figure, title=""):
     """
     Projects the input data to two dimensions and plots it. The projection is
     done using the relevances of the given glvq model.
 
-    :param model: GlvqModel that has relevances
+    Parameters
+    ----------
+    model : GlvqModel that has relevances
         (GrlvqModel,GmlvqModel,LgmlvqModel)
-    :param x: Input data
-    :param y: Input data target
-    :param figure: the figure to plot on
-    :param title: the title to use, optional
-    :return: None
+    x : array-like, shape = [n_samples, n_features]
+        Input data
+    y : array, shape = [n_samples]
+        Input data target
+    figure : int
+        the figure to plot on
+    title : str, optional
+        the title to use, optional
     """
     x, y = validation.check_X_y(x, y)
     dim = 2
@@ -25,19 +30,13 @@ def plot2d(model, x, y, figure, title="", prototype_count=-1):
 
     if hasattr(model, 'omegas_'):
         nb_prototype = model.w_.shape[0]
-        if prototype_count is -1:
-            prototype_count = nb_prototype
-        if prototype_count > nb_prototype:
-            print(
-                'prototype_count may not be bigger than number of prototypes')
-            return
         ax = f.add_subplot(1, nb_prototype + 1, 1)
-        ax.scatter(x[:, 0], x[:, 1], c=to_tango_colors(y), alpha=0.5)
-        ax.scatter(x[:, 0], x[:, 1], c=to_tango_colors(pred), marker='.')
+        ax.scatter(x[:, 0], x[:, 1], c=_to_tango_colors(y), alpha=0.5)
+        ax.scatter(x[:, 0], x[:, 1], c=_to_tango_colors(pred), marker='.')
         ax.scatter(model.w_[:, 0], model.w_[:, 1],
-                   c=tango_color('aluminium', 5), marker='D')
+                   c=_tango_color('aluminium', 5), marker='D')
         ax.scatter(model.w_[:, 0], model.w_[:, 1],
-                   c=to_tango_colors(model.c_w_, 0), marker='.')
+                   c=_to_tango_colors(model.c_w_, 0), marker='.')
         ax.axis('equal')
 
         d = sorted([(model._compute_distance(x[y == model.c_w_[i]],
@@ -48,33 +47,33 @@ def plot2d(model, x, y, figure, title="", prototype_count=-1):
             x_p = model.project(x, i, dim, print_variance_covered=True)
             w_p = model.project(model.w_[i], i, dim)
             ax = f.add_subplot(1, nb_prototype + 1, idxs.index(i) + 2)
-            ax.scatter(x_p[:, 0], x_p[:, 1], c=to_tango_colors(y, 0),
+            ax.scatter(x_p[:, 0], x_p[:, 1], c=_to_tango_colors(y, 0),
                        alpha=0.2)
             # ax.scatter(X_p[:, 0], X_p[:, 1], c=pred, marker='.')
             ax.scatter(w_p[0], w_p[1],
-                       c=tango_color('aluminium', 5), marker='D')
+                       c=_tango_color('aluminium', 5), marker='D')
             ax.scatter(w_p[0], w_p[1],
-                       c=tango_color(i, 0), marker='.')
+                       c=_tango_color(i, 0), marker='.')
             ax.axis('equal')
     else:
         ax = f.add_subplot(121)
-        ax.scatter(x[:, 0], x[:, 1], c=to_tango_colors(y), alpha=0.5)
-        ax.scatter(x[:, 0], x[:, 1], c=to_tango_colors(pred), marker='.')
+        ax.scatter(x[:, 0], x[:, 1], c=_to_tango_colors(y), alpha=0.5)
+        ax.scatter(x[:, 0], x[:, 1], c=_to_tango_colors(pred), marker='.')
         ax.scatter(model.w_[:, 0], model.w_[:, 1],
-                   c=tango_color('aluminium', 5), marker='D')
+                   c=_tango_color('aluminium', 5), marker='D')
         ax.scatter(model.w_[:, 0], model.w_[:, 1],
-                   c=to_tango_colors(model.c_w_, 0), marker='.')
+                   c=_to_tango_colors(model.c_w_, 0), marker='.')
         ax.axis('equal')
         x_p = model.project(x, dim, print_variance_covered=True)
         w_p = model.project(model.w_, dim)
 
         ax = f.add_subplot(122)
-        ax.scatter(x_p[:, 0], x_p[:, 1], c=to_tango_colors(y, 0), alpha=0.5)
+        ax.scatter(x_p[:, 0], x_p[:, 1], c=_to_tango_colors(y, 0), alpha=0.5)
         # ax.scatter(X_p[:, 0], X_p[:, 1], c=pred, marker='.')
         ax.scatter(w_p[:, 0], w_p[:, 1],
-                   c=tango_color('aluminium', 5), marker='D')
+                   c=_tango_color('aluminium', 5), marker='D')
         ax.scatter(w_p[:, 0], w_p[:, 1], s=60,
-                   c=to_tango_colors(model.c_w_, 0), marker='.')
+                   c=_to_tango_colors(model.c_w_, 0), marker='.')
         ax.axis('equal')
     f.show()
 
@@ -94,7 +93,7 @@ colors = {
 color_names = list(colors.keys())
 
 
-def tango_color(name, brightness=0):
+def _tango_color(name, brightness=0):
     if type(name) is int:
         if name >= len(color_names):
             name = name % len(color_names)
@@ -105,6 +104,6 @@ def tango_color(name, brightness=0):
         raise ValueError('{} is not a valid color'.format(name))
 
 
-def to_tango_colors(elems, brightness=0):
+def _to_tango_colors(elems, brightness=0):
     elem_set = list(set(elems))
-    return [tango_color(elem_set.index(e), brightness) for e in elems]
+    return [_tango_color(elem_set.index(e), brightness) for e in elems]
