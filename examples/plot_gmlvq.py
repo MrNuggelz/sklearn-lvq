@@ -1,8 +1,8 @@
 """
-===============================================
-Generalized Matrix Learning Vector Quantization
-===============================================
-This example shows how GMLVQ projects and classifies.
+=========================================================
+Generalized Relevance Matrix Learning Vector Quantization
+=========================================================
+This example shows how GRMLVQ projects and classifies.
 The plot shows the target class of each data point
 (big circle) and which class was predicted (smaller circle). It also
 shows the prototypes (black diamond) and their labels (small point inside the diamond).

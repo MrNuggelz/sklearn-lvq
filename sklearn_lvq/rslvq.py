@@ -67,7 +67,7 @@ class RslvqModel(_LvqBaseModel):
 
     See also
     --------
-    MslvqModel, LmrslvqModel
+    MrslvqModel, LmrslvqModel
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,

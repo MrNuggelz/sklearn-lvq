@@ -2,6 +2,8 @@ from __future__ import print_function
 import sys
 from setuptools import setup
 
+import sklearn_lvq
+
 with open('requirements.txt') as f:
     INSTALL_REQUIRES = [l.strip() for l in f.readlines() if l]
 
@@ -29,7 +31,7 @@ CLASSIFIERS = [
     'Operating System :: Microsoft :: Windows',
 ]
 
-version = '1.0.3'
+version = sklearn_lvq.__version__
 
 setup(name='sklearn-lvq',
       version=version,

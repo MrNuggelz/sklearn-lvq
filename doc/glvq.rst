@@ -1,53 +1,9 @@
 .. _glvq:
-.. currentmodule:: glvq
+.. currentmodule:: sklearn_lvq
 
 ========================================
 Generalized Learning Vector Quantization
 ========================================
-
-Learning Vector quantization (LVQ) [1]_ attempts to construct a highly
-sparse model of the data by representing data classes by *prototypes*.
-Prototypes are vectors in the data spaced which are placed such that
-they achieve a good nearest-neighbor classification accuracy. More
-formally, for a dataset :math:`\{(x_1, y_1), ..., (x_m, y_m)\}` LVQ attempts to
-place K prototypes :math:`w_1, ..., w_K` with :math:`labels c_1, ..., c_K` in the data
-space, such that as many data points as possible are correctly
-classified by assigning the label of the closest prototype.
-The number of prototypes K is a hyper-parameter to be specified by the
-user. Per default, we use 1 prototype per class.
-
-Placing the prototypes is done by optimizing the following cost
-function, called the Generalized Learning Vector Quantization (GLVQ)
-cost function [2]_:
-
-:math:`E = \sum_{i=1}^m \frac{d^+_i - d^-_i}{d^+_i + d^-_i}`
-
-where :math:`d^+_i` is the squared Euclidean distance of :math:`x_i` to the closest
-prototype :math:`w_k` with the same label :math:`(y_i = c_k)` and :math:`d^-_i` is the squared
-Euclidean distance of :math:`x_i` to the closest prototype w_k with a different
-label :math:`(y_i \neq c_k)`. Note that an LVQ model will classify a data point
-correctly if and only if :math:`d^+_i < d^-_i`, which makes the cost function a
-coarse approximation of the classification error. The optimization is
-performed via a limited-memory version of the
-Broyden-Fletcher-Goldfarb-Shanno algorithm. Regarding runtime, the cost
-function can be computed in linear time with respect to the data points:
-For each data point, we need to compute the distances to all prototypes,
-compute the fraction :math:`(d^+_i - d^-_i) / (d^+_i + d^-_i)` and then sum up all
-these fractions, the same goes for the derivative. Thus, GLVQ scales
-linearly with the number of data points.
-
-.. topic:: References:
-
-    .. [1] `"Learning Vector Quantization"
-     <https://doi.org/10.1007/978-3-642-97610-0_6>`_
-     Kohonen, Teuvo - Self-Organizing Maps, pp. 175-189, 1995.
-
-    .. [2] `"Generalized learning vector quantization."
-      <https://papers.nips.cc/paper/1113-generalized-learning-vector-quantization.pdf>`_
-      Sato, Atsushi, and Keiji Yamada - Advances in neural information processing systems 8, pp. 423-429, 1996.
-
-Generalized Learning Vector Quantizaton (GLVQ)
-==============================================
 
 A GLVQ model can be constructed by initializing :class:`GlvqModel` with the
 desired hyper-parameters, e.g. the number of prototypes, and the initial
@@ -57,6 +13,33 @@ positions and prototype labels which can be retrieved as properties `w_`
 and `c_w_`. Classifications of new data can be made via the predict
 function, which computes the Euclidean distances of the input data to
 all prototypes and returns the label of the respective closest prototypes.
+
+Placing the prototypes is done by optimizing the following cost
+function, called the Generalized Learning Vector Quantization (GLVQ)
+cost function [2]_:
+
+:math:`\displaystyle E_{\mathrm{GLVQ}} = \sum_{i=1}^l \Phi\left(\frac{d^+_i - d^-_i}{d^+_i + d^-_i}\right)`
+
+where :math:`d^+_i` is the squared Euclidean distance of :math:`x_i` to the closest
+prototype :math:`w_k` with the same label :math:`(y_i = c_k)` and :math:`d^-_i` is the squared
+Euclidean distance of :math:`x_i` to the closest prototype w_k with a different
+label :math:`(y_i \neq c_k)`. Note that an LVQ model will classify a data point
+correctly if and only if :math:`d^+_i < d^-_i`, which makes the cost function a
+coarse approximation of the classification error.
+
+The optimization is performed via a limited-memory version of the
+Broyden-Fletcher-Goldfarb-Shanno algorithm. Regarding runtime, the cost
+function can be computed in linear time with respect to the data points:
+For each data point, we need to compute the distances to all prototypes,
+compute the fraction :math:`(d^+_i - d^-_i) / (d^+_i + d^-_i)` and then sum up all
+these fractions, the same goes for the derivative. Thus, GLVQ scales
+linearly with the number of data points.
+
+.. topic:: References:
+
+    .. [2] `"Generalized learning vector quantization."
+      <https://papers.nips.cc/paper/1113-generalized-learning-vector-quantization.pdf>`_
+      Sato, Atsushi, and Keiji Yamada - Advances in neural information processing systems 8, pp. 423-429, 1996.
 
 Generalized Relevance Learning Vector Quantization (GRLVQ)
 ==========================================================
@@ -150,7 +133,7 @@ different for each class, or even each prototype. Localized Generalized
 Matrix Learning Vector Quantization (LGMLVQ) accounts for this locality
 dependence by learning an individual :math:`\Omega_k` for each prototype k [5]_.
 As with GMLVQ, the rank of :math:`\Omega` can be bounded by using the dim
-parameter. After initializing the LgmlvqModel and calling the fit
+parameter. After initializing the :class:`LgmlvqModel` and calling the fit
 function on your data set, the learned :math:`\Omega_k` matrices can be
 retrieved via the attribute `omegas_`.
 
@@ -163,7 +146,7 @@ multiplication with the :math:`\Omega_1` and :math:`\Omega_2` matrix respectivel
 can be seen, both prototypes project the data onto one dimension, but
 they choose orthogonal projection dimensions, such that the data of the
 respective own class is close while the other class gets dispersed,
-thereby enhancing classification accuracy. A GmlvqModel can not solve
+thereby enhancing classification accuracy. A :class:`GmlvqModel` can not solve
 this classification problem, because no global :math:`\Omega` can enhance the
 classification significantly.
 
@@ -175,16 +158,6 @@ classification significantly.
     .. [5] `"Adaptive Relevance Matrices in Learning Vector Quantization"
       <http://www.cs.rug.nl/~biehl/Preprints/gmlvq.pdf>`_
       Petra Schneider, Michael Biehl and Barbara Hammer - Neural Computation, vol. 21, nb. 12, pp. 3532-3561, 2009.
-
-Dimensionality Reducation
-=========================
-
-.. currentmodule:: glvq
-
-The relevances learned by a :class:`GrlvqModel` and the relevance matrices
-learned by a :class:`GmlvqModel` or a :class:`LgmlvqModel` can be applied for
-dimensionality reduction by projecting the data on the eigenvectors of
-the relevance matrix which correspond to the largest eigenvalues.
 
 Implementation Details
 ======================

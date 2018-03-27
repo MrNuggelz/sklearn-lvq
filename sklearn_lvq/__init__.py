@@ -9,4 +9,4 @@ from .lmrslvq import LmrslvqModel
 
 __all__ = ['GlvqModel', 'GrlvqModel', 'GmlvqModel', 'GrmlvqModel', 'LgmlvqModel',
            'RslvqModel', 'MrslvqModel', 'LmrslvqModel']
-__version__ = '1.0'
+__version__ = '1.1.0'
