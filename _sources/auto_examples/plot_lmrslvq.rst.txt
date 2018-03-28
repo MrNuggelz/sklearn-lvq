@@ -28,7 +28,7 @@ right plot.
     LMRSLVQ:
     ('variance coverd by projection:', 100.0)
     ('variance coverd by projection:', 100.0)
-    ('classification accuracy:', 0.76)
+    ('classification accuracy:', 0.71)
 
 
 
@@ -41,7 +41,8 @@ right plot.
     import numpy as np
     import matplotlib.pyplot as plt
 
-    from rslvq import plot2d, LmrslvqModel
+    from sklearn_lvq import LmrslvqModel
+    from sklearn_lvq.utils import plot2d
 
     print(__doc__)
 
@@ -62,7 +63,7 @@ right plot.
     plt.show()
 
 
-**Total running time of the script:** ( 0 minutes  4.004 seconds)
+**Total running time of the script:** ( 0 minutes  11.653 seconds)
 
 
 

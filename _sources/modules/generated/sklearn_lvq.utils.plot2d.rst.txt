@@ -1,0 +1,12 @@
+:mod:`sklearn_lvq.utils`.plot2d
+============================================
+
+.. currentmodule:: sklearn_lvq.utils
+
+.. autofunction:: plot2d
+
+.. include:: sklearn_lvq.utils.plot2d.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

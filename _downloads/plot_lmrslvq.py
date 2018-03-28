@@ -13,7 +13,8 @@ right plot.
 import numpy as np
 import matplotlib.pyplot as plt
 
-from rslvq import plot2d, LmrslvqModel
+from sklearn_lvq import LmrslvqModel
+from sklearn_lvq.utils import plot2d
 
 print(__doc__)
 

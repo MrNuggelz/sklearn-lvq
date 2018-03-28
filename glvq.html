@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generalized Learning Vector Quantization &mdash; sklearn-glvq 1.0 documentation</title>
+  <title>Generalized Learning Vector Quantization &mdash; sklearn-glvq 1.1.0 documentation</title>
   
 
   
@@ -37,7 +37,8 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="sklearn-glvq 1.0 documentation" href="index.html"/>
+    <link rel="top" title="sklearn-glvq 1.1.0 documentation" href="index.html"/>
+        <link rel="next" title="Robust Soft Learning Vector Quantization" href="rslvq.html"/>
         <link rel="prev" title="GLVQ Benchmark" href="auto_examples/plot_benchmark.html"/> 
 
   
@@ -67,7 +68,7 @@
             
             
               <div class="version">
-                1.0
+                1.1.0
               </div>
             
           
@@ -92,16 +93,16 @@
             
             
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="modules/api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Generalized Learning Vector Quantization</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#generalized-learning-vector-quantizaton-glvq">Generalized Learning Vector Quantizaton (GLVQ)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#generalized-relevance-learning-vector-quantization-grlvq">Generalized Relevance Learning Vector Quantization (GRLVQ)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#generalized-matrix-learning-vector-quantization-gmlvq">Generalized Matrix Learning Vector Quantization (GMLVQ)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localized-generalized-matrix-learning-vector-quantization-lgmlvq">Localized Generalized Matrix Learning Vector Quantization (LGMLVQ)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#dimensionality-reducation">Dimensionality Reducation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#implementation-details">Implementation Details</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="rslvq.html">Robust Soft Learning Vector Quantization</a></li>
 </ul>
 
             
@@ -167,27 +168,25 @@
             
   <div class="section" id="generalized-learning-vector-quantization">
 <span id="glvq"></span><h1>Generalized Learning Vector Quantization<a class="headerlink" href="#generalized-learning-vector-quantization" title="Permalink to this headline">¶</a></h1>
-<p>Learning Vector quantization (LVQ) <a class="footnote-reference" href="#id3" id="id1">[1]</a> attempts to construct a highly
-sparse model of the data by representing data classes by <em>prototypes</em>.
-Prototypes are vectors in the data spaced which are placed such that
-they achieve a good nearest-neighbor classification accuracy. More
-formally, for a dataset <img class="math" src="_images/math/e60b131015a92d15f283e78cd55581fb8566f12b.png" alt="\{(x_1, y_1), ..., (x_m, y_m)\}"/> LVQ attempts to
-place K prototypes <img class="math" src="_images/math/4616d1c73a5bb98fa1263a998b2862ebac4420f3.png" alt="w_1, ..., w_K"/> with <img class="math" src="_images/math/f7c7afe0b55f304e1f626bb348dc175e3cf9f557.png" alt="labels c_1, ..., c_K"/> in the data
-space, such that as many data points as possible are correctly
-classified by assigning the label of the closest prototype.
-The number of prototypes K is a hyper-parameter to be specified by the
-user. Per default, we use 1 prototype per class.</p>
+<p>A GLVQ model can be constructed by initializing <a class="reference internal" href="modules/generated/sklearn_lvq.GlvqModel.html#sklearn_lvq.GlvqModel" title="sklearn_lvq.GlvqModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlvqModel</span></code></a> with the
+desired hyper-parameters, e.g. the number of prototypes, and the initial
+positions of the prototypes and then calling the <a class="reference internal" href="modules/generated/sklearn_lvq.GlvqModel.html#sklearn_lvq.GlvqModel.fit" title="sklearn_lvq.GlvqModel.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GlvqModel.fit</span></code></a> function with the
+input data. The resulting model will contain the learned prototype
+positions and prototype labels which can be retrieved as properties <cite>w_</cite>
+and <cite>c_w_</cite>. Classifications of new data can be made via the predict
+function, which computes the Euclidean distances of the input data to
+all prototypes and returns the label of the respective closest prototypes.</p>
 <p>Placing the prototypes is done by optimizing the following cost
 function, called the Generalized Learning Vector Quantization (GLVQ)
-cost function <a class="footnote-reference" href="#id4" id="id2">[2]</a>:</p>
-<p><img class="math" src="_images/math/02ef75d093c884b3d2580e8a5c7584999fbd38de.png" alt="E = \sum_{i=1}^m \frac{d^+_i - d^-_i}{d^+_i + d^-_i}"/></p>
+cost function <a class="footnote-reference" href="#id2" id="id1">[2]</a>:</p>
+<p><img class="math" src="_images/math/0e428cb1bef91f169fcf18f5515298467718903c.png" alt="\displaystyle E_{\mathrm{GLVQ}} = \sum_{i=1}^l \Phi\left(\frac{d^+_i - d^-_i}{d^+_i + d^-_i}\right)"/></p>
 <p>where <img class="math" src="_images/math/a16d1f7a4e063b183ad6861103bc3a7681db7340.png" alt="d^+_i"/> is the squared Euclidean distance of <img class="math" src="_images/math/7720e563212e11bf72de255ab82c2a3b97c1a7f5.png" alt="x_i"/> to the closest
 prototype <img class="math" src="_images/math/a5ed050c0bfcf35b4d60d048b02fa167cc3667a7.png" alt="w_k"/> with the same label <img class="math" src="_images/math/da669269e0074b69cb05673636798e853c2026e2.png" alt="(y_i = c_k)"/> and <img class="math" src="_images/math/bd64c85b1e9b99b95c7bbcbf620f3eb6704320e2.png" alt="d^-_i"/> is the squared
 Euclidean distance of <img class="math" src="_images/math/7720e563212e11bf72de255ab82c2a3b97c1a7f5.png" alt="x_i"/> to the closest prototype w_k with a different
 label <img class="math" src="_images/math/b77bced86f6546b404576b7e9f1e10948b090fa8.png" alt="(y_i \neq c_k)"/>. Note that an LVQ model will classify a data point
 correctly if and only if <img class="math" src="_images/math/ba907fa70620472b065fe58c843881554aac93df.png" alt="d^+_i &lt; d^-_i"/>, which makes the cost function a
-coarse approximation of the classification error. The optimization is
-performed via a limited-memory version of the
+coarse approximation of the classification error.</p>
+<p>The optimization is performed via a limited-memory version of the
 Broyden-Fletcher-Goldfarb-Shanno algorithm. Regarding runtime, the cost
 function can be computed in linear time with respect to the data points:
 For each data point, we need to compute the distances to all prototypes,
@@ -196,31 +195,13 @@ these fractions, the same goes for the derivative. Thus, GLVQ scales
 linearly with the number of data points.</p>
 <div class="topic">
 <p class="topic-title first">References:</p>
-<table class="docutils footnote" frame="void" id="id3" rules="none">
+<table class="docutils footnote" frame="void" id="id2" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><a class="reference external" href="https://doi.org/10.1007/978-3-642-97610-0_6">“Learning Vector Quantization”</a>
-Kohonen, Teuvo - Self-Organizing Maps, pp. 175-189, 1995.</td></tr>
-</tbody>
-</table>
-<table class="docutils footnote" frame="void" id="id4" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td><a class="reference external" href="https://papers.nips.cc/paper/1113-generalized-learning-vector-quantization.pdf">“Generalized learning vector quantization.”</a>
+<tr><td class="label"><a class="fn-backref" href="#id1">[2]</a></td><td><a class="reference external" href="https://papers.nips.cc/paper/1113-generalized-learning-vector-quantization.pdf">“Generalized learning vector quantization.”</a>
 Sato, Atsushi, and Keiji Yamada - Advances in neural information processing systems 8, pp. 423-429, 1996.</td></tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="generalized-learning-vector-quantizaton-glvq">
-<h2>Generalized Learning Vector Quantizaton (GLVQ)<a class="headerlink" href="#generalized-learning-vector-quantizaton-glvq" title="Permalink to this headline">¶</a></h2>
-<p>A GLVQ model can be constructed by initializing <a class="reference internal" href="modules/generated/glvq.GlvqModel.html#glvq.GlvqModel" title="glvq.GlvqModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlvqModel</span></code></a> with the
-desired hyper-parameters, e.g. the number of prototypes, and the initial
-positions of the prototypes and then calling the <a class="reference internal" href="modules/generated/glvq.GlvqModel.html#glvq.GlvqModel.fit" title="glvq.GlvqModel.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GlvqModel.fit</span></code></a> function with the
-input data. The resulting model will contain the learned prototype
-positions and prototype labels which can be retrieved as properties <cite>w_</cite>
-and <cite>c_w_</cite>. Classifications of new data can be made via the predict
-function, which computes the Euclidean distances of the input data to
-all prototypes and returns the label of the respective closest prototypes.</p>
 </div>
 <div class="section" id="generalized-relevance-learning-vector-quantization-grlvq">
 <h2>Generalized Relevance Learning Vector Quantization (GRLVQ)<a class="headerlink" href="#generalized-relevance-learning-vector-quantization-grlvq" title="Permalink to this headline">¶</a></h2>
@@ -267,11 +248,11 @@ following equation:</p>
 \cdot \Omega^T \cdot \Omega \cdot (x_i - w_k)"/></p>
 </div><p>The matrix product <img class="math" src="_images/math/c262fd250c1539669018ad8aeedc443c75fa13de.png" alt="\Omega^T \cdot \Omega"/> is also called the positive
 semi-definite <em>relevance matrix</em> <img class="math" src="_images/math/5b99ed91598429157b547a2c3700a6b25c52824a.png" alt="\Lambda"/>. Interpreted this way, GMLVQ is
-a <em>metric learning</em> algorithm <a class="footnote-reference" href="#id8" id="id6">[3]</a>. It is also possible to initialize the
+a <em>metric learning</em> algorithm <a class="footnote-reference" href="#id6" id="id4">[3]</a>. It is also possible to initialize the
 GmlvqModel by setting the dim parameter to an integer less than the data
 dimensionality, in which case Omega will have only dim rows, performing
 an implicit dimensionality reduction. This variant is called Limited
-Rank Matrix LVQ or LiRaM-LVQ <a class="footnote-reference" href="#id9" id="id7">[4]</a>. After initializing the GmlvqModel and
+Rank Matrix LVQ or LiRaM-LVQ <a class="footnote-reference" href="#id7" id="id5">[4]</a>. After initializing the GmlvqModel and
 calling the fit function on your data set, the learned <img class="math" src="_images/math/cd30e0b91d2b53728ae09ccac9d857b79b3adfcb.png" alt="\Omega"/> matrix can
 be retrieved via the attribute <cite>omega_</cite>.</p>
 <p>The following figure shows how GMLVQ classifies some example data after
@@ -287,17 +268,17 @@ coordinate axis.</p>
 <a class="reference external image-reference" href="auto_examples/plot_gmlvq.html"><img alt="_images/sphx_glr_plot_gmlvq_001.png" src="_images/sphx_glr_plot_gmlvq_001.png" /></a>
 <div class="topic">
 <p class="topic-title first">References:</p>
-<table class="docutils footnote" frame="void" id="id8" rules="none">
+<table class="docutils footnote" frame="void" id="id6" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id6">[3]</a></td><td><a class="reference external" href="http://www.cs.rug.nl/~biehl/Preprints/gmlvq.pdf">“Adaptive Relevance Matrices in Learning Vector Quantization”</a>
+<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td><a class="reference external" href="http://www.cs.rug.nl/~biehl/Preprints/gmlvq.pdf">“Adaptive Relevance Matrices in Learning Vector Quantization”</a>
 Petra Schneider, Michael Biehl and Barbara Hammer - Neural Computation, vol. 21, nb. 12, pp. 3532-3561, 2009.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id9" rules="none">
+<table class="docutils footnote" frame="void" id="id7" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id7">[4]</a></td><td><a class="reference external" href="http://www.cs.rug.nl/biehl/Preprints/liram-preliminary.pdf">“Limited Rank Matrix Learning - Discriminative Dimension Reduction and Visualization”</a>
+<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td><a class="reference external" href="http://www.cs.rug.nl/biehl/Preprints/liram-preliminary.pdf">“Limited Rank Matrix Learning - Discriminative Dimension Reduction and Visualization”</a>
 K. Bunte, P. Schneider, B. Hammer, F.-M. Schleif, T. Villmann and M. Biehl - Neural Networks, vol. 26, nb. 4, pp. 159-173, 2012.</td></tr>
 </tbody>
 </table>
@@ -305,14 +286,14 @@ K. Bunte, P. Schneider, B. Hammer, F.-M. Schleif, T. Villmann and M. Biehl - Neu
 </div>
 <div class="section" id="localized-generalized-matrix-learning-vector-quantization-lgmlvq">
 <h2>Localized Generalized Matrix Learning Vector Quantization (LGMLVQ)<a class="headerlink" href="#localized-generalized-matrix-learning-vector-quantization-lgmlvq" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="modules/generated/glvq.LgmlvqModel.html#glvq.LgmlvqModel" title="glvq.LgmlvqModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">LgmlvqModel</span></code></a> extends GLVQ by giving each prototype/class relevances for each feature. This way LGMLVQ is able to project the data for better
+<p><a class="reference internal" href="modules/generated/sklearn_lvq.LgmlvqModel.html#sklearn_lvq.LgmlvqModel" title="sklearn_lvq.LgmlvqModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">LgmlvqModel</span></code></a> extends GLVQ by giving each prototype/class relevances for each feature. This way LGMLVQ is able to project the data for better
 classification.</p>
 <p>Especially in multi-class data sets, the ideal projection <img class="math" src="_images/math/cd30e0b91d2b53728ae09ccac9d857b79b3adfcb.png" alt="\Omega"/> may be
 different for each class, or even each prototype. Localized Generalized
 Matrix Learning Vector Quantization (LGMLVQ) accounts for this locality
-dependence by learning an individual <img class="math" src="_images/math/a0c92b2d911ecaed5d7d15046033c5fe527e0878.png" alt="\Omega_k"/> for each prototype k <a class="footnote-reference" href="#id11" id="id10">[5]</a>.
+dependence by learning an individual <img class="math" src="_images/math/a0c92b2d911ecaed5d7d15046033c5fe527e0878.png" alt="\Omega_k"/> for each prototype k <a class="footnote-reference" href="#id9" id="id8">[5]</a>.
 As with GMLVQ, the rank of <img class="math" src="_images/math/cd30e0b91d2b53728ae09ccac9d857b79b3adfcb.png" alt="\Omega"/> can be bounded by using the dim
-parameter. After initializing the LgmlvqModel and calling the fit
+parameter. After initializing the <a class="reference internal" href="modules/generated/sklearn_lvq.LgmlvqModel.html#sklearn_lvq.LgmlvqModel" title="sklearn_lvq.LgmlvqModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">LgmlvqModel</span></code></a> and calling the fit
 function on your data set, the learned <img class="math" src="_images/math/a0c92b2d911ecaed5d7d15046033c5fe527e0878.png" alt="\Omega_k"/> matrices can be
 retrieved via the attribute <cite>omegas_</cite>.</p>
 <p>The following figure shows how LGMLVQ classifies some example data after
@@ -324,50 +305,43 @@ multiplication with the <img class="math" src="_images/math/34b719c3420fe5c82d20
 can be seen, both prototypes project the data onto one dimension, but
 they choose orthogonal projection dimensions, such that the data of the
 respective own class is close while the other class gets dispersed,
-thereby enhancing classification accuracy. A GmlvqModel can not solve
+thereby enhancing classification accuracy. A <a class="reference internal" href="modules/generated/sklearn_lvq.GmlvqModel.html#sklearn_lvq.GmlvqModel" title="sklearn_lvq.GmlvqModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">GmlvqModel</span></code></a> can not solve
 this classification problem, because no global <img class="math" src="_images/math/cd30e0b91d2b53728ae09ccac9d857b79b3adfcb.png" alt="\Omega"/> can enhance the
 classification significantly.</p>
 <a class="reference external image-reference" href="auto_examples/plot_lgmlvq.html"><img alt="_images/sphx_glr_plot_lgmlvq_001.png" src="_images/sphx_glr_plot_lgmlvq_001.png" /></a>
 <div class="topic">
 <p class="topic-title first">References:</p>
-<table class="docutils footnote" frame="void" id="id11" rules="none">
+<table class="docutils footnote" frame="void" id="id9" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id10">[5]</a></td><td><a class="reference external" href="http://www.cs.rug.nl/~biehl/Preprints/gmlvq.pdf">“Adaptive Relevance Matrices in Learning Vector Quantization”</a>
+<tr><td class="label"><a class="fn-backref" href="#id8">[5]</a></td><td><a class="reference external" href="http://www.cs.rug.nl/~biehl/Preprints/gmlvq.pdf">“Adaptive Relevance Matrices in Learning Vector Quantization”</a>
 Petra Schneider, Michael Biehl and Barbara Hammer - Neural Computation, vol. 21, nb. 12, pp. 3532-3561, 2009.</td></tr>
 </tbody>
 </table>
 </div>
 </div>
-<div class="section" id="dimensionality-reducation">
-<h2>Dimensionality Reducation<a class="headerlink" href="#dimensionality-reducation" title="Permalink to this headline">¶</a></h2>
-<p>The relevances learned by a <a class="reference internal" href="modules/generated/glvq.GrlvqModel.html#glvq.GrlvqModel" title="glvq.GrlvqModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">GrlvqModel</span></code></a> and the relevance matrices
-learned by a <a class="reference internal" href="modules/generated/glvq.GmlvqModel.html#glvq.GmlvqModel" title="glvq.GmlvqModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">GmlvqModel</span></code></a> or a <a class="reference internal" href="modules/generated/glvq.LgmlvqModel.html#glvq.LgmlvqModel" title="glvq.LgmlvqModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">LgmlvqModel</span></code></a> can be applied for
-dimensionality reduction by projecting the data on the eigenvectors of
-the relevance matrix which correspond to the largest eigenvalues.</p>
-</div>
 <div class="section" id="implementation-details">
 <h2>Implementation Details<a class="headerlink" href="#implementation-details" title="Permalink to this headline">¶</a></h2>
 <p>This implementation is based upon the reference Matlab implementation
-provided by Biehl, Schneider and Bunte <a class="footnote-reference" href="#id15" id="id13">[6]</a>.</p>
+provided by Biehl, Schneider and Bunte <a class="footnote-reference" href="#id13" id="id11">[6]</a>.</p>
 <p>To optimize the GLVQ cost function with respect to all parameters
 (prototype positions as well as relevances and <img class="math" src="_images/math/cd30e0b91d2b53728ae09ccac9d857b79b3adfcb.png" alt="\Omega"/> matrices) we
 employ the LBFGS implementation of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/optimize.minimize-lbfgsb.html#optimize-minimize-lbfgsb">scipy</a>. To prevent the degeneration of relevances in GMLVQ, we add
 the log-determinant of the relevance matrix <img class="math" src="_images/math/b8ae8f3cea8e8ea5f76fd98942f6298d07a32378.png" alt="\Lambda = \Omega^T \cdot \Omega"/>
 to the cost function, such that relevances can not degenerate to
-zero <a class="footnote-reference" href="#id16" id="id14">[7]</a>.</p>
+zero <a class="footnote-reference" href="#id14" id="id12">[7]</a>.</p>
 <div class="topic">
 <p class="topic-title first">References:</p>
-<table class="docutils footnote" frame="void" id="id15" rules="none">
+<table class="docutils footnote" frame="void" id="id13" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id13">[6]</a></td><td><a class="reference external" href="http://matlabserver.cs.rug.nl/gmlvqweb/web/">LVQ Toolbox</a>  M. Biehl, P. Schneider and K. Bunte, 2017</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id11">[6]</a></td><td><a class="reference external" href="http://matlabserver.cs.rug.nl/gmlvqweb/web/">LVQ Toolbox</a>  M. Biehl, P. Schneider and K. Bunte, 2017</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id16" rules="none">
+<table class="docutils footnote" frame="void" id="id14" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id14">[7]</a></td><td><a class="reference external" href="http://www.cs.rug.nl/~biehl/Preprints/tnn-2010.pdf">“Regularization in Matrix Relevance Learning”</a>
+<tr><td class="label"><a class="fn-backref" href="#id12">[7]</a></td><td><a class="reference external" href="http://www.cs.rug.nl/~biehl/Preprints/tnn-2010.pdf">“Regularization in Matrix Relevance Learning”</a>
 P. Schneider, K. Bunte, B. Hammer and M. Biehl - IEEE Transactions on Neural Networks, vol. 21, nb. 5, pp. 831-840, 2010.</td></tr>
 </tbody>
 </table>
@@ -384,6 +358,8 @@ P. Schneider, K. Bunte, B. Hammer and M. Biehl - IEEE Transactions on Neural Net
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="rslvq.html" class="btn btn-neutral float-right" title="Robust Soft Learning Vector Quantization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="auto_examples/plot_benchmark.html" class="btn btn-neutral" title="GLVQ Benchmark" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -417,7 +393,7 @@ P. Schneider, K. Bunte, B. Hammer and M. Biehl - IEEE Transactions on Neural Net
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.0',
+            VERSION:'1.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

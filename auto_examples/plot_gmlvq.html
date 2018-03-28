@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generalized Matrix Learning Vector Quantization &mdash; sklearn-glvq 1.0 documentation</title>
+  <title>Generalized Relevance Matrix Learning Vector Quantization &mdash; sklearn-glvq 1.1.0 documentation</title>
   
 
   
@@ -37,10 +37,10 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="sklearn-glvq 1.0 documentation" href="../index.html"/>
+    <link rel="top" title="sklearn-glvq 1.1.0 documentation" href="../index.html"/>
         <link rel="up" title="Examples" href="index.html"/>
         <link rel="next" title="Generalized Relevance Learning Vector Quantization" href="plot_grlvq.html"/>
-        <link rel="prev" title="Examples" href="index.html"/> 
+        <link rel="prev" title="Generalized Learning Vector Quantization" href="plot_glvq.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.0
+                1.1.0
               </div>
             
           
@@ -94,19 +94,21 @@
             
             
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../modules/api.html">API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Generalized Matrix Learning Vector Quantization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_rslvq.html">Robust Soft Learning Vector Quantization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_glvq.html">Generalized Learning Vector Quantization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Generalized Relevance Matrix Learning Vector Quantization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_grlvq.html">Generalized Relevance Learning Vector Quantization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_lgmlvq.html">Localized Generalized Matrix Learning Vector Quantization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_lmrslvq.html">Localized Matrix Robust Soft Learning Vector Quantization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_grmlvq.html">Generalized Matrix Learning Vector Quantization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_mrslvq.html">Matrix Robust Soft Learning Vector Quantization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_rslvq.html">Robust Soft Learning Vector Quantization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_glvq.html">Generalized Learning Vector Quantization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">GLVQ Benchmark</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../glvq.html">Generalized Learning Vector Quantization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rslvq.html">Robust Soft Learning Vector Quantization</a></li>
 </ul>
 
             
@@ -153,7 +155,7 @@
         
           <li><a href="index.html">Examples</a> &raquo;</li>
         
-      <li>Generalized Matrix Learning Vector Quantization</li>
+      <li>Generalized Relevance Matrix Learning Vector Quantization</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -172,9 +174,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="generalized-matrix-learning-vector-quantization">
-<span id="sphx-glr-auto-examples-plot-gmlvq-py"></span><h1>Generalized Matrix Learning Vector Quantization<a class="headerlink" href="#generalized-matrix-learning-vector-quantization" title="Permalink to this headline">¶</a></h1>
-<p>This example shows how GMLVQ projects and classifies.
+  <div class="section" id="generalized-relevance-matrix-learning-vector-quantization">
+<span id="sphx-glr-auto-examples-plot-gmlvq-py"></span><h1>Generalized Relevance Matrix Learning Vector Quantization<a class="headerlink" href="#generalized-relevance-matrix-learning-vector-quantization" title="Permalink to this headline">¶</a></h1>
+<p>This example shows how GRMLVQ projects and classifies.
 The plot shows the target class of each data point
 (big circle) and which class was predicted (smaller circle). It also
 shows the prototypes (black diamond) and their labels (small point inside the diamond).
@@ -192,7 +194,8 @@ The projected data is shown in the right plot.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">glvq</span> <span class="kn">import</span> <span class="n">GmlvqModel</span><span class="p">,</span> <span class="n">plot2d</span>
+<span class="kn">from</span> <span class="nn">sklearn_lvq</span> <span class="kn">import</span> <span class="n">GmlvqModel</span>
+<span class="kn">from</span> <span class="nn">sklearn_lvq.utils</span> <span class="kn">import</span> <span class="n">plot2d</span>
 
 <span class="k">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
 
@@ -213,7 +216,7 @@ The projected data is shown in the right plot.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  0.317 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.114 seconds)</p>
 <div class="sphx-glr-footer docutils container">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" href="../_downloads/plot_gmlvq.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_gmlvq.py</span></code></a></div>
@@ -236,7 +239,7 @@ The projected data is shown in the right plot.</p>
         <a href="plot_grlvq.html" class="btn btn-neutral float-right" title="Generalized Relevance Learning Vector Quantization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="plot_glvq.html" class="btn btn-neutral" title="Generalized Learning Vector Quantization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -267,7 +270,7 @@ The projected data is shown in the right plot.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.0',
+            VERSION:'1.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

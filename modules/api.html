@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API &mdash; sklearn-glvq 1.0 documentation</title>
+  <title>API &mdash; sklearn-glvq 1.1.0 documentation</title>
   
 
   
@@ -37,7 +37,9 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="sklearn-glvq 1.0 documentation" href="../index.html"/> 
+    <link rel="top" title="sklearn-glvq 1.1.0 documentation" href="../index.html"/>
+        <link rel="next" title="sklearn_lvq.GlvqModel" href="generated/sklearn_lvq.GlvqModel.html"/>
+        <link rel="prev" title="Learning Vector Quantization" href="../index.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -66,7 +68,7 @@
             
             
               <div class="version">
-                1.0
+                1.1.0
               </div>
             
           
@@ -90,9 +92,30 @@
               
             
             
-              <ul>
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#glvq">GLVQ</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/sklearn_lvq.GlvqModel.html"><code class="docutils literal notranslate"><span class="pre">sklearn_lvq</span></code>.GlvqModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/sklearn_lvq.GrlvqModel.html"><code class="docutils literal notranslate"><span class="pre">sklearn_lvq</span></code>.GrlvqModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/sklearn_lvq.GmlvqModel.html"><code class="docutils literal notranslate"><span class="pre">sklearn_lvq</span></code>.GmlvqModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/sklearn_lvq.LgmlvqModel.html"><code class="docutils literal notranslate"><span class="pre">sklearn_lvq</span></code>.LgmlvqModel</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rslvq">RSLVQ</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/sklearn_lvq.RslvqModel.html"><code class="docutils literal notranslate"><span class="pre">sklearn_lvq</span></code>.RslvqModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/sklearn_lvq.MrslvqModel.html"><code class="docutils literal notranslate"><span class="pre">sklearn_lvq</span></code>.MrslvqModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/sklearn_lvq.LmrslvqModel.html"><code class="docutils literal notranslate"><span class="pre">sklearn_lvq</span></code>.LmrslvqModel</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#utils">Utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/sklearn_lvq.utils.plot2d.html"><code class="docutils literal notranslate"><span class="pre">sklearn_lvq.utils</span></code>.plot2d</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../glvq.html">Generalized Learning Vector Quantization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rslvq.html">Robust Soft Learning Vector Quantization</a></li>
 </ul>
 
             
@@ -158,6 +181,8 @@
             
   <div class="section" id="api">
 <span id="glvqapi"></span><h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="glvq">
+<h2>GLVQ<a class="headerlink" href="#glvq" title="Permalink to this headline">¶</a></h2>
 <p><strong>User guide:</strong> See the <a class="reference internal" href="../glvq.html#glvq"><span class="std std-ref">Generalized Learning Vector Quantization</span></a> section for further details.</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -165,40 +190,56 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/glvq.GlvqModel.html#glvq.GlvqModel" title="glvq.GlvqModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GlvqModel</span></code></a>([prototypes_per_class,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/sklearn_lvq.GlvqModel.html#sklearn_lvq.GlvqModel" title="sklearn_lvq.GlvqModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GlvqModel</span></code></a>([prototypes_per_class,&nbsp;…])</td>
 <td>Generalized Learning Vector Quantization</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/glvq.GrlvqModel.html#glvq.GrlvqModel" title="glvq.GrlvqModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GrlvqModel</span></code></a>([prototypes_per_class,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/sklearn_lvq.GrlvqModel.html#sklearn_lvq.GrlvqModel" title="sklearn_lvq.GrlvqModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GrlvqModel</span></code></a>([prototypes_per_class,&nbsp;…])</td>
 <td>Generalized Relevance Learning Vector Quantization</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/glvq.GmlvqModel.html#glvq.GmlvqModel" title="glvq.GmlvqModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GmlvqModel</span></code></a>([prototypes_per_class,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/sklearn_lvq.GmlvqModel.html#sklearn_lvq.GmlvqModel" title="sklearn_lvq.GmlvqModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GmlvqModel</span></code></a>([prototypes_per_class,&nbsp;…])</td>
 <td>Generalized Matrix Learning Vector Quantization</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/glvq.LgmlvqModel.html#glvq.LgmlvqModel" title="glvq.LgmlvqModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LgmlvqModel</span></code></a>([prototypes_per_class,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/sklearn_lvq.LgmlvqModel.html#sklearn_lvq.LgmlvqModel" title="sklearn_lvq.LgmlvqModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LgmlvqModel</span></code></a>([prototypes_per_class,&nbsp;…])</td>
 <td>Localized Generalized Matrix Learning Vector Quantization</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">RslvqModel</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">MrslvqModel</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">LmrslvqModel</span></code></td>
-<td></td>
 </tr>
 </tbody>
 </table>
+</div>
+<div class="section" id="rslvq">
+<h2>RSLVQ<a class="headerlink" href="#rslvq" title="Permalink to this headline">¶</a></h2>
+<p><strong>User guide:</strong> See the <a class="reference internal" href="../rslvq.html#rslvq"><span class="std std-ref">Robust Soft Learning Vector Quantization</span></a> section for further details.</p>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/glvq.plot2d.html#glvq.plot2d" title="glvq.plot2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot2d</span></code></a>(model,&nbsp;x,&nbsp;y,&nbsp;figure[,&nbsp;title,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/sklearn_lvq.RslvqModel.html#sklearn_lvq.RslvqModel" title="sklearn_lvq.RslvqModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RslvqModel</span></code></a>([prototypes_per_class,&nbsp;…])</td>
+<td>Robust Soft Learning Vector Quantization</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/sklearn_lvq.MrslvqModel.html#sklearn_lvq.MrslvqModel" title="sklearn_lvq.MrslvqModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MrslvqModel</span></code></a>([prototypes_per_class,&nbsp;…])</td>
+<td>Matrix Robust Soft Learning Vector Quantization</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/sklearn_lvq.LmrslvqModel.html#sklearn_lvq.LmrslvqModel" title="sklearn_lvq.LmrslvqModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LmrslvqModel</span></code></a>([prototypes_per_class,&nbsp;…])</td>
+<td>Localized Matrix Robust Soft Learning Vector Quantization</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="utils">
+<h2>Utils<a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/sklearn_lvq.utils.plot2d.html#sklearn_lvq.utils.plot2d" title="sklearn_lvq.utils.plot2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.plot2d</span></code></a>(model,&nbsp;x,&nbsp;y,&nbsp;figure[,&nbsp;title])</td>
 <td>Projects the input data to two dimensions and plots it.</td>
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 
 
@@ -208,6 +249,15 @@
            </div>
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="generated/sklearn_lvq.GlvqModel.html" class="btn btn-neutral float-right" title="sklearn_lvq.GlvqModel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral" title="Learning Vector Quantization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
@@ -236,7 +286,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.0',
+            VERSION:'1.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

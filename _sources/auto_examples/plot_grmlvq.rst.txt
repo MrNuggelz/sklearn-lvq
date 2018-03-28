@@ -25,9 +25,9 @@ The projected data is shown in the right plot.
  Out::
 
     GRMLVQ:
-    [0.70258552 0.29741448]
+    [0.70228936 0.29771064]
     ('variance coverd by projection:', 100.0)
-    ('classification accuracy:', 0.975)
+    ('classification accuracy:', 1.0)
 
 
 
@@ -40,8 +40,8 @@ The projected data is shown in the right plot.
     import matplotlib.pyplot as plt
     import numpy as np
 
-    from glvq import plot2d
-    from glvq.grmlvq import GrmlvqModel
+    from sklearn_lvq import GrmlvqModel
+    from sklearn_lvq.utils import plot2d
 
     print(__doc__)
 
@@ -62,7 +62,7 @@ The projected data is shown in the right plot.
     print('classification accuracy:', grmlvq.score(toy_data, toy_label))
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.142 seconds)
+**Total running time of the script:** ( 0 minutes  0.123 seconds)
 
 
 

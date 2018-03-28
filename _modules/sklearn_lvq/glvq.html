@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>glvq.glvq &mdash; sklearn-glvq 1.0 documentation</title>
+  <title>sklearn_lvq.glvq &mdash; sklearn-glvq 1.1.0 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="sklearn-glvq 1.0 documentation" href="../../index.html"/>
+    <link rel="top" title="sklearn-glvq 1.1.0 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                1.0
+                1.1.0
               </div>
             
           
@@ -92,8 +92,10 @@
             
             
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../auto_examples/index.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../glvq.html">Generalized Learning Vector Quantization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rslvq.html">Robust Soft Learning Vector Quantization</a></li>
 </ul>
 
             
@@ -140,7 +142,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>glvq.glvq</li>
+      <li>sklearn_lvq.glvq</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -157,7 +159,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for glvq.glvq</h1><div class="highlight"><pre>
+  <h1>Source code for sklearn_lvq.glvq</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="c1"># Author: Joris Jensen &lt;jjensen@techfak.uni-bielefeld.de&gt;</span>
@@ -170,11 +172,12 @@
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="k">import</span> <span class="n">minimize</span>
 <span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="k">import</span> <span class="n">cdist</span>
 
-<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="k">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ClassifierMixin</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="k">import</span> <span class="n">validation</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils.multiclass</span> <span class="k">import</span> <span class="n">unique_labels</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="k">import</span> <span class="n">check_is_fitted</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">product</span>
+
+<span class="kn">from</span> <span class="nn">sklearn_lvq.lvq</span> <span class="k">import</span> <span class="n">_LvqBaseModel</span>
 
 
 <span class="k">def</span> <span class="nf">_squared_euclidean</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -187,7 +190,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="GlvqModel"><a class="viewcode-back" href="../../modules/generated/glvq.GlvqModel.html#glvq.GlvqModel">[docs]</a><span class="k">class</span> <span class="nc">GlvqModel</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ClassifierMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="GlvqModel"><a class="viewcode-back" href="../../modules/generated/sklearn_lvq.GlvqModel.html#sklearn_lvq.GlvqModel">[docs]</a><span class="k">class</span> <span class="nc">GlvqModel</span><span class="p">(</span><span class="n">_LvqBaseModel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Generalized Learning Vector Quantization</span>
 
 <span class="sd">    Parameters</span>
@@ -245,30 +248,17 @@
 <span class="sd">    GrlvqModel, GmlvqModel, LgmlvqModel</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="GlvqModel.__init__"><a class="viewcode-back" href="../../modules/generated/glvq.GlvqModel.html#glvq.GlvqModel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prototypes_per_class</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">initial_prototypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="GlvqModel.__init__"><a class="viewcode-back" href="../../modules/generated/sklearn_lvq.GlvqModel.html#sklearn_lvq.GlvqModel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prototypes_per_class</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">initial_prototypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">max_iter</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span> <span class="n">gtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">display</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">initial_prototypes</span> <span class="o">=</span> <span class="n">initial_prototypes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prototypes_per_class</span> <span class="o">=</span> <span class="n">prototypes_per_class</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="n">display</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GlvqModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">prototypes_per_class</span><span class="o">=</span><span class="n">prototypes_per_class</span><span class="p">,</span>
+                                        <span class="n">initial_prototypes</span><span class="o">=</span><span class="n">initial_prototypes</span><span class="p">,</span>
+                                        <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">gtol</span><span class="o">=</span><span class="n">gtol</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="n">display</span><span class="p">,</span>
+                                        <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gtol</span> <span class="o">=</span> <span class="n">gtol</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">C</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">C</span></div>
 
-
-<div class="viewcode-block" id="GlvqModel.phi"><a class="viewcode-back" href="../../modules/generated/glvq.GlvqModel.html#glvq.GlvqModel.phi">[docs]</a>    <span class="k">def</span> <span class="nf">phi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-
-<span class="sd">        x : input value</span>
-
-<span class="sd">        &quot;&quot;&quot;</span></div>
-        <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">x</span><span class="p">))</span>
-
-<div class="viewcode-block" id="GlvqModel.phi_prime"><a class="viewcode-back" href="../../modules/generated/glvq.GlvqModel.html#glvq.GlvqModel.phi_prime">[docs]</a>    <span class="k">def</span> <span class="nf">phi_prime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="GlvqModel.phi"><a class="viewcode-back" href="../../modules/generated/sklearn_lvq.GlvqModel.html#sklearn_lvq.GlvqModel.phi">[docs]</a>    <span class="k">def</span> <span class="nf">phi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -276,8 +266,18 @@
 <span class="sd">        x : input value</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span></div>
-                <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">x</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">x</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="GlvqModel.phi_prime"><a class="viewcode-back" href="../../modules/generated/sklearn_lvq.GlvqModel.html#sklearn_lvq.GlvqModel.phi_prime">[docs]</a>    <span class="k">def</span> <span class="nf">phi_prime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        x : input value</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">x</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span></div>
 
     <span class="k">def</span> <span class="nf">_optgrad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">training_data</span><span class="p">,</span> <span class="n">label_equals_prototype</span><span class="p">,</span>
                  <span class="n">random_state</span><span class="p">):</span>
@@ -340,69 +340,10 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">)(</span><span class="n">mu</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_validate_train_parms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_set</span><span class="p">,</span> <span class="n">train_lab</span><span class="p">):</span>
-        <span class="n">random_state</span> <span class="o">=</span> <span class="n">validation</span><span class="o">.</span><span class="n">check_random_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;beta must a an integer&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;display must be a boolean&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;max_iter must be an positive integer&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gtol</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">gtol</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;gtol must be a positive float&quot;</span><span class="p">)</span>
-        <span class="n">train_set</span><span class="p">,</span> <span class="n">train_lab</span> <span class="o">=</span> <span class="n">validation</span><span class="o">.</span><span class="n">check_X_y</span><span class="p">(</span><span class="n">train_set</span><span class="p">,</span> <span class="n">train_lab</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">classes_</span> <span class="o">=</span> <span class="n">unique_labels</span><span class="p">(</span><span class="n">train_lab</span><span class="p">)</span>
-        <span class="n">nb_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span>
-        <span class="n">nb_samples</span><span class="p">,</span> <span class="n">nb_features</span> <span class="o">=</span> <span class="n">train_set</span><span class="o">.</span><span class="n">shape</span>  <span class="c1"># nb_samples unused</span>
-
-        <span class="c1"># set prototypes per class</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prototypes_per_class</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prototypes_per_class</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">prototypes_per_class</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;prototypes_per_class must be a positive int&quot;</span><span class="p">)</span>
-            <span class="n">nb_ppc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">nb_classes</span><span class="p">],</span>
-                             <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">prototypes_per_class</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">nb_ppc</span> <span class="o">=</span> <span class="n">validation</span><span class="o">.</span><span class="n">column_or_1d</span><span class="p">(</span>
-                <span class="n">validation</span><span class="o">.</span><span class="n">check_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prototypes_per_class</span><span class="p">,</span>
-                                       <span class="n">ensure_2d</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">nb_ppc</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;values in prototypes_per_class must be positive&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">nb_ppc</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">nb_classes</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;length of prototypes per class&quot;</span>
-                    <span class="s2">&quot; does not fit the number of classes&quot;</span>
-                    <span class="s2">&quot;classes=</span><span class="si">%d</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;length=</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nb_classes</span><span class="p">,</span> <span class="n">nb_ppc</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
-        <span class="c1"># initialize prototypes</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_prototypes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">w_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">nb_ppc</span><span class="p">),</span> <span class="n">nb_features</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">nb_ppc</span><span class="o">.</span><span class="n">sum</span><span class="p">()],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-            <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">actClass</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_classes</span><span class="p">):</span>
-                <span class="n">nb_prot</span> <span class="o">=</span> <span class="n">nb_ppc</span><span class="p">[</span><span class="n">actClass</span><span class="p">]</span>
-                <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
-                    <span class="n">train_set</span><span class="p">[</span><span class="n">train_lab</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">[</span><span class="n">actClass</span><span class="p">],</span> <span class="p">:],</span> <span class="mi">0</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">w_</span><span class="p">[</span><span class="n">pos</span><span class="p">:</span><span class="n">pos</span> <span class="o">+</span> <span class="n">nb_prot</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean</span> <span class="o">+</span> <span class="p">(</span>
-                        <span class="n">random_state</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">nb_prot</span><span class="p">,</span> <span class="n">nb_features</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span><span class="p">[</span><span class="n">pos</span><span class="p">:</span><span class="n">pos</span> <span class="o">+</span> <span class="n">nb_prot</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">[</span><span class="n">actClass</span><span class="p">]</span>
-                <span class="n">pos</span> <span class="o">+=</span> <span class="n">nb_prot</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">validation</span><span class="o">.</span><span class="n">check_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_prototypes</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">w_</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">nb_ppc</span><span class="p">),</span> <span class="n">nb_features</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;the initial prototypes have wrong shape</span><span class="se">\n</span><span class="s2">&quot;</span>
-                                 <span class="s2">&quot;found=(</span><span class="si">%d</span><span class="s2">,</span><span class="si">%d</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span>
-                                 <span class="s2">&quot;expected=(</span><span class="si">%d</span><span class="s2">,</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                                     <span class="bp">self</span><span class="o">.</span><span class="n">w_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                                     <span class="n">nb_ppc</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">nb_features</span><span class="p">))</span>
-            <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;prototype labels and test data classes do not match</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;classes=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;prototype labels=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span><span class="p">))</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">GlvqModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_validate_train_parms</span><span class="p">(</span><span class="n">train_set</span><span class="p">,</span> <span class="n">train_lab</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">c_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -411,8 +352,7 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;C must be shape (2,3)&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">product</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_map_to_int</span><span class="p">(</span><span class="n">k1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_to_int</span><span class="p">(</span><span class="n">k2</span><span class="p">))))]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">train_set</span><span class="p">,</span> <span class="n">train_lab</span><span class="p">,</span> <span class="n">random_state</span>
+        <span class="k">return</span> <span class="n">ret</span>
 
     <span class="k">def</span> <span class="nf">_map_to_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span> <span class="o">==</span> <span class="n">item</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -433,36 +373,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">w_</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w_</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">nit</span>
 
-<div class="viewcode-block" id="GlvqModel.fit"><a class="viewcode-back" href="../../modules/generated/glvq.GlvqModel.html#glvq.GlvqModel.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Fit the GLVQ model to the given training data and parameters using</span>
-<span class="sd">        l-bfgs-b.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        x : array-like, shape = [n_samples, n_features]</span>
-<span class="sd">          Training vector, where n_samples in the number of samples and</span>
-<span class="sd">          n_features is the number of features.</span>
-<span class="sd">        y : array, shape = [n_samples]</span>
-<span class="sd">          Target values (integers in classification, real numbers in</span>
-<span class="sd">          regression)</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        --------</span>
-<span class="sd">        self</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_train_parms</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;fitting &quot;</span> <span class="o">+</span> <span class="nb">type</span><span class="p">(</span>
-                <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">&quot; with only one class is not possible&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_optimize</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="p">)</span></div>
-        <span class="k">return</span> <span class="bp">self</span>
-
     <span class="k">def</span> <span class="nf">_compute_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_</span>
         <span class="k">return</span> <span class="n">cdist</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="s1">&#39;euclidean&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="GlvqModel.predict"><a class="viewcode-back" href="../../modules/generated/glvq.GlvqModel.html#glvq.GlvqModel.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="GlvqModel.predict"><a class="viewcode-back" href="../../modules/generated/sklearn_lvq.GlvqModel.html#sklearn_lvq.GlvqModel.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Predict class membership index for each input sample.</span>
 
 <span class="sd">        This function does classification on an array of</span>
@@ -485,30 +401,8 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;X has wrong number of features</span><span class="se">\n</span><span class="s2">&quot;</span>
                              <span class="s2">&quot;found=</span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span>
                              <span class="s2">&quot;expected=</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-        <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_distance</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
-        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span><span class="p">[</span><span class="n">dist</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="mi">1</span><span class="p">)])</span>
-
-<div class="viewcode-block" id="GlvqModel.project"><a class="viewcode-back" href="../../modules/generated/glvq.GlvqModel.html#glvq.GlvqModel.project">[docs]</a>    <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="n">print_variance_covered</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Projects the data input data X using the relevance matrix of trained</span>
-<span class="sd">        model to dimension dim</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        x : array-like, shape = [n,n_features]</span>
-<span class="sd">          input data for project</span>
-<span class="sd">        dims : int</span>
-<span class="sd">          dimension to project to</span>
-<span class="sd">        print_variance_covered : boolean</span>
-<span class="sd">          flag to print the covered variance of the projection</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        --------</span>
-<span class="sd">        C : array, shape = [n,n_features]</span>
-<span class="sd">            Returns predicted values.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">print_variance_covered</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;not implemented!&#39;</span><span class="p">)</span></div></div>
-        <span class="k">return</span> <span class="n">x</span><span class="p">[:,</span> <span class="p">:</span><span class="n">dims</span><span class="p">]</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_distance</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_w_</span><span class="p">[</span><span class="n">dist</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="mi">1</span><span class="p">)])</span></div></div>
 </pre></div>
 
            </div>
@@ -545,7 +439,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.0',
+            VERSION:'1.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

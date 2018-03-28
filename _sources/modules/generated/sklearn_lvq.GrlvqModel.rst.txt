@@ -1,0 +1,16 @@
+:mod:`sklearn_lvq`.GrlvqModel
+====================================
+
+.. currentmodule:: sklearn_lvq
+
+.. autoclass:: GrlvqModel
+
+   
+   .. automethod:: __init__
+   
+
+.. include:: sklearn_lvq.GrlvqModel.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

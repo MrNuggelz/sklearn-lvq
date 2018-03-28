@@ -1,8 +1,8 @@
 """
-===============================================
-Generalized Matrix Learning Vector Quantization
-===============================================
-This example shows how GMLVQ projects and classifies.
+=========================================================
+Generalized Relevance Matrix Learning Vector Quantization
+=========================================================
+This example shows how GRMLVQ projects and classifies.
 The plot shows the target class of each data point
 (big circle) and which class was predicted (smaller circle). It also
 shows the prototypes (black diamond) and their labels (small point inside the diamond).
@@ -12,7 +12,8 @@ The projected data is shown in the right plot.
 import matplotlib.pyplot as plt
 import numpy as np
 
-from glvq import GmlvqModel, plot2d
+from sklearn_lvq import GmlvqModel
+from sklearn_lvq.utils import plot2d
 
 print(__doc__)
 

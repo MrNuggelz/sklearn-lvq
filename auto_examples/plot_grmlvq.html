@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Generalized Matrix Learning Vector Quantization &mdash; sklearn-glvq 1.0 documentation</title>
+  <title>Generalized Matrix Learning Vector Quantization &mdash; sklearn-glvq 1.1.0 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="sklearn-glvq 1.0 documentation" href="../index.html"/>
+    <link rel="top" title="sklearn-glvq 1.1.0 documentation" href="../index.html"/>
         <link rel="up" title="Examples" href="index.html"/>
         <link rel="next" title="Matrix Robust Soft Learning Vector Quantization" href="plot_mrslvq.html"/>
         <link rel="prev" title="Localized Matrix Robust Soft Learning Vector Quantization" href="plot_lmrslvq.html"/> 
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                1.0
+                1.1.0
               </div>
             
           
@@ -94,19 +94,21 @@
             
             
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../modules/api.html">API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="plot_gmlvq.html">Generalized Matrix Learning Vector Quantization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_rslvq.html">Robust Soft Learning Vector Quantization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_glvq.html">Generalized Learning Vector Quantization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_gmlvq.html">Generalized Relevance Matrix Learning Vector Quantization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_grlvq.html">Generalized Relevance Learning Vector Quantization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_lgmlvq.html">Localized Generalized Matrix Learning Vector Quantization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_lmrslvq.html">Localized Matrix Robust Soft Learning Vector Quantization</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Generalized Matrix Learning Vector Quantization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_mrslvq.html">Matrix Robust Soft Learning Vector Quantization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_rslvq.html">Robust Soft Learning Vector Quantization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_glvq.html">Generalized Learning Vector Quantization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">GLVQ Benchmark</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../glvq.html">Generalized Learning Vector Quantization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rslvq.html">Robust Soft Learning Vector Quantization</a></li>
 </ul>
 
             
@@ -182,9 +184,9 @@ The projected data is shown in the right plot.</p>
 <img alt="../_images/sphx_glr_plot_grmlvq_001.png" class="align-center" src="../_images/sphx_glr_plot_grmlvq_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GRMLVQ</span><span class="p">:</span>
-<span class="p">[</span><span class="mf">0.70258552</span> <span class="mf">0.29741448</span><span class="p">]</span>
+<span class="p">[</span><span class="mf">0.70228936</span> <span class="mf">0.29771064</span><span class="p">]</span>
 <span class="p">(</span><span class="s1">&#39;variance coverd by projection:&#39;</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">)</span>
-<span class="p">(</span><span class="s1">&#39;classification accuracy:&#39;</span><span class="p">,</span> <span class="mf">0.975</span><span class="p">)</span>
+<span class="p">(</span><span class="s1">&#39;classification accuracy:&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="line-block">
@@ -193,8 +195,8 @@ The projected data is shown in the right plot.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">glvq</span> <span class="kn">import</span> <span class="n">plot2d</span>
-<span class="kn">from</span> <span class="nn">glvq.grmlvq</span> <span class="kn">import</span> <span class="n">GrmlvqModel</span>
+<span class="kn">from</span> <span class="nn">sklearn_lvq</span> <span class="kn">import</span> <span class="n">GrmlvqModel</span>
+<span class="kn">from</span> <span class="nn">sklearn_lvq.utils</span> <span class="kn">import</span> <span class="n">plot2d</span>
 
 <span class="k">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
 
@@ -216,7 +218,7 @@ The projected data is shown in the right plot.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  0.142 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.123 seconds)</p>
 <div class="sphx-glr-footer docutils container">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" href="../_downloads/plot_grmlvq.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_grmlvq.py</span></code></a></div>
@@ -270,7 +272,7 @@ The projected data is shown in the right plot.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'1.0',
+            VERSION:'1.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
