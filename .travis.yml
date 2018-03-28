@@ -11,7 +11,7 @@ env:
   global:
     # Directory where tests are run from
     - TEST_DIR=/tmp/test_dir/
-    - MODULE=glvq
+    - MODULE=sklearn_lvq
   matrix:
     - DISTRIB="conda" PYTHON_VERSION="2.7"
       NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1" CYTHON_VERSION="0.21"
