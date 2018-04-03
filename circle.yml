@@ -5,7 +5,7 @@ machine:
     USERNAME: "MrNuggelz"
 
     # The repository where the documentation will be hosted
-    DOC_REPO: "sklearn-glvq"
+    DOC_REPO: "sklearn-lvq"
 
     # The base URL for the Github page where the documentation will be hosted
     DOC_URL: ""
