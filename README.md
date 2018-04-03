@@ -1,10 +1,14 @@
-[![Build Status](https://travis-ci.org/MrNuggelz/sklearn-glvq.svg?branch=master)](https://travis-ci.org/MrNuggelz/sklearn-glvq)
+[![Build Status](https://travis-ci.org/MrNuggelz/sklearn-lvq.svg?branch=stable)](https://travis-ci.org/MrNuggelz/sklearn-lvq)
 [![Build status](https://ci.appveyor.com/api/projects/status/qiwkue1x5lgll382?svg=true)](https://ci.appveyor.com/project/MrNuggelz/sklearn-glvq)
-[![CircleCI](https://circleci.com/gh/MrNuggelz/sklearn-glvq.svg?style=shield)](https://circleci.com/gh/MrNuggelz/sklearn-glvq)
-[![Coverage Status](https://coveralls.io/repos/github/MrNuggelz/sklearn-glvq/badge.svg?branch=master)](https://coveralls.io/github/MrNuggelz/sklearn-glvq?branch=master)
+[![CircleCI](https://circleci.com/gh/MrNuggelz/sklearn-lvq.svg?style=shield)](https://circleci.com/gh/MrNuggelz/sklearn-lvq)
+[![Coverage Status](https://coveralls.io/repos/github/MrNuggelz/sklearn-lvq/badge.svg)](https://coveralls.io/github/MrNuggelz/sklearn-lvq)
+
+# Warning
+
+Repository and Package Name changed to sklearn-lvq!
 
 # Generalized Learning Vector Quantization
-Scikit-learn compatible implementation of GLVQ, GRLVQ, GLMVQ, LGMLVQ
+Scikit-learn compatible implementation of GLVQ, GRLVQ, GMLVQ, LGMLVQ
 RSLVQ, MRSLVQ and LMRSLVQ.
 
 Compatible with Python2.7 and Python3.6
