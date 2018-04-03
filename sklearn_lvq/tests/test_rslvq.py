@@ -17,12 +17,13 @@ perm = rng.permutation(iris.target.size)
 iris.data = iris.data[perm]
 iris.target = iris.target[perm]
 
+score = 0.9
 
 def test_rslvq_iris():
     check_estimator(RslvqModel)
     model = RslvqModel()
     model.fit(iris.data, iris.target)
-    assert_greater(model.score(iris.data, iris.target), 0.94)
+    assert_greater(model.score(iris.data, iris.target), score)
 
     assert_raise_message(ValueError, 'display must be a boolean',
                          RslvqModel(display='true').fit, iris.data, iris.target)
@@ -64,7 +65,7 @@ def test_mrslvq_iris():
     check_estimator(MrslvqModel)
     model = MrslvqModel()
     model.fit(iris.data, iris.target)
-    assert_greater(model.score(iris.data, iris.target), 0.94)
+    assert_greater(model.score(iris.data, iris.target), score)
 
     assert_raise_message(ValueError, 'regularization must be a positive float',
                          MrslvqModel(regularization=-1.0).fit, iris.data,
