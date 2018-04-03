@@ -20,6 +20,8 @@ perm = rng.permutation(iris.target.size)
 iris.data = iris.data[perm]
 iris.target = iris.target[perm]
 
+score = 0.9
+
 
 def test_glvq_iris():
     check_estimator(GlvqModel)
@@ -27,7 +29,7 @@ def test_glvq_iris():
     c = [(0, 1, 0.9), (1, 0, 1.1)]
     model = GlvqModel(prototypes_per_class=2, C=c)
     model.fit(iris.data, iris.target)
-    assert_greater(model.score(iris.data, iris.target), 0.94)
+    assert_greater(model.score(iris.data, iris.target), score)
 
     assert_raise_message(ValueError, 'display must be a boolean',
                          GlvqModel(display='true').fit, iris.data, iris.target)
@@ -70,7 +72,7 @@ def test_grlvq_iris():
     c = [(0, 1, 0.9), (1, 0, 1.1)]
     model = GrlvqModel(prototypes_per_class=2, C=c, regularization=0.5)
     model.fit(iris.data, iris.target)
-    assert_greater(model.score(iris.data, iris.target), 0.94)
+    assert_greater(model.score(iris.data, iris.target), score)
 
     model = GrlvqModel(initial_prototypes=[[0, 0, 0], [4, 4, 1]])
     nb_ppc = 10
@@ -98,7 +100,7 @@ def test_gmlvq_iris():
     c = [(0, 1, 0.9), (1, 0, 1.1)]
     model = GmlvqModel(prototypes_per_class=2, C=c, regularization=0.5)
     model.fit(iris.data, iris.target)
-    assert_greater(model.score(iris.data, iris.target), 0.94)
+    assert_greater(model.score(iris.data, iris.target), score)
 
     model = GmlvqModel(initial_prototypes=[[0, 0, 0], [4, 4, 1]])
     nb_ppc = 10
@@ -129,7 +131,7 @@ def test_grmlvq_iris():
     c = [(0, 1, 0.9), (1, 0, 1.1)]
     model = GrmlvqModel(prototypes_per_class=2, C=c, regularization=0.5)
     model.fit(iris.data, iris.target)
-    assert_greater(model.score(iris.data, iris.target), 0.94)
+    assert_greater(model.score(iris.data, iris.target), score)
 
     model = GrmlvqModel(initial_prototypes=[[0, 0, 0], [4, 4, 1]])
     nb_ppc = 10
@@ -161,7 +163,7 @@ def test_lgmlvq_iris():
     check_estimator(LgmlvqModel)
     model = LgmlvqModel()
     model.fit(iris.data, iris.target)
-    assert_greater(model.score(iris.data, iris.target), 0.95)
+    assert_greater(model.score(iris.data, iris.target), score)
 
     assert_raise_message(ValueError, 'regularization must be a positive float',
                          LgmlvqModel(regularization=-1.0).fit, iris.data,
