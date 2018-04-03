@@ -4,7 +4,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/MrNuggelz/sklearn-glvq/badge.svg?branch=master)](https://coveralls.io/github/MrNuggelz/sklearn-glvq?branch=master)
 
 # Generalized Learning Vector Quantization
-Scikit-learn compatible implementation of GLVQ, GRLVQ, GLMVQ and LGMLVQ.
+Scikit-learn compatible implementation of GLVQ, GRLVQ, GLMVQ, LGMLVQ
+RSLVQ, MRSLVQ and LMRSLVQ.
 
 Compatible with Python2.7 and Python3.6
 
@@ -13,7 +14,7 @@ provided by Biehl, Schneider and Bunte (http://matlabserver.cs.rug.nl/gmlvqweb/w
 
 ## Important Links
 - scikit-learn (http://scikit-learn.org/)
-- documentation (https://mrnuggelz.github.io/sklearn-glvq/)
+- documentation (https://mrnuggelz.github.io/sklearn-lvq/)
 
 ## Installation
 Before you can install this module you need to install `numpy` and `scipy`:
@@ -26,7 +27,7 @@ python setup.py install
 ```
 or
 ```
-pip install sklearn-glvq
+pip install sklearn-lvq
 ```
 
 ## Examples
@@ -41,7 +42,7 @@ Requires installation of `nose` package.
 ```
 pip install nose
 ```
-Tests are located in the `glvq/tests` folder
+Tests are located in the `sklearn_lvq/tests` folder
 and can be run with the `nosetests` command in the main directory.
 
 ## Documentation
