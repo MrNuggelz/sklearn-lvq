@@ -184,102 +184,88 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>prototypes_per_class</strong> : int or list of int, optional (default=1)</p>
-<blockquote>
-<div><p>Number of prototypes per class. Use list to specify different numbers
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>prototypes_per_class</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int or list of int, optional (default=1)</span></dt>
+<dd><p class="first last">Number of prototypes per class. Use list to specify different numbers
 per class.</p>
-</div></blockquote>
-<p><strong>initial_prototypes</strong> : array-like, shape =  [n_prototypes, n_features + 1],</p>
-<blockquote>
-<div><dl class="docutils">
+</dd>
+<dt><strong>initial_prototypes</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape =  [n_prototypes, n_features + 1],</span></dt>
+<dd><dl class="first last docutils">
 <dt>optional</dt>
 <dd><p class="first last">Prototypes to start with. If not given initialization near the class
 means. Class label must be placed as last entry of each prototype.</p>
 </dd>
 </dl>
-</div></blockquote>
-<p><strong>initial_matrices</strong> : list of array-like, optional</p>
-<blockquote>
-<div><p>Matrices to start with. If not given random initialization</p>
-</div></blockquote>
-<p><strong>regularization</strong> : float or array-like, shape = [n_classes/n_prototypes],</p>
-<blockquote>
-<div><dl class="docutils">
+</dd>
+<dt><strong>initial_matrices</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of array-like, optional</span></dt>
+<dd><p class="first last">Matrices to start with. If not given random initialization</p>
+</dd>
+<dt><strong>regularization</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float or array-like, shape = [n_classes/n_prototypes],</span></dt>
+<dd><dl class="first last docutils">
 <dt>optional (default=0.0)</dt>
 <dd><p class="first last">Values between 0 and 1. Regularization is done by the log determinant
 of the relevance matrix. Without regularization relevances may
 degenerate to zero.</p>
 </dd>
 </dl>
-</div></blockquote>
-<p><strong>dim</strong> : int, optional</p>
-<blockquote>
-<div><p>Maximum rank or projection dimensions</p>
-</div></blockquote>
-<p><strong>classwise</strong> : boolean, optional</p>
-<blockquote>
-<div><p>If true, each class has one relevance matrix.
+</dd>
+<dt><strong>dim</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Maximum rank or projection dimensions</p>
+</dd>
+<dt><strong>classwise</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">If true, each class has one relevance matrix.
 If false, each prototype has one relevance matrix.</p>
-</div></blockquote>
-<p><strong>max_iter</strong> : int, optional (default=2500)</p>
-<blockquote>
-<div><p>The maximum number of iterations.</p>
-</div></blockquote>
-<p><strong>gtol</strong> : float, optional (default=1e-5)</p>
-<blockquote>
-<div><p>Gradient norm must be less than gtol before successful termination
+</dd>
+<dt><strong>max_iter</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional (default=2500)</span></dt>
+<dd><p class="first last">The maximum number of iterations.</p>
+</dd>
+<dt><strong>gtol</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional (default=1e-5)</span></dt>
+<dd><p class="first last">Gradient norm must be less than gtol before successful termination
 of l-bfgs-b.</p>
-</div></blockquote>
-<p><strong>beta</strong> : int, optional (default=2)</p>
-<blockquote>
-<div><p>Used inside phi.
+</dd>
+<dt><strong>beta</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional (default=2)</span></dt>
+<dd><p class="first last">Used inside phi.
 1 / (1 + np.math.exp(-beta * x))</p>
-</div></blockquote>
-<p><strong>C</strong> : array-like, shape = [2,3] ,optional</p>
-<blockquote>
-<div><p>Weights for wrong classification of form (y_real,y_pred,weight)
+</dd>
+<dt><strong>C</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape = [2,3] ,optional</span></dt>
+<dd><p class="first last">Weights for wrong classification of form (y_real,y_pred,weight)
 Per default all weights are one, meaning you only need to specify
 the weights not equal one.</p>
-</div></blockquote>
-<p><strong>display</strong> : boolean, optional (default=False)</p>
-<blockquote>
-<div><p>Print information about the bfgs steps.</p>
-</div></blockquote>
-<p><strong>random_state</strong> : int, RandomState instance or None, optional</p>
-<blockquote class="last">
-<div><p>If int, random_state is the seed used by the random number generator;
+</dd>
+<dt><strong>display</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional (default=False)</span></dt>
+<dd><p class="first last">Print information about the bfgs steps.</p>
+</dd>
+<dt><strong>random_state</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, RandomState instance or None, optional</span></dt>
+<dd><p class="first last">If int, random_state is the seed used by the random number generator;
 If RandomState instance, random_state is the random number generator;
 If None, the random number generator is the RandomState instance used
 by <cite>np.random</cite>.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-</tbody>
-</table>
-<p class="rubric">Attributes</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="11%" />
-<col width="89%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>w_</strong></td>
-<td>(array-like, shape = [n_prototypes, n_features]) Prototype vector, where n_prototypes in the number of prototypes and n_features is the number of features</td>
-</tr>
-<tr class="row-even"><td><strong>c_w_</strong></td>
-<td>(array-like, shape = [n_prototypes]) Prototype classes</td>
-</tr>
-<tr class="row-odd"><td><strong>classes_</strong></td>
-<td>(array-like, shape = [n_classes]) Array containing labels.</td>
-</tr>
-<tr class="row-even"><td><strong>omegas_</strong></td>
-<td>(list of array-like) Relevance Matrices</td>
-</tr>
-<tr class="row-odd"><td><strong>dim_</strong></td>
-<td>(list of int) Maximum rank of projection</td>
-</tr>
-<tr class="row-even"><td><strong>regularization_</strong></td>
-<td>(array-like, shape = [n_classes/n_prototypes]) Values between 0 and 1</td>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>w_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape = [n_prototypes, n_features]</span></dt>
+<dd><p class="first last">Prototype vector, where n_prototypes in the number of prototypes and
+n_features is the number of features</p>
+</dd>
+<dt><strong>c_w_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape = [n_prototypes]</span></dt>
+<dd><p class="first last">Prototype classes</p>
+</dd>
+<dt><strong>classes_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape = [n_classes]</span></dt>
+<dd><p class="first last">Array containing labels.</p>
+</dd>
+<dt><strong>omegas_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of array-like</span></dt>
+<dd><p class="first last">Relevance Matrices</p>
+</dd>
+<dt><strong>dim_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of int</span></dt>
+<dd><p class="first last">Maximum rank of projection</p>
+</dd>
+<dt><strong>regularization_</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape = [n_classes/n_prototypes]</span></dt>
+<dd><p class="first last">Values between 0 and 1</p>
+</dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -351,19 +337,22 @@ l-bfgs-b.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : array-like, shape = [n_samples, n_features]</p>
-<blockquote>
-<div><p>Training vector, where n_samples in the number of samples and
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape = [n_samples, n_features]</span></dt>
+<dd><p class="first last">Training vector, where n_samples in the number of samples and
 n_features is the number of features.</p>
-</div></blockquote>
-<p><strong>y</strong> : array, shape = [n_samples]</p>
-<blockquote>
-<div><p>Target values (integers in classification, real numbers in
+</dd>
+<dt><strong>y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape = [n_samples]</span></dt>
+<dd><p class="first last">Target values (integers in classification, real numbers in
 regression)</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">self</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>self</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -378,17 +367,19 @@ regression)</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>deep</strong> : boolean, optional</p>
-<blockquote>
-<div><p>If True, will return the parameters for this estimator and
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>deep</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">If True, will return the parameters for this estimator and
 contained subobjects that are estimators.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>params</strong> : mapping of string to any</p>
-<blockquote class="last">
-<div><p>Parameter names mapped to their values.</p>
-</div></blockquote>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>params</strong> <span class="classifier-delimiter">:</span> <span class="classifier">mapping of string to any</span></dt>
+<dd><p class="first last">Parameter names mapped to their values.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -402,7 +393,11 @@ contained subobjects that are estimators.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> : input value</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">input value</span></dt>
+<dd></dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -415,7 +410,11 @@ contained subobjects that are estimators.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> : input value</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">input value</span></dt>
+<dd></dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -431,13 +430,17 @@ test vectors X.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : array-like, shape = [n_samples, n_features]</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape = [n_samples, n_features]</span></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>C</strong> : array, shape = (n_samples,)</p>
-<blockquote class="last">
-<div><p>Returns predicted values.</p>
-</div></blockquote>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>C</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape = (n_samples,)</span></dt>
+<dd><p class="first last">Returns predicted values.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -453,28 +456,27 @@ prototype specified by prototype_idx to dimension dim</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : array-like, shape = [n,n_features]</p>
-<blockquote>
-<div><p>input data for project</p>
-</div></blockquote>
-<p><strong>prototype_idx</strong> : int</p>
-<blockquote>
-<div><p>index of the prototype</p>
-</div></blockquote>
-<p><strong>dims</strong> : int</p>
-<blockquote>
-<div><p>dimension to project to</p>
-</div></blockquote>
-<p><strong>print_variance_covered</strong> : boolean</p>
-<blockquote>
-<div><p>flag to print the covered variance of the projection</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape = [n,n_features]</span></dt>
+<dd><p class="first last">input data for project</p>
+</dd>
+<dt><strong>prototype_idx</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">index of the prototype</p>
+</dd>
+<dt><strong>dims</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">dimension to project to</p>
+</dd>
+<dt><strong>print_variance_covered</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
+<dd><p class="first last">flag to print the covered variance of the projection</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>C</strong> : array, shape = [n,n_features]</p>
-<blockquote class="last">
-<div><p>Returns predicted values.</p>
-</div></blockquote>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>C</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array, shape = [n,n_features]</span></dt>
+<dd><p class="first last">Returns predicted values.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -492,24 +494,24 @@ each label set be correctly predicted.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like, shape = (n_samples, n_features)</p>
-<blockquote>
-<div><p>Test samples.</p>
-</div></blockquote>
-<p><strong>y</strong> : array-like, shape = (n_samples) or (n_samples, n_outputs)</p>
-<blockquote>
-<div><p>True labels for X.</p>
-</div></blockquote>
-<p><strong>sample_weight</strong> : array-like, shape = [n_samples], optional</p>
-<blockquote>
-<div><p>Sample weights.</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>X</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape = (n_samples, n_features)</span></dt>
+<dd><p class="first last">Test samples.</p>
+</dd>
+<dt><strong>y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape = (n_samples) or (n_samples, n_outputs)</span></dt>
+<dd><p class="first last">True labels for X.</p>
+</dd>
+<dt><strong>sample_weight</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape = [n_samples], optional</span></dt>
+<dd><p class="first last">Sample weights.</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>score</strong> : float</p>
-<blockquote class="last">
-<div><p>Mean accuracy of self.predict(X) wrt. y.</p>
-</div></blockquote>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>score</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Mean accuracy of self.predict(X) wrt. y.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -528,7 +530,11 @@ component of a nested object.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>self</strong></dt>
+<dd></dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
