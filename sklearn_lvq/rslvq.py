@@ -218,6 +218,17 @@ class RslvqModel(_LvqBaseModel):
                                signature='(n)->()')
             pred = fun(self.w_)
             class_prob_dens = np.bincount(self.c_w_.astype(int), weights=pred)
-            return 1 - (class_prob_dens/class_prob_dens.sum())
+            class_prob_dens = class_prob_dens / class_prob_dens.sum()
 
+            # reorder probabilities due to negative pred
+            idx_pos = class_prob_dens.copy()
+            # postion of the elements when ordered: [0.2, 0.7, 0.1] --> [1, 2, 0]
+            idx_pos[class_prob_dens.argsort()] = np.arange(idx_pos.size)
+            class_prob_dens_sorted = np.sort(class_prob_dens)[::-1]
+
+            res = class_prob_dens_sorted[idx_pos.astype(int)]
+
+            return res
+
+        a = np.apply_along_axis(foo, axis=1, arr=x)
         return np.apply_along_axis(foo, axis=1, arr=x)

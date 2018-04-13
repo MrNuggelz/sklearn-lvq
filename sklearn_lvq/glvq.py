@@ -243,7 +243,7 @@ class GlvqModel(_LvqBaseModel):
         return (self.c_w_[dist.argmin(1)])
 
     def decision_function(self, x):
-        """Score for the positive class
+        """Predict confidence scores for samples.
 
         Parameters
         ----------
@@ -252,7 +252,7 @@ class GlvqModel(_LvqBaseModel):
 
         Returns
         -------
-        T : array-like, shape = [n_samples, 1]
+        T : array-like, shape=(n_samples,) if n_classes == 2 else (n_samples, n_classes)
         """
         check_is_fitted(self, ['w_', 'c_w_'])
         x = validation.check_array(x)
@@ -262,4 +262,13 @@ class GlvqModel(_LvqBaseModel):
                              "expected=%d" % (self.w_.shape[1], x.shape[1]))
         dist = self._compute_distance(x)
 
-        return (dist[:,self.c_w_ == 0].min(1)) - dist[:,self.c_w_ != 0].min(1)
+        res = dist[:,self.c_w_ != 0].min(1) - dist[:,self.c_w_ == 0].min(1)
+
+        for c in range(self.classes_.size-1):
+           res = np.vstack((res, dist[:,self.c_w_ != c+1].min(1) - dist[:,self.c_w_ == c+1].min(1)))
+
+        res = res.T
+        if self.classes_.size <= 2:
+            return res[:,1]
+        else:
+            return res
