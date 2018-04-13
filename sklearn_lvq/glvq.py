@@ -267,6 +267,6 @@ class GlvqModel(_LvqBaseModel):
            return res
         else:
            for c in range(self.classes_.size-1):
-               res = np.vstack((res, (dist[:,self.c_w_ == c+1].min(1) - dist[:,self.c_w_ != c+1].min(1)))).T
+               res = np.vstack((res, (dist[:,self.c_w_ == c+1].min(1) - dist[:,self.c_w_ != c+1].min(1))))
 
-        return res
+        return res.T
