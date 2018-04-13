@@ -241,3 +241,25 @@ class GlvqModel(_LvqBaseModel):
                              "expected=%d" % (self.w_.shape[1], x.shape[1]))
         dist = self._compute_distance(x)
         return (self.c_w_[dist.argmin(1)])
+
+    def decision_function(self, x):
+        """Score for the positive class
+
+        Parameters
+        ----------
+        x : array-like, shape = [n_samples, n_features]
+
+
+        Returns
+        -------
+        T : array-like, shape = [n_samples, 1]
+        """
+        check_is_fitted(self, ['w_', 'c_w_'])
+        x = validation.check_array(x)
+        if x.shape[1] != self.w_.shape[1]:
+            raise ValueError("X has wrong number of features\n"
+                             "found=%d\n"
+                             "expected=%d" % (self.w_.shape[1], x.shape[1]))
+        dist = self._compute_distance(x)
+
+        return (dist[:,self.c_w_ == 0].min(1)) - dist[:,self.c_w_ != 0].min(1)
