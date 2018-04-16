@@ -262,11 +262,13 @@ class GlvqModel(_LvqBaseModel):
                              "expected=%d" % (self.w_.shape[1], x.shape[1]))
         dist = self._compute_distance(x)
 
-        res = dist[:,self.c_w_ == 0].min(1) - dist[:,self.c_w_ != 0].min(1)
-        if self.classes_.size <= 2:
-           return res
-        else:
-           for c in range(self.classes_.size-1):
-               res = np.vstack((res, (dist[:,self.c_w_ == c+1].min(1) - dist[:,self.c_w_ != c+1].min(1))))
+        res = dist[:,self.c_w_ != 0].min(1) - dist[:,self.c_w_ == 0].min(1)
 
-        return res.T
+        for c in range(self.classes_.size-1):
+           res = np.vstack((res, dist[:,self.c_w_ != c+1].min(1) - dist[:,self.c_w_ == c+1].min(1)))
+
+        res = res.T
+        if self.classes_.size <= 2:
+            return res[:,1]
+        else:
+            return res
