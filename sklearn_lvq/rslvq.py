@@ -188,4 +188,3 @@ class RslvqModel(_LvqBaseModel):
             return self.c_w_[pred]
 
         return np.vectorize(foo, signature='(n)->()')(x)
-
