@@ -189,3 +189,25 @@ class RslvqModel(_LvqBaseModel):
 
         return np.vectorize(foo, signature='(n)->()')(x)
 
+    def posterior(self,y,x):
+        """
+        calculate the posterior for x:
+         p(y|x)
+
+        Parameters
+        ----------
+        x: array-like, shape = [n_features]
+
+        :return: posterior
+        """
+        check_is_fitted(self,['w_','c_w_'])
+        x = validation.column_or_1d(x)
+        if y not in self.classes_:
+            raise ValueError('y must be one of the labels\n'
+                             'y=%s\n'
+                             'labels=%s' % (y,self.classes_))
+        s1 = sum([self._costf(x, self.w_[i]) for i in
+              range(self.w_.shape[0]) if
+              self.c_w_[i] == y])
+        s2 = sum([self._costf(x, w) for w in self.w_])
+        return s1/s2
