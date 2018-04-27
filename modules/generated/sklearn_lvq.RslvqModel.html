@@ -243,16 +243,19 @@ n_features is the number of features</p>
 <tr class="row-even"><td><a class="reference internal" href="#sklearn_lvq.RslvqModel.get_params" title="sklearn_lvq.RslvqModel.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</td>
 <td>Get parameters for this estimator.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#sklearn_lvq.RslvqModel.predict" title="sklearn_lvq.RslvqModel.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(x)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#sklearn_lvq.RslvqModel.posterior" title="sklearn_lvq.RslvqModel.posterior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">posterior</span></code></a>(y,&nbsp;x)</td>
+<td>calculate the posterior for x:  p(y|x)</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#sklearn_lvq.RslvqModel.predict" title="sklearn_lvq.RslvqModel.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(x)</td>
 <td>Predict class membership index for each input sample.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#sklearn_lvq.RslvqModel.project" title="sklearn_lvq.RslvqModel.project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project</span></code></a>(x,&nbsp;dims[,&nbsp;print_variance_covered])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#sklearn_lvq.RslvqModel.project" title="sklearn_lvq.RslvqModel.project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project</span></code></a>(x,&nbsp;dims[,&nbsp;print_variance_covered])</td>
 <td>Projects the data input data X using the relevance matrix of trained model to dimension dim</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#sklearn_lvq.RslvqModel.score" title="sklearn_lvq.RslvqModel.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;y[,&nbsp;sample_weight])</td>
+<tr class="row-even"><td><a class="reference internal" href="#sklearn_lvq.RslvqModel.score" title="sklearn_lvq.RslvqModel.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;y[,&nbsp;sample_weight])</td>
 <td>Returns the mean accuracy on the given test data and labels.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#sklearn_lvq.RslvqModel.set_params" title="sklearn_lvq.RslvqModel.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#sklearn_lvq.RslvqModel.set_params" title="sklearn_lvq.RslvqModel.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
 <td>Set the parameters of this estimator.</td>
 </tr>
 </tbody>
@@ -314,6 +317,29 @@ contained subobjects that are estimators.</p>
 <dt><strong>params</strong> <span class="classifier-delimiter">:</span> <span class="classifier">mapping of string to any</span></dt>
 <dd><p class="first last">Parameter names mapped to their values.</p>
 </dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sklearn_lvq.RslvqModel.posterior">
+<code class="descname">posterior</code><span class="sig-paren">(</span><em>y</em>, <em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/sklearn_lvq/rslvq.html#RslvqModel.posterior"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sklearn_lvq.RslvqModel.posterior" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>calculate the posterior for x:</dt>
+<dd>p(y|x)</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>x: array-like, shape = [n_features]</strong></dt>
+<dd></dd>
+<dt><strong>:return: posterior</strong></dt>
+<dd></dd>
 </dl>
 </td>
 </tr>
