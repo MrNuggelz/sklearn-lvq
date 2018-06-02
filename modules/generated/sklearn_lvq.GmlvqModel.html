@@ -263,13 +263,16 @@ n_features is the number of features</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.fit" title="sklearn_lvq.GmlvqModel.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(x,&nbsp;y)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.decision_function" title="sklearn_lvq.GmlvqModel.decision_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decision_function</span></code></a>(x)</td>
+<td>Predict confidence scores for samples.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.fit" title="sklearn_lvq.GmlvqModel.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(x,&nbsp;y)</td>
 <td>Fit the LVQ model to the given training data and parameters using l-bfgs-b.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.get_params" title="sklearn_lvq.GmlvqModel.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.get_params" title="sklearn_lvq.GmlvqModel.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</td>
 <td>Get parameters for this estimator.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.phi" title="sklearn_lvq.GmlvqModel.phi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi</span></code></a>(x)</td>
+<tr class="row-even"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.phi" title="sklearn_lvq.GmlvqModel.phi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi</span></code></a>(x)</td>
 <td><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -280,7 +283,7 @@ n_features is the number of features</p>
 </table>
 </td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.phi_prime" title="sklearn_lvq.GmlvqModel.phi_prime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi_prime</span></code></a>(x)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.phi_prime" title="sklearn_lvq.GmlvqModel.phi_prime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">phi_prime</span></code></a>(x)</td>
 <td><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -291,16 +294,16 @@ n_features is the number of features</p>
 </table>
 </td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.predict" title="sklearn_lvq.GmlvqModel.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(x)</td>
+<tr class="row-even"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.predict" title="sklearn_lvq.GmlvqModel.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(x)</td>
 <td>Predict class membership index for each input sample.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.project" title="sklearn_lvq.GmlvqModel.project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project</span></code></a>(x,&nbsp;dims[,&nbsp;print_variance_covered])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.project" title="sklearn_lvq.GmlvqModel.project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project</span></code></a>(x,&nbsp;dims[,&nbsp;print_variance_covered])</td>
 <td>Projects the data input data X using the relevance matrix of trained model to dimension dim</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.score" title="sklearn_lvq.GmlvqModel.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;y[,&nbsp;sample_weight])</td>
+<tr class="row-even"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.score" title="sklearn_lvq.GmlvqModel.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X,&nbsp;y[,&nbsp;sample_weight])</td>
 <td>Returns the mean accuracy on the given test data and labels.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.set_params" title="sklearn_lvq.GmlvqModel.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#sklearn_lvq.GmlvqModel.set_params" title="sklearn_lvq.GmlvqModel.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</td>
 <td>Set the parameters of this estimator.</td>
 </tr>
 </tbody>
@@ -309,6 +312,30 @@ n_features is the number of features</p>
 <dt id="sklearn_lvq.GmlvqModel.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>prototypes_per_class=1</em>, <em>initial_prototypes=None</em>, <em>initial_matrix=None</em>, <em>regularization=0.0</em>, <em>dim=None</em>, <em>max_iter=2500</em>, <em>gtol=1e-05</em>, <em>beta=2</em>, <em>C=None</em>, <em>display=False</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/sklearn_lvq/gmlvq.html#GmlvqModel.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sklearn_lvq.GmlvqModel.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>x.__init__(…) initializes x; see help(type(x)) for signature</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sklearn_lvq.GmlvqModel.decision_function">
+<code class="descname">decision_function</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#sklearn_lvq.GmlvqModel.decision_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict confidence scores for samples.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape = [n_samples, n_features]</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>T</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape=(n_samples,) if n_classes == 2 else (n_samples, n_classes)</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">

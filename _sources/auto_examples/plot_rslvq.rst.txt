@@ -59,7 +59,7 @@ right plot.
 
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.873 seconds)
+**Total running time of the script:** ( 0 minutes  0.887 seconds)
 
 
 
