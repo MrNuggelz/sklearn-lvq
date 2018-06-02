@@ -25,9 +25,9 @@ The projected data is shown in the right plot.
  Out::
 
     GRMLVQ:
-    [0.73015866 0.26984134]
+    [0.70722238 0.29277762]
     ('variance coverd by projection:', 100.0)
-    ('classification accuracy:', 1.0)
+    ('classification accuracy:', 0.99)
 
 
 
@@ -62,7 +62,7 @@ The projected data is shown in the right plot.
     print('classification accuracy:', grmlvq.score(toy_data, toy_label))
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.133 seconds)
+**Total running time of the script:** ( 0 minutes  0.199 seconds)
 
 
 
