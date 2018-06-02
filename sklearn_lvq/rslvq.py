@@ -73,10 +73,10 @@ class RslvqModel(_LvqBaseModel):
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
                  sigma=0.5, max_iter=2500, gtol=1e-5,
                  display=False, random_state=None):
-        super(RslvqModel,self).__init__(prototypes_per_class=prototypes_per_class,
-                                        initial_prototypes=initial_prototypes,
-                                        max_iter=max_iter, gtol=gtol, display=display,
-                                        random_state=random_state)
+        super(RslvqModel, self).__init__(prototypes_per_class=prototypes_per_class,
+                                         initial_prototypes=initial_prototypes,
+                                         max_iter=max_iter, gtol=gtol, display=display,
+                                         random_state=random_state)
         self.sigma = sigma
 
     def _optgrad(self, variables, training_data, label_equals_prototype,
@@ -189,25 +189,34 @@ class RslvqModel(_LvqBaseModel):
 
         return np.vectorize(foo, signature='(n)->()')(x)
 
-    def posterior(self,y,x):
+    def posterior(self, y, x):
         """
         calculate the posterior for x:
          p(y|x)
 
         Parameters
         ----------
+        
+        y: class
+            label
         x: array-like, shape = [n_features]
+            sample
 
+
+        Returns
+        -------
+
+        posterior
         :return: posterior
         """
-        check_is_fitted(self,['w_','c_w_'])
+        check_is_fitted(self, ['w_', 'c_w_'])
         x = validation.column_or_1d(x)
         if y not in self.classes_:
             raise ValueError('y must be one of the labels\n'
                              'y=%s\n'
-                             'labels=%s' % (y,self.classes_))
+                             'labels=%s' % (y, self.classes_))
         s1 = sum([self._costf(x, self.w_[i]) for i in
-              range(self.w_.shape[0]) if
-              self.c_w_[i] == y])
+                  range(self.w_.shape[0]) if
+                  self.c_w_[i] == y])
         s2 = sum([self._costf(x, w) for w in self.w_])
-        return s1/s2
+        return s1 / s2

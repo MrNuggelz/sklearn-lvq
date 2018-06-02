@@ -241,3 +241,31 @@ class GlvqModel(_LvqBaseModel):
                              "expected=%d" % (self.w_.shape[1], x.shape[1]))
         dist = self._compute_distance(x)
         return (self.c_w_[dist.argmin(1)])
+
+    def decision_function(self, x):
+        """Predict confidence scores for samples.
+
+        Parameters
+        ----------
+        x : array-like, shape = [n_samples, n_features]
+
+
+        Returns
+        -------
+        T : array-like, shape=(n_samples,) if n_classes == 2 else (n_samples, n_classes)
+        """
+        check_is_fitted(self, ['w_', 'c_w_'])
+        x = validation.check_array(x)
+        if x.shape[1] != self.w_.shape[1]:
+            raise ValueError("X has wrong number of features\n"
+                             "found=%d\n"
+                             "expected=%d" % (self.w_.shape[1], x.shape[1]))
+        dist = self._compute_distance(x)
+
+        foo = lambda c: dist[:,self.c_w_ != self.classes_[c]].min(1) - dist[:,self.c_w_ == self.classes_[c]].min(1)
+        res = np.vectorize(foo, signature='()->(n)')(self.classes_).T
+
+        if self.classes_.size <= 2:
+            return res[:,1]
+        else:
+            return res
