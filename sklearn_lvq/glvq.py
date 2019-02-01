@@ -114,8 +114,8 @@ class GlvqModel(_LvqBaseModel):
         x : input value
 
         """
-        return self.beta * np.math.exp(self.beta * x) / (
-                1 + np.math.exp(self.beta * x)) ** 2
+        return self.beta * np.math.exp(-self.beta * x) / (
+                1 + np.math.exp(-self.beta * x)) ** 2
 
     def _optgrad(self, variables, training_data, label_equals_prototype,
                  random_state):
