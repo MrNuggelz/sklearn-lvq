@@ -1,4 +1,8 @@
+.. note::
+    :class: sphx-glr-download-link-note
 
+    Click :ref:`here <sphx_glr_download_auto_examples_plot_lmrslvq.py>` to download the full example code
+.. rst-class:: sphx-glr-example-title
 
 .. _sphx_glr_auto_examples_plot_lmrslvq.py:
 
@@ -18,17 +22,19 @@ right plot.
 
 
 .. image:: /auto_examples/images/sphx_glr_plot_lmrslvq_001.png
-    :align: center
+    :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out::
+ Out:
+
+ .. code-block:: none
 
     LMRSLVQ:
     ('variance coverd by projection:', 100.0)
     ('variance coverd by projection:', 100.0)
-    ('classification accuracy:', 0.73)
+    ('classification accuracy:', 0.755)
 
 
 
@@ -63,13 +69,17 @@ right plot.
     plt.show()
 
 
-**Total running time of the script:** ( 0 minutes  6.544 seconds)
+**Total running time of the script:** ( 0 minutes  4.618 seconds)
 
+
+.. _sphx_glr_download_auto_examples_plot_lmrslvq.py:
 
 
 .. only :: html
 
  .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
 
 
   .. container:: sphx-glr-download

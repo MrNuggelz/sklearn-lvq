@@ -1,4 +1,8 @@
+.. note::
+    :class: sphx-glr-download-link-note
 
+    Click :ref:`here <sphx_glr_download_auto_examples_plot_benchmark.py>` to download the full example code
+.. rst-class:: sphx-glr-example-title
 
 .. _sphx_glr_auto_examples_plot_benchmark.py:
 
@@ -16,15 +20,17 @@ a PCA is used.
 
 
 .. image:: /auto_examples/images/sphx_glr_plot_benchmark_001.png
-    :align: center
+    :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out::
+ Out:
 
-    ('variance coverd by projection:', 97.84166859937741)
-    ('variance coverd by projection:', 98.06442781044413)
+ .. code-block:: none
+
+    ('variance coverd by projection:', 97.72361175875687)
+    ('variance coverd by projection:', 98.46641870021854)
 
 
 
@@ -122,13 +128,17 @@ a PCA is used.
 
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  21.382 seconds)
+**Total running time of the script:** ( 0 minutes  12.386 seconds)
 
+
+.. _sphx_glr_download_auto_examples_plot_benchmark.py:
 
 
 .. only :: html
 
  .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
 
 
   .. container:: sphx-glr-download

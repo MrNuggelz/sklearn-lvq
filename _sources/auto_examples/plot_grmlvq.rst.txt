@@ -1,4 +1,8 @@
+.. note::
+    :class: sphx-glr-download-link-note
 
+    Click :ref:`here <sphx_glr_download_auto_examples_plot_grmlvq.py>` to download the full example code
+.. rst-class:: sphx-glr-example-title
 
 .. _sphx_glr_auto_examples_plot_grmlvq.py:
 
@@ -17,17 +21,19 @@ The projected data is shown in the right plot.
 
 
 .. image:: /auto_examples/images/sphx_glr_plot_grmlvq_001.png
-    :align: center
+    :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out::
+ Out:
+
+ .. code-block:: none
 
     GRMLVQ:
-    [0.68981674 0.31018326]
+    [0.7276588 0.2723412]
     ('variance coverd by projection:', 100.0)
-    ('classification accuracy:', 0.995)
+    ('classification accuracy:', 0.985)
 
 
 
@@ -62,13 +68,17 @@ The projected data is shown in the right plot.
     print('classification accuracy:', grmlvq.score(toy_data, toy_label))
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.146 seconds)
+**Total running time of the script:** ( 0 minutes  0.123 seconds)
 
+
+.. _sphx_glr_download_auto_examples_plot_grmlvq.py:
 
 
 .. only :: html
 
  .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
 
 
   .. container:: sphx-glr-download

@@ -1,4 +1,8 @@
+.. note::
+    :class: sphx-glr-download-link-note
 
+    Click :ref:`here <sphx_glr_download_auto_examples_plot_gmlvq.py>` to download the full example code
+.. rst-class:: sphx-glr-example-title
 
 .. _sphx_glr_auto_examples_plot_gmlvq.py:
 
@@ -17,12 +21,14 @@ The projected data is shown in the right plot.
 
 
 .. image:: /auto_examples/images/sphx_glr_plot_gmlvq_001.png
-    :align: center
+    :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out::
+ Out:
+
+ .. code-block:: none
 
     GMLVQ:
     ('variance coverd by projection:', 100.0)
@@ -60,13 +66,17 @@ The projected data is shown in the right plot.
     print('classification accuracy:', gmlvq.score(toy_data, toy_label))
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.118 seconds)
+**Total running time of the script:** ( 0 minutes  0.112 seconds)
 
+
+.. _sphx_glr_download_auto_examples_plot_gmlvq.py:
 
 
 .. only :: html
 
  .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
 
 
   .. container:: sphx-glr-download

@@ -9,7 +9,7 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="">
+    <div class="sphx-glr-thumbcontainer" tooltip="Robust Soft Learning Vector Quantization">
 
 .. only:: html
 
@@ -29,7 +29,7 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="">
+    <div class="sphx-glr-thumbcontainer" tooltip="Generalized Learning Vector Quantization">
 
 .. only:: html
 
@@ -49,7 +49,7 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="">
+    <div class="sphx-glr-thumbcontainer" tooltip="Generalized Relevance Matrix Learning Vector Quantization">
 
 .. only:: html
 
@@ -69,7 +69,7 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="">
+    <div class="sphx-glr-thumbcontainer" tooltip="Generalized Relevance Learning Vector Quantization">
 
 .. only:: html
 
@@ -89,7 +89,7 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="">
+    <div class="sphx-glr-thumbcontainer" tooltip="Localized Generalized Matrix Learning Vector Quantization">
 
 .. only:: html
 
@@ -109,7 +109,7 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="">
+    <div class="sphx-glr-thumbcontainer" tooltip="Localized Matrix Robust Soft Learning Vector Quantization">
 
 .. only:: html
 
@@ -129,7 +129,7 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="">
+    <div class="sphx-glr-thumbcontainer" tooltip="Generalized Matrix Learning Vector Quantization">
 
 .. only:: html
 
@@ -149,7 +149,7 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="">
+    <div class="sphx-glr-thumbcontainer" tooltip="Matrix Robust Soft Learning Vector Quantization">
 
 .. only:: html
 
@@ -169,7 +169,7 @@ Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="">
+    <div class="sphx-glr-thumbcontainer" tooltip="GLVQ Benchmark">
 
 .. only:: html
 
@@ -195,6 +195,7 @@ Examples
 .. only :: html
 
  .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-gallery
 
 
   .. container:: sphx-glr-download
