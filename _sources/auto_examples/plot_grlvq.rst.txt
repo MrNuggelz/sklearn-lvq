@@ -67,7 +67,7 @@ The projected data is shown in the right plot.
     print('classification accuracy:', grlvq.score(toy_data, toy_label))
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  2.464 seconds)
+**Total running time of the script:** ( 0 minutes  7.488 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_grlvq.py:
