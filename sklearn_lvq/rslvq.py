@@ -98,7 +98,7 @@ class RslvqModel(_LvqBaseModel):
                 else:
                     g[j] -= c * self._p(j, xi, prototypes=prototypes) * d
         g /= n_data
-        g *= -(1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
+        g *= -(1 + 0.0001 * (random_state.rand(*g.shape) - 0.5))
         return g.ravel()
 
     def _optfun(self, variables, training_data, label_equals_prototype):
