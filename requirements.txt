@@ -1,2 +1,2 @@
-scikit-learn>=0.17
+scikit-learn==0.19.*
 matplotlib>=2.0.2
