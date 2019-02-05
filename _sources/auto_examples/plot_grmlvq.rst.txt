@@ -31,9 +31,9 @@ The projected data is shown in the right plot.
  .. code-block:: none
 
     GRMLVQ:
-    [0.69478435 0.30521565]
+    [0.70815199 0.29184801]
     ('variance coverd by projection:', 100.0)
-    ('classification accuracy:', 1.0)
+    ('classification accuracy:', 0.99)
 
 
 
@@ -68,7 +68,7 @@ The projected data is shown in the right plot.
     print('classification accuracy:', grmlvq.score(toy_data, toy_label))
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.115 seconds)
+**Total running time of the script:** ( 0 minutes  0.173 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_grmlvq.py:
