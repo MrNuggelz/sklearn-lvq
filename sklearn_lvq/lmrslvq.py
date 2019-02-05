@@ -162,7 +162,7 @@ class LmrslvqModel(RslvqModel):
         if lr_prototypes > 0:
             g[:nb_prototypes] = 1 / n_data * \
                                 lr_prototypes * g[:nb_prototypes]
-        g *= -(1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
+        g *= -(1 + 0.0001 * (random_state.rand(*g.shape) - 0.5))
         return g.ravel()
 
     def _optfun(self, variables, training_data, label_equals_prototype):
