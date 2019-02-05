@@ -29,8 +29,8 @@ a PCA is used.
 
  .. code-block:: none
 
-    ('variance coverd by projection:', 97.72361175875687)
-    ('variance coverd by projection:', 98.46641870021854)
+    ('variance coverd by projection:', 95.06013270079512)
+    ('variance coverd by projection:', 97.17190996838083)
 
 
 
@@ -128,7 +128,7 @@ a PCA is used.
 
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  12.386 seconds)
+**Total running time of the script:** ( 0 minutes  10.494 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_benchmark.py:
