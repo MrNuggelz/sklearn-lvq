@@ -33,7 +33,7 @@ The projected data is shown in the right plot.
     LGMLVQ:
     ('variance coverd by projection:', 100.0)
     ('variance coverd by projection:', 100.0)
-    ('classification accuracy:', 0.8)
+    ('classification accuracy:', 0.805)
 
 
 
@@ -67,7 +67,7 @@ The projected data is shown in the right plot.
     print('classification accuracy:', lgmlvq.score(toy_data, toy_label))
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  0.266 seconds)
+**Total running time of the script:** ( 0 minutes  0.396 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_lgmlvq.py:
