@@ -12,7 +12,7 @@ from scipy.optimize import minimize
 from sklearn.utils import validation
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_is_fitted
-from sklearn_lvq.lvq import _LvqBaseModel
+from .lvq import _LvqBaseModel
 
 
 # TODO: add sigma for every prototype
@@ -46,6 +46,10 @@ class RslvqModel(_LvqBaseModel):
     display : boolean, optional (default=False)
         Print information about the bfgs steps.
 
+    force_all_finite : bool or 'allow-nan', optional (default=True)
+        Set to 'allow-nan' to be able to process NaN gaps in training and
+        testing data.
+
     random_state : int, RandomState instance or None, optional
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
@@ -72,10 +76,12 @@ class RslvqModel(_LvqBaseModel):
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
                  sigma=0.5, max_iter=2500, gtol=1e-5,
-                 display=False, random_state=None):
+                 display=False, force_all_finite=True, random_state=None):
         super(RslvqModel, self).__init__(prototypes_per_class=prototypes_per_class,
                                          initial_prototypes=initial_prototypes,
-                                         max_iter=max_iter, gtol=gtol, display=display,
+                                         max_iter=max_iter, gtol=gtol,
+                                         display=display,
+                                         force_all_finite=force_all_finite,
                                          random_state=random_state)
         self.sigma = sigma
 
@@ -98,7 +104,7 @@ class RslvqModel(_LvqBaseModel):
                 else:
                     g[j] -= c * self._p(j, xi, prototypes=prototypes) * d
         g /= n_data
-        g *= -(1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
+        g *= -(1 + 0.0001 * (random_state.rand(*g.shape) - 0.5))
         return g.ravel()
 
     def _optfun(self, variables, training_data, label_equals_prototype):
@@ -175,7 +181,7 @@ class RslvqModel(_LvqBaseModel):
             Returns predicted values.
         """
         check_is_fitted(self, ['w_', 'c_w_'])
-        x = validation.check_array(x)
+        x = validation.check_array(x, force_all_finite=self.force_all_finite)
         if x.shape[1] != self.w_.shape[1]:
             raise ValueError("X has wrong number of features\n"
                              "found=%d\n"

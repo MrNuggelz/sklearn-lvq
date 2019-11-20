@@ -1,6 +1,6 @@
 from __future__ import print_function
 import sys
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open('requirements.txt') as f:
     INSTALL_REQUIRES = [l.strip() for l in f.readlines() if l]
@@ -41,7 +41,7 @@ setup(name='sklearn-lvq',
       tests_require=['nose'],
       platforms=['any'],
       license='BSD-3-Clause',
-      packages=['sklearn_lvq'],
+      packages=find_packages(),
       install_requires=INSTALL_REQUIRES,
       author_email='jjensen@techfak.uni-bielefeld.de',
       classifiers=CLASSIFIERS,

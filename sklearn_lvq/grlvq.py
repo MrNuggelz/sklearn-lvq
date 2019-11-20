@@ -55,6 +55,10 @@ class GrlvqModel(GlvqModel):
     display : boolean, optional (default=False)
         Print information about the bfgs steps.
 
+    force_all_finite : bool or 'allow-nan', optional (default=True)
+        Set to 'allow-nan' to be able to process NaN gaps in training and
+        testing data.
+
     random_state : int, RandomState instance or None, optional
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
@@ -85,10 +89,11 @@ class GrlvqModel(GlvqModel):
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
                  initial_relevances=None, regularization=0.0,
                  max_iter=2500, gtol=1e-5, beta=2, C=None, display=False,
-                 random_state=None):
+                 force_all_finite=True, random_state=None):
         super(GrlvqModel, self).__init__(prototypes_per_class,
                                          initial_prototypes, max_iter,
-                                         gtol, beta, C, display, random_state)
+                                         gtol, beta, C, display,
+                                         force_all_finite, random_state)
         self.regularization = regularization
         self.initial_relevances = initial_relevances
 
@@ -148,7 +153,7 @@ class GrlvqModel(GlvqModel):
             g[:nb_prototypes] = 1 / n_data * lr_prototypes * \
                                 g[:nb_prototypes] * lambd
         g = np.append(g.ravel(), gw, axis=0)
-        g = g * (1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
+        g = g * (1 + 0.0001 * (random_state.rand(*g.shape) - 0.5))
         return g
 
     def _optfun(self, variables, training_data, label_equals_prototype):

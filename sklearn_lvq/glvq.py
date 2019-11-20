@@ -15,7 +15,7 @@ from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_is_fitted
 from itertools import product
 
-from sklearn_lvq.lvq import _LvqBaseModel
+from .lvq import _LvqBaseModel
 
 
 def _squared_euclidean(a, b=None):
@@ -62,6 +62,10 @@ class GlvqModel(_LvqBaseModel):
     display : boolean, optional (default=False)
         Print information about the bfgs steps.
 
+    force_all_finite : bool or 'allow-nan', optional (default=True)
+        Set to 'allow-nan' to be able to process NaN gaps in training and
+        testing data.
+
     random_state : int, RandomState instance or None, optional
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
@@ -88,10 +92,12 @@ class GlvqModel(_LvqBaseModel):
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
                  max_iter=2500, gtol=1e-5, beta=2, C=None,
-                 display=False, random_state=None):
+                 display=False, force_all_finite=True, random_state=None):
         super(GlvqModel, self).__init__(prototypes_per_class=prototypes_per_class,
                                         initial_prototypes=initial_prototypes,
-                                        max_iter=max_iter, gtol=gtol, display=display,
+                                        max_iter=max_iter, gtol=gtol,
+                                        display=display,
+                                        force_all_finite=force_all_finite,
                                         random_state=random_state)
         self.beta = beta
         self.c = C
@@ -114,8 +120,8 @@ class GlvqModel(_LvqBaseModel):
         x : input value
 
         """
-        return self.beta * np.math.exp(self.beta * x) / (
-                1 + np.math.exp(self.beta * x)) ** 2
+        return self.beta * np.math.exp(-self.beta * x) / (
+                1 + np.math.exp(-self.beta * x)) ** 2
 
     def _optgrad(self, variables, training_data, label_equals_prototype,
                  random_state):
@@ -152,7 +158,7 @@ class GlvqModel(_LvqBaseModel):
                 training_data[idxc]) + (dwd.sum(0) -
                                         dcd.sum(0)) * prototypes[i]
         g[:nb_prototypes] = 1 / n_data * g[:nb_prototypes]
-        g = g * (1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
+        g = g * (1 + 0.0001 * (random_state.rand(*g.shape) - 0.5))
         return g.ravel()
 
     def _optfun(self, variables, training_data, label_equals_prototype):
@@ -234,7 +240,7 @@ class GlvqModel(_LvqBaseModel):
             Returns predicted values.
         """
         check_is_fitted(self, ['w_', 'c_w_'])
-        x = validation.check_array(x)
+        x = validation.check_array(x, force_all_finite=self.force_all_finite)
         if x.shape[1] != self.w_.shape[1]:
             raise ValueError("X has wrong number of features\n"
                              "found=%d\n"
@@ -255,15 +261,16 @@ class GlvqModel(_LvqBaseModel):
         T : array-like, shape=(n_samples,) if n_classes == 2 else (n_samples, n_classes)
         """
         check_is_fitted(self, ['w_', 'c_w_'])
-        x = validation.check_array(x)
+        x = validation.check_array(x, force_all_finite=self.force_all_finite)
         if x.shape[1] != self.w_.shape[1]:
             raise ValueError("X has wrong number of features\n"
                              "found=%d\n"
                              "expected=%d" % (self.w_.shape[1], x.shape[1]))
         dist = self._compute_distance(x)
+        classes = self.classes_.astype(np.int64)
 
-        foo = lambda c: dist[:,self.c_w_ != self.classes_[c]].min(1) - dist[:,self.c_w_ == self.classes_[c]].min(1)
-        res = np.vectorize(foo, signature='()->(n)')(self.classes_).T
+        foo = lambda c: dist[:,self.c_w_ != self.classes_[c-1]].min(1) - dist[:,self.c_w_ == self.classes_[c-1]].min(1)
+        res = np.vectorize(foo, signature='()->(n)')(classes).T
 
         if self.classes_.size <= 2:
             return res[:,1]

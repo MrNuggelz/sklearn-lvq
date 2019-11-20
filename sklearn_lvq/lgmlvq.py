@@ -63,6 +63,10 @@ class LgmlvqModel(GlvqModel):
     display : boolean, optional (default=False)
         Print information about the bfgs steps.
 
+    force_all_finite : bool or 'allow-nan', optional (default=True)
+        Set to 'allow-nan' to be able to process NaN gaps in training and
+        testing data.
+
     random_state : int, RandomState instance or None, optional
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
@@ -99,10 +103,12 @@ class LgmlvqModel(GlvqModel):
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
                  initial_matrices=None, regularization=0.0,
                  dim=None, classwise=False, max_iter=2500, gtol=1e-5,
-                 beta=2, C=None, display=False, random_state=None):
+                 beta=2, C=None, display=False, force_all_finite=True,
+                 random_state=None):
         super(LgmlvqModel, self).__init__(prototypes_per_class,
                                           initial_prototypes, max_iter,
-                                          gtol, beta, C, display, random_state)
+                                          gtol, beta, C, display,
+                                          force_all_finite, random_state)
         self.regularization = regularization
         self.initial_matrices = initial_matrices
         self.classwise = classwise
@@ -181,7 +187,7 @@ class LgmlvqModel(GlvqModel):
         if lr_prototypes > 0:
             g[:nb_prototypes] = 1 / nb_samples * \
                                 lr_prototypes * g[:nb_prototypes]
-        g = g * (1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
+        g = g * (1 + 0.0001 * (random_state.rand(*g.shape) - 0.5))
         return g.ravel()
 
     def _f(self, variables, training_data, label_equals_prototype):
@@ -259,7 +265,9 @@ class LgmlvqModel(GlvqModel):
         else:
             if not isinstance(self.initial_matrices, list):
                 raise ValueError("initial matrices must be a list")
-            self.omegas_ = list(map(lambda v: validation.check_array(v),
+            self.omegas_ = list(
+                map(lambda v: validation.check_array(v, force_all_finite=self.
+                                                     force_all_finite),
                                     self.initial_matrices))
             if self.classwise and len(self.omegas_) != nb_classes:
                 raise ValueError("length of matrices wrong\n"
