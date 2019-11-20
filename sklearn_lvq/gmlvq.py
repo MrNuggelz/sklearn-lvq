@@ -19,8 +19,6 @@ from sklearn.utils import validation
 class GmlvqModel(GlvqModel):
     """Generalized Matrix Learning Vector Quantization
 
-    this is a push test, ignore
-
     Parameters
     ----------
 
