@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.utils import validation
 
 
-def plot2d(model, x, y, figure, title=""):
+def plot2d(model, x, y, figure, title="", force_all_finite=True):
     """
     Projects the input data to two dimensions and plots it. The projection is
     done using the relevances of the given glvq model.
@@ -21,8 +21,10 @@ def plot2d(model, x, y, figure, title=""):
         the figure to plot on
     title : str, optional
         the title to use, optional
+    force_all_finite: boolean or 'allow-nan'
+        option to allow NaN values in x
     """
-    x, y = validation.check_X_y(x, y)
+    x, y = validation.check_X_y(x, y, force_all_finite=force_all_finite)
     dim = 2
     f = plt.figure(figure)
     f.suptitle(title)

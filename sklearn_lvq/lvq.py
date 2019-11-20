@@ -8,13 +8,15 @@ from sklearn.utils.multiclass import unique_labels
 class _LvqBaseModel(BaseEstimator, ClassifierMixin):
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 max_iter=2500, gtol=1e-5, display=False, random_state=None):
+                 max_iter=2500, gtol=1e-5, display=False, force_all_finite=True,
+                 random_state=None):
         self.random_state = random_state
         self.initial_prototypes = initial_prototypes
         self.prototypes_per_class = prototypes_per_class
         self.display = display
         self.max_iter = max_iter
         self.gtol = gtol
+        self.force_all_finite = force_all_finite
 
     def _validate_train_parms(self, train_set, train_lab):
         random_state = validation.check_random_state(self.random_state)
@@ -24,7 +26,13 @@ class _LvqBaseModel(BaseEstimator, ClassifierMixin):
             raise ValueError("max_iter must be an positive integer")
         if not isinstance(self.gtol, float) or self.gtol <= 0:
             raise ValueError("gtol must be a positive float")
-        train_set, train_lab = validation.check_X_y(train_set, train_lab)
+        if not isinstance(self.force_all_finite, bool) or \
+                self.force_all_finite != 'allow-nan':
+            raise ValueError("force all finite must either be boolean or"
+                             "'allow-nan'")
+        train_set, train_lab = validation.check_X_y(train_set, train_lab,
+                                                    force_all_finite=self.
+                                                    force_all_finite)
 
         self.classes_ = unique_labels(train_lab)
         nb_classes = len(self.classes_)
@@ -57,14 +65,19 @@ class _LvqBaseModel(BaseEstimator, ClassifierMixin):
             pos = 0
             for actClass in range(nb_classes):
                 nb_prot = nb_ppc[actClass]
-                mean = np.mean(
-                    train_set[train_lab == self.classes_[actClass], :], 0)
+                if self.force_all_finite == 'allow-nan':
+                    mean = np.nanmean(
+                        train_set[train_lab == self.classes_[actClass], :], 0)
+                else:
+                    mean = np.mean(
+                        train_set[train_lab == self.classes_[actClass], :], 0)
                 self.w_[pos:pos + nb_prot] = mean + (
                         random_state.rand(nb_prot, nb_features) * 2 - 1)
                 self.c_w_[pos:pos + nb_prot] = self.classes_[actClass]
                 pos += nb_prot
         else:
-            x = validation.check_array(self.initial_prototypes)
+            x = validation.check_array(self.initial_prototypes,
+                                       force_all_finite=self.force_all_finite)
             self.w_ = x[:, :-1]
             self.c_w_ = x[:, -1]
             if self.w_.shape != (np.sum(nb_ppc), nb_features):

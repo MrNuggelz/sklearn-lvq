@@ -53,6 +53,10 @@ class MrslvqModel(RslvqModel):
     display : boolean, optional (default=False)
         Print information about the bfgs steps.
 
+    force_all_finite : bool or 'allow-nan', optional (default=True)
+        Set to 'allow-nan' to be able to process NaN gaps in training and
+        testing data.
+
     random_state : int, RandomState instance or None, optional (default=None)
         If int, random_state is the seed used by the random number generator;
         If RandomState instance, random_state is the random number generator;
@@ -85,12 +89,15 @@ class MrslvqModel(RslvqModel):
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
                  initial_matrix=None, regularization=0.0, dim=None,
-                 sigma=1, max_iter=1000, gtol=1e-5, display=False, random_state=None):
+                 sigma=1, max_iter=1000, gtol=1e-5, display=False,
+                 force_all_finite=True, random_state=None):
         super(MrslvqModel, self).__init__(sigma=sigma,
                                           random_state=random_state,
                                           prototypes_per_class=prototypes_per_class,
                                           initial_prototypes=initial_prototypes,
-                                          gtol=gtol, display=display, max_iter=max_iter)
+                                          gtol=gtol, display=display,
+                                          force_all_finite=force_all_finite,
+                                          max_iter=max_iter)
         self.regularization = regularization
         self.initial_matrix = initial_matrix
         self.initialdim = dim
@@ -137,7 +144,7 @@ class MrslvqModel(RslvqModel):
         if lr_prototypes > 0:
             g[:nb_prototypes] = 1 / n_data * lr_prototypes \
                                 * g[:nb_prototypes].dot(omega.T.dot(omega))
-        g *= -(1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
+        g *= -(1 + 0.0001 * (random_state.rand(*g.shape) - 0.5))
         return g.ravel()
 
     def _optfun(self, variables, training_data, label_equals_prototype):
