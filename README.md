@@ -2,7 +2,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/qiwkue1x5lgll382?svg=true)](https://ci.appveyor.com/project/MrNuggelz/sklearn-glvq)
 [![CircleCI](https://circleci.com/gh/MrNuggelz/sklearn-lvq.svg?style=shield)](https://circleci.com/gh/MrNuggelz/sklearn-lvq)
 [![Coverage Status](https://coveralls.io/repos/github/MrNuggelz/sklearn-lvq/badge.svg)](https://coveralls.io/github/MrNuggelz/sklearn-lvq)
-
+[![Coverage Status](https://readthedocs.org/projects/sklearn-lvq/badge/?version=latest)](https://sklearn-lvq.readthedocs.io/en/latest/?badge=latest)
 # Warning
 
 Repository and Package Name changed to sklearn-lvq!
