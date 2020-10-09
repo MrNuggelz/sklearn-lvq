@@ -18,7 +18,7 @@ provided by Biehl, Schneider and Bunte (http://matlabserver.cs.rug.nl/gmlvqweb/w
 
 ## Important Links
 - scikit-learn (http://scikit-learn.org/)
-- documentation (https://mrnuggelz.github.io/sklearn-lvq/)
+- documentation (https://sklearn-lvq.readthedocs.io/en/latest/?badge=latest)
 
 ## Installation
 To install this module run:
