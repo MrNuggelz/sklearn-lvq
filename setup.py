@@ -12,7 +12,7 @@ with open('README.md', 'r') as fh:
     long_description = fh.read()
 
 setup(name="sklearn-lvq",
-      version="1.1.0",
+      version="1.1.1",
       description="Scikit-Learn compatible Generalized Learning Vector "
       "Quantization (GLVQ) and Robust Soft Learning Vector Quantization "
       "implementation.",
