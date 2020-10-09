@@ -24,10 +24,9 @@ score = 0.9
 
 
 def test_glvq_iris():
-    check_estimator(GlvqModel)
-
     c = [(0, 1, 0.9), (1, 0, 1.1)]
-    model = GlvqModel(prototypes_per_class=2, C=c)
+    model = GlvqModel(prototypes_per_class=2, c=c)
+    check_estimator(model)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), score)
 
@@ -68,9 +67,9 @@ def test_glvq_iris():
 
 
 def test_grlvq_iris():
-    check_estimator(GrlvqModel)
     c = [(0, 1, 0.9), (1, 0, 1.1)]
-    model = GrlvqModel(prototypes_per_class=2, C=c, regularization=0.5)
+    model = GrlvqModel(prototypes_per_class=2, c=c, regularization=0.5)
+    check_estimator(model)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), score)
 
@@ -96,9 +95,9 @@ def test_grlvq_iris():
 
 
 def test_gmlvq_iris():
-    check_estimator(GmlvqModel)
     c = [(0, 1, 0.9), (1, 0, 1.1)]
-    model = GmlvqModel(prototypes_per_class=2, C=c, regularization=0.5)
+    model = GmlvqModel(prototypes_per_class=2, c=c, regularization=0.5)
+    check_estimator(model)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), score)
 
@@ -122,14 +121,14 @@ def test_gmlvq_iris():
                              initial_matrix=[[1, 2], [3, 4], [5, 6]]).fit,
                          iris.data, iris.target)
     assert_raise_message(ValueError, 'dim must be an positive int',
-                         GmlvqModel(dim=0).fit, iris.data, iris.target)
-    GmlvqModel(dim=1, prototypes_per_class=2).fit(
+                         GmlvqModel(initialdim=0).fit, iris.data, iris.target)
+    GmlvqModel(initialdim=1, prototypes_per_class=2).fit(
         iris.data, iris.target)
 
 def test_grmlvq_iris():
-    check_estimator(GrmlvqModel)
     c = [(0, 1, 0.9), (1, 0, 1.1)]
-    model = GrmlvqModel(prototypes_per_class=2, C=c, regularization=0.5)
+    model = GrmlvqModel(prototypes_per_class=2, c=c, regularization=0.5)
+    check_estimator(model)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), score)
 
@@ -154,14 +153,14 @@ def test_grmlvq_iris():
                              initial_matrix=[[1, 2], [3, 4], [5, 6]]).fit,
                          iris.data, iris.target)
     assert_raise_message(ValueError, 'dim must be an positive int',
-                         GrmlvqModel(dim=0).fit, iris.data, iris.target)
-    GrmlvqModel(dim=1, prototypes_per_class=2).fit(
+                         GrmlvqModel(initialdim=0).fit, iris.data, iris.target)
+    GrmlvqModel(initialdim=1, prototypes_per_class=2).fit(
         iris.data, iris.target)
 
 
 def test_lgmlvq_iris():
-    check_estimator(LgmlvqModel)
     model = LgmlvqModel()
+    check_estimator(model)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), score)
 
@@ -202,13 +201,13 @@ def test_lgmlvq_iris():
                          LgmlvqModel(classwise="a").fit, iris.data,
                          iris.target)
     assert_raise_message(ValueError, 'dim must be a list of positive ints',
-                         LgmlvqModel(dim=[-1]).fit, iris.data, iris.target)
+                         LgmlvqModel(initialdim=[-1]).fit, iris.data, iris.target)
     assert_raise_message(ValueError, 'dim length must be number of prototypes',
-                         LgmlvqModel(dim=[1, 1]).fit, iris.data, iris.target)
+                         LgmlvqModel(initialdim=[1, 1]).fit, iris.data, iris.target)
     assert_raise_message(ValueError, 'dim length must be number of classes',
-                         LgmlvqModel(dim=[1, 1], classwise=True).fit,
+                         LgmlvqModel(initialdim=[1, 1], classwise=True).fit,
                          iris.data, iris.target)
-    LgmlvqModel(classwise=True, dim=[1], prototypes_per_class=2).fit(
+    LgmlvqModel(classwise=True, initialdim=[1], prototypes_per_class=2).fit(
         iris.data, iris.target)
 
     model = LgmlvqModel(regularization=0.1)
@@ -216,7 +215,7 @@ def test_lgmlvq_iris():
 
     model = LgmlvqModel(initial_prototypes=[[0, 2, 1], [1, 6, 2]],
                         initial_matrices=[np.ones([1, 2]), np.ones([1, 2])],
-                        dim=[1, 1])
+                        initialdim=[1, 1])
     x = np.array([[0, 0], [0, 4], [1, 4], [1, 8]])
     y = np.array([1, 1, 2, 2])
     model.fit(x, y)

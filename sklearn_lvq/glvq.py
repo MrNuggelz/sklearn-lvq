@@ -54,7 +54,7 @@ class GlvqModel(_LvqBaseModel):
         Used inside phi.
         1 / (1 + np.math.exp(-beta * x))
 
-    C : array-like, shape = [2,3] ,optional
+    c : array-like, shape = [2,3] ,optional
         Weights for wrong classification of form (y_real,y_pred,weight)
         Per default all weights are one, meaning you only need to specify
         the weights not equal one.
@@ -87,14 +87,14 @@ class GlvqModel(_LvqBaseModel):
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 max_iter=2500, gtol=1e-5, beta=2, C=None,
+                 max_iter=2500, gtol=1e-5, beta=2, c=None,
                  display=False, random_state=None):
         super(GlvqModel, self).__init__(prototypes_per_class=prototypes_per_class,
                                         initial_prototypes=initial_prototypes,
                                         max_iter=max_iter, gtol=gtol, display=display,
                                         random_state=random_state)
         self.beta = beta
-        self.c = C
+        self.c = c
 
     def phi(self, x):
         """
@@ -185,10 +185,10 @@ class GlvqModel(_LvqBaseModel):
 
         self.c_ = np.ones((self.c_w_.size, self.c_w_.size))
         if self.c is not None:
-            self.c = validation.check_array(self.c)
-            if self.c.shape != (2, 3):
+            c = validation.check_array(self.c)
+            if c.shape != (2, 3):
                 raise ValueError("C must be shape (2,3)")
-            for k1, k2, v in self.c:
+            for k1, k2, v in c:
                 self.c_[tuple(zip(*product(self._map_to_int(k1), self._map_to_int(k2))))] = float(v)
         return ret
 
@@ -262,7 +262,7 @@ class GlvqModel(_LvqBaseModel):
                              "expected=%d" % (self.w_.shape[1], x.shape[1]))
         dist = self._compute_distance(x)
 
-        foo = lambda c: dist[:,self.c_w_ != self.classes_[c]].min(1) - dist[:,self.c_w_ == self.classes_[c]].min(1)
+        foo = lambda cls: dist[:, self.c_w_ != cls].min(1) - dist[:, self.c_w_ == cls].min(1)
         res = np.vectorize(foo, signature='()->(n)')(self.classes_).T
 
         if self.classes_.size <= 2:

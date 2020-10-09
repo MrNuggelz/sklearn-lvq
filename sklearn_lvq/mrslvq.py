@@ -37,7 +37,7 @@ class MrslvqModel(RslvqModel):
         of the relevance matrix. Without regularization relevances may
         degenerate to zero.
 
-    dim : int, optional (default=nb_features)
+    initialdim : int, optional (default=nb_features)
         Maximum rank or projection dimensions
 
     sigma : float, optional (default=0.5)
@@ -84,7 +84,7 @@ class MrslvqModel(RslvqModel):
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 initial_matrix=None, regularization=0.0, dim=None,
+                 initial_matrix=None, regularization=0.0, initialdim=None,
                  sigma=1, max_iter=1000, gtol=1e-5, display=False, random_state=None):
         super(MrslvqModel, self).__init__(sigma=sigma,
                                           random_state=random_state,
@@ -93,7 +93,7 @@ class MrslvqModel(RslvqModel):
                                           gtol=gtol, display=display, max_iter=max_iter)
         self.regularization = regularization
         self.initial_matrix = initial_matrix
-        self.initialdim = dim
+        self.initialdim = initialdim
 
     def _optgrad(self, variables, training_data, label_equals_prototype,
                  random_state, lr_relevances=0, lr_prototypes=1):

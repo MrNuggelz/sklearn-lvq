@@ -37,7 +37,7 @@ class LmrslvqModel(RslvqModel):
         of the relevance matrix. Without regularization relevances may
         degenerate to zero.
 
-    dim : int, optional
+    initialdim : int, optional
         Maximum rank or projection dimensions
 
     classwise : boolean, optional
@@ -90,7 +90,7 @@ class LmrslvqModel(RslvqModel):
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 initial_matrices=None, regularization=0.0, dim=None,
+                 initial_matrices=None, regularization=0.0, initialdim=None,
                  classwise=False, sigma=1, max_iter=2500, gtol=1e-5, display=False,
                  random_state=None):
         super(LmrslvqModel, self).__init__(sigma=sigma,
@@ -101,7 +101,7 @@ class LmrslvqModel(RslvqModel):
         self.regularization = regularization
         self.initial_matrices = initial_matrices
         self.classwise = classwise
-        self.initialdim = dim
+        self.initialdim = initialdim
 
     def _optgrad(self, variables, training_data, label_equals_prototype,
                  random_state, lr_relevances=0, lr_prototypes=1):
