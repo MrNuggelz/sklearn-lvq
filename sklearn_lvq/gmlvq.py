@@ -41,7 +41,7 @@ class GmlvqModel(GlvqModel):
         of the relevance matrix. Without regularization relevances may
         degenerate to zero.
 
-    dim : int, optional (default=nb_features)
+    initialdim : int, optional (default=nb_features)
         Maximum rank or projection dimensions
 
     max_iter : int, optional (default=2500)
@@ -55,7 +55,7 @@ class GmlvqModel(GlvqModel):
         Used inside phi.
         1 / (1 + np.math.exp(-beta * x))
 
-    C : array-like, shape = [2,3] ,optional
+    c : array-like, shape = [2,3] ,optional
         Weights for wrong classification of form (y_real,y_pred,weight)
         Per default all weights are one, meaning you only need to specify
         the weights not equal one.
@@ -94,15 +94,15 @@ class GmlvqModel(GlvqModel):
     """
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
-                 initial_matrix=None, regularization=0.0, dim=None,
-                 max_iter=2500, gtol=1e-5, beta=2, C=None, display=False,
+                 initial_matrix=None, regularization=0.0, initialdim=None,
+                 max_iter=2500, gtol=1e-5, beta=2, c=None, display=False,
                  random_state=None):
         super(GmlvqModel, self).__init__(prototypes_per_class,
                                          initial_prototypes, max_iter,
-                                         gtol, beta, C, display, random_state)
+                                         gtol, beta, c, display, random_state)
         self.regularization = regularization
         self.initial_matrix = initial_matrix
-        self.initialdim = dim
+        self.initialdim = initialdim
 
     def _optgrad(self, variables, training_data, label_equals_prototype,
                  random_state, lr_relevances=0, lr_prototypes=1):
@@ -162,7 +162,7 @@ class GmlvqModel(GlvqModel):
         if lr_prototypes > 0:
             g[:nb_prototypes] = 1 / n_data * lr_prototypes \
                                 * g[:nb_prototypes].dot(omega_t.dot(omega_t.T))
-        g = g * (1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
+        g = g * (1 + 0.0001 * (random_state.rand(*g.shape) - 0.5))
         return g.ravel()
 
     def _optfun(self, variables, training_data, label_equals_prototype):

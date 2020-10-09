@@ -37,7 +37,7 @@ class LgmlvqModel(GlvqModel):
         of the relevance matrix. Without regularization relevances may
         degenerate to zero.
 
-    dim : int, optional
+    initialdim : int, optional
         Maximum rank or projection dimensions
 
     classwise : boolean, optional
@@ -55,7 +55,7 @@ class LgmlvqModel(GlvqModel):
         Used inside phi.
         1 / (1 + np.math.exp(-beta * x))
 
-    C : array-like, shape = [2,3] ,optional
+    c : array-like, shape = [2,3] ,optional
         Weights for wrong classification of form (y_real,y_pred,weight)
         Per default all weights are one, meaning you only need to specify
         the weights not equal one.
@@ -98,15 +98,15 @@ class LgmlvqModel(GlvqModel):
 
     def __init__(self, prototypes_per_class=1, initial_prototypes=None,
                  initial_matrices=None, regularization=0.0,
-                 dim=None, classwise=False, max_iter=2500, gtol=1e-5,
-                 beta=2, C=None, display=False, random_state=None):
+                 initialdim=None, classwise=False, max_iter=2500, gtol=1e-5,
+                 beta=2, c=None, display=False, random_state=None):
         super(LgmlvqModel, self).__init__(prototypes_per_class,
                                           initial_prototypes, max_iter,
-                                          gtol, beta, C, display, random_state)
+                                          gtol, beta, c, display, random_state)
         self.regularization = regularization
         self.initial_matrices = initial_matrices
         self.classwise = classwise
-        self.initialdim = dim
+        self.initialdim = initialdim
 
     def _g(self, variables, training_data, label_equals_prototype,
            random_state, lr_relevances=0,
@@ -181,7 +181,7 @@ class LgmlvqModel(GlvqModel):
         if lr_prototypes > 0:
             g[:nb_prototypes] = 1 / nb_samples * \
                                 lr_prototypes * g[:nb_prototypes]
-        g = g * (1 + 0.0001 * random_state.rand(*g.shape) - 0.5)
+        g = g * (1 + 0.0001 * (random_state.rand(*g.shape) - 0.5))
         return g.ravel()
 
     def _f(self, variables, training_data, label_equals_prototype):

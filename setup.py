@@ -1,48 +1,58 @@
+"""Install sklearn-lvq."""
+
 from __future__ import print_function
 import sys
 from setuptools import setup
+from setuptools import find_packages
 
-with open('requirements.txt') as f:
-    INSTALL_REQUIRES = [l.strip() for l in f.readlines() if l]
+PROJECT_URL = "https://github.com/MrNuggelz/sklearn-lvq"
+DOWNLOAD_URL = "https://github.com/MrNuggelz/sklearn-lvq/releases/tag/1.1.0"
 
-try:
-    import numpy
-except ImportError:
-    print('numpy is required during installation')
-    sys.exit(1)
+with open('README.md', 'r') as fh:
+    long_description = fh.read()
 
-try:
-    import scipy
-except ImportError:
-    print('scipy is required during installation')
-    sys.exit(1)
-
-CLASSIFIERS = [
-    'Programming Language :: Python',
-    'Programming Language :: Python :: 2.7',
-    'Programming Language :: Python :: 3.5',
-    'Intended Audience :: Science/Research',
-    'Natural Language :: English',
-    'Operating System :: POSIX',
-    'Operating System :: MacOS',
-    'Operating System :: Unix',
-    'Operating System :: Microsoft :: Windows',
-]
-
-version = '1.1.0'
-
-setup(name='sklearn-lvq',
-      version=version,
-      description='sklearn compatible Generalized Learning Vector '
-                  'Quantization and Robust Soft Learning Vector Quantization implementation',
-      author='Joris Jensen',
-      url='https://github.com/MrNuggelz/sklearn-lvq',
-      download_url='https://github.com/MrNuggelz/sklearn-lvq/releases/tag/{}'.format(version),
-      tests_require=['nose'],
-      platforms=['any'],
-      license='BSD-3-Clause',
-      packages=['sklearn_lvq'],
-      install_requires=INSTALL_REQUIRES,
-      author_email='jjensen@techfak.uni-bielefeld.de',
-      classifiers=CLASSIFIERS,
-      )
+setup(name="sklearn-lvq",
+      version="1.1.0",
+      description="Scikit-Learn compatible Generalized Learning Vector "
+      "Quantization (GLVQ) and Robust Soft Learning Vector Quantization "
+      "implementation.",
+      long_description=long_description,
+      long_description_content_type="text/markdown",
+      author="Joris Jensun",
+      author_email="jjensen@techfak.uni-bielefeld.de",
+      url=PROJECT_URL,
+      download_url=DOWNLOAD_URL,
+      license="BSD-3-Clause",
+      install_requires=[
+          "numpy>=1.9.1",
+          "scikit-learn>=0.17",
+      ],
+      extras_require={
+          "examples": ["matplotlib>=2.0.2"],
+          "tests": ["nose"],
+          "docs": [
+              "sphinx",
+              "pillow",
+              "sphinx-gallery",
+              "sphinx_rtd_theme",
+              "metric_learn",
+              "matplotlib>=2.0.2",
+              "numpydoc",
+          ],
+      },
+      classifiers=[
+          "Intended Audience :: Developers",
+          "Intended Audience :: Education",
+          "Intended Audience :: Science/Research",
+          "License :: OSI Approved :: BSD License",
+          "Programming Language :: Python :: 2.7",
+          "Programming Language :: Python :: 3.5",
+          "Programming Language :: Python :: 3.6",
+          "Programming Language :: Python :: 3.7",
+          "Programming Language :: Python :: 3.8",
+          "Operating System :: OS Independent",
+          "Topic :: Scientific/Engineering :: Artificial Intelligence",
+          "Topic :: Software Development :: Libraries",
+          "Topic :: Software Development :: Libraries :: Python Modules"
+      ],
+      packages=find_packages())
