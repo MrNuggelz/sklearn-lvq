@@ -37,6 +37,7 @@ setup(name="sklearn-lvq",
               "sphinx_rtd_theme",
               "metric_learn",
               "matplotlib>=2.0.2",
+              "numpydoc",
           ],
       },
       classifiers=[
