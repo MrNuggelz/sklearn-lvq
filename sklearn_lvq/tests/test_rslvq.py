@@ -20,8 +20,8 @@ iris.target = iris.target[perm]
 score = 0.9
 
 def test_rslvq_iris():
-    check_estimator(RslvqModel)
     model = RslvqModel()
+    check_estimator(model)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), score)
 
@@ -62,8 +62,8 @@ def test_rslvq_iris():
 
 
 def test_mrslvq_iris():
-    check_estimator(MrslvqModel)
     model = MrslvqModel()
+    check_estimator(model)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), score)
 
@@ -76,12 +76,12 @@ def test_mrslvq_iris():
                              initial_matrix=[[1, 2], [3, 4], [5, 6]]).fit,
                          iris.data, iris.target)
     assert_raise_message(ValueError, 'dim must be an positive int',
-                         MrslvqModel(dim=0).fit, iris.data, iris.target)
+                         MrslvqModel(initialdim=0).fit, iris.data, iris.target)
 
 
 def test_lmrslvq_iris():
-    check_estimator(LmrslvqModel)
     model = LmrslvqModel()
+    check_estimator(model)
     model.fit(iris.data, iris.target)
     assert_greater(model.score(iris.data, iris.target), 0.85) #TODO: make more stable and increase to 0.94
 
@@ -122,14 +122,14 @@ def test_lmrslvq_iris():
                          LmrslvqModel(classwise="a").fit, iris.data,
                          iris.target)
     assert_raise_message(ValueError, 'dim must be a list of positive ints',
-                         LmrslvqModel(dim=[-1]).fit, iris.data, iris.target)
+                         LmrslvqModel(initialdim=[-1]).fit, iris.data, iris.target)
     assert_raise_message(ValueError, 'dim length must be number of prototypes',
-                         LmrslvqModel(dim=[1, 1]).fit, iris.data, iris.target)
+                         LmrslvqModel(initialdim=[1, 1]).fit, iris.data, iris.target)
     assert_raise_message(ValueError, 'dim length must be number of classes',
-                         LmrslvqModel(dim=[1, 1], classwise=True).fit,
+                         LmrslvqModel(initialdim=[1, 1], classwise=True).fit,
                          iris.data, iris.target)
 
-    LmrslvqModel(classwise=True, dim=[1], prototypes_per_class=2).fit(
+    LmrslvqModel(classwise=True, initialdim=[1], prototypes_per_class=2).fit(
         iris.data, iris.target)
 
     model = LmrslvqModel(regularization=0.1)
