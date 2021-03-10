@@ -127,7 +127,7 @@ class GmlvqModel(GlvqModel):
         distcorrectpluswrong = distcorrect + distwrong
         distcorectminuswrong = distcorrect - distwrong
         mu = distcorectminuswrong / distcorrectpluswrong
-        mu = np.vectorize(self.phi_prime)(mu)
+        mu = self.phi_prime(mu)
         mu *= self.c_[label_equals_prototype.argmax(1), d_wrong.argmin(1)]
 
         g = np.zeros(variables.shape)
@@ -190,8 +190,8 @@ class GmlvqModel(GlvqModel):
         if self.regularization > 0:
             reg_term = self.regularization * log(
                 np.linalg.det(omega_t.conj().T.dot(omega_t)))
-            return np.vectorize(self.phi)(mu).sum(0) - reg_term  # f
-        return np.vectorize(self.phi)(mu).sum(0)
+            return self.phi(mu).sum(0) - reg_term  # f
+        return self.phi(mu).sum(0)
 
     def _optimize(self, x, y, random_state):
         if not isinstance(self.regularization,
