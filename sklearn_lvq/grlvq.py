@@ -116,7 +116,7 @@ class GrlvqModel(GlvqModel):
         distcorrectpluswrong = distcorrect + distwrong
         distcorectminuswrong = distcorrect - distwrong
         mu = distcorectminuswrong / distcorrectpluswrong
-        mu = np.vectorize(self.phi_prime)(mu)
+        mu = self.phi_prime(mu)
 
         g = np.zeros(prototypes.shape)
         distcorrectpluswrong = 4 / distcorrectpluswrong ** 2
@@ -173,7 +173,7 @@ class GrlvqModel(GlvqModel):
         mu = distcorectminuswrong / distcorrectpluswrong
         mu *= self.c_[label_equals_prototype.argmax(1), d_wrong.argmin(1)]
 
-        return np.vectorize(self.phi)(mu).sum(0)
+        return self.phi(mu).sum(0)
 
     def _optimize(self, x, y, random_state):
         if not isinstance(self.regularization,

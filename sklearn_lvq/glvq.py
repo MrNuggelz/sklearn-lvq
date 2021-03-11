@@ -9,6 +9,7 @@ from __future__ import division
 import numpy as np
 from scipy.optimize import minimize
 from scipy.spatial.distance import cdist
+from scipy.special import expit
 
 from sklearn.utils import validation
 from sklearn.utils.multiclass import unique_labels
@@ -104,7 +105,7 @@ class GlvqModel(_LvqBaseModel):
         x : input value
 
         """
-        return 1 / (1 + np.math.exp(-self.beta * x))
+        return expit(self.beta * x)
 
     def phi_prime(self, x):
         """
@@ -114,8 +115,8 @@ class GlvqModel(_LvqBaseModel):
         x : input value
 
         """
-        return self.beta * np.math.exp(-self.beta * x) / (
-                1 + np.math.exp(-self.beta * x)) ** 2
+        phi = expit(self.beta * x)
+        return self.beta * phi * (1 - phi)
 
     def _optgrad(self, variables, training_data, label_equals_prototype,
                  random_state):
@@ -137,7 +138,7 @@ class GlvqModel(_LvqBaseModel):
         distcorrectpluswrong = distcorrect + distwrong
         distcorectminuswrong = distcorrect - distwrong
         mu = distcorectminuswrong / distcorrectpluswrong
-        mu = np.vectorize(self.phi_prime)(mu)
+        mu = self.phi_prime(mu)
 
         g = np.zeros(prototypes.shape)
         distcorrectpluswrong = 4 / distcorrectpluswrong ** 2
@@ -175,7 +176,7 @@ class GlvqModel(_LvqBaseModel):
         [self._map_to_int(x) for x in self.c_w_[label_equals_prototype.argmax(1)]]
         mu *= self.c_[label_equals_prototype.argmax(1), d_wrong.argmin(1)]  # y_real, y_pred
 
-        return np.vectorize(self.phi)(mu).sum(0)
+        return self.phi(mu).sum(0)
 
     def _validate_train_parms(self, train_set, train_lab):
         if not isinstance(self.beta, int):
